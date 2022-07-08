@@ -1,0 +1,25 @@
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.nav-item.dropdown .dropdown-menu {
+    display: none;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
+    background-color: $color-coral;
+}
+
+.nav-link {
+    font-weight: 600;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    background-color: $color-coral;
+}
+
+.test {
+    background-color: $color-tomato;
+}
