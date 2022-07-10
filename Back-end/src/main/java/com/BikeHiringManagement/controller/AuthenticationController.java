@@ -1,5 +1,8 @@
 package com.BikeHiringManagement.controller;
 
+import com.BikeHiringManagement.entity.Role;
+import com.BikeHiringManagement.entity.User;
+import com.BikeHiringManagement.model.request.SignupRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.modelmapper.ModelMapper;
@@ -30,15 +33,15 @@ import static com.BikeHiringManagement.constant.constant.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/authen")
 public class AuthenticationController {
 
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
-    UserRepository userDao;
+    UserRepository userRepository;
     @Autowired
-    RoleRepository roleDao;
+    RoleRepository roleRepository;
     @Autowired
     PasswordEncoder encoder;
     @Autowired
@@ -78,4 +81,31 @@ public class AuthenticationController {
             return responseUtils.getResponseEntity(e, SYSTEM_ERROR_CODE, SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
+        try {
+            if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+                return responseUtils.getResponseEntity(null, -2, "Error: Username is already taken!", HttpStatus.BAD_REQUEST);
+            }
+            User user = modelMapper.map(signUpRequest, User.class);
+            user.setCreatedDate(new Date());
+            user.setPassword(encoder.encode(user.getPassword()));
+
+            Long roleId = signUpRequest.getRoleId();
+            Set<Role> roles = systemManager.getSignUpRole(roleId);
+            if(roles.isEmpty()){
+                return responseUtils.getResponseEntity(null, -2, "Not found the Role ID", HttpStatus.BAD_REQUEST);
+            }
+            user.setRoles(roles);
+            userRepository.save(user);
+
+            return responseUtils.getResponseEntity(null, 1, "Success", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "Fail", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

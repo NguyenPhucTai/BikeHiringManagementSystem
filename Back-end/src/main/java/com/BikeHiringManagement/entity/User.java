@@ -49,7 +49,7 @@ public class User {
     private Set<Role> roles;
 
     @Column(name = "is_admin")
-    private Boolean isAdmin = false;
+    private Boolean isAdmin = true;
 
     public User(String username, String email, String encode) {
         this.username = username;

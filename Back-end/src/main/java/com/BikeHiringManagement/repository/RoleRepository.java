@@ -9,7 +9,6 @@ import java.util.List;
 public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificationExecutor<Role> {
     Role findByName(String role);
     Role findRoleById(Long id);
-    //    Role findByName(String name);
     Boolean existsByName(String role);
     List<Role> getRoleByNameIn(List<String> names);
     void deleteByNameIn(List<String> names);

@@ -34,20 +34,21 @@ public class SystemManager {
         try {
 //            String username = request.getEmail().substring(0, request.getEmail().indexOf("@"));
             UserDetailObject userDetails = new UserDetailObject();
-            User existUser = userRepository.findByEmail(request.getEmail());
+            Optional<User> existUser = userRepository.findByUsername(request.getUsername());
             if (existUser == null) {
                 userDetails.setResponseMessage("user_not_exist");
                 return userDetails;
             } else {
                 try {
                     Authentication authentication = authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+                            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     String jwt = jwtUtils.generateJwtToken(authentication);
                     userDetails = (UserDetailObject) authentication.getPrincipal();
                     userDetails.setJwt(jwt);
                     userDetails.setResponseMessage("success");
-                    userDetails.setName(existUser.getName());
+                    userDetails.setName(existUser.get().getName());
                     return userDetails;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -80,11 +81,15 @@ public class SystemManager {
         try {
             Set<Role> setRole = new HashSet<>();
             if (roleId == null) {
-                Role userRole = roleRepository.findByName("USER");
-                setRole.add(userRole);
+                Role userRole = roleRepository.findByName("ADMIN");
+                if(userRole != null && userRole.getIsDeleted() == false){
+                    setRole.add(userRole);
+                }
             } else {
                 Role userRole = roleRepository.findRoleById(roleId);
-                setRole.add(userRole);
+                if(userRole != null && userRole.getIsDeleted() == false){
+                    setRole.add(userRole);
+                }
             }
             return setRole;
         } catch (Exception e) {

@@ -4,6 +4,7 @@ package com.BikeHiringManagement.repository;
 import com.BikeHiringManagement.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,7 +15,6 @@ public interface UserRepository extends JpaRepository<User, String>, JpaSpecific
 
     Boolean existsByUsername(String username);
 
-    Boolean existsByEmail(String email);
+    //User findByUsername(String username);
 
-    User findByEmail(String email);
 }
