@@ -1,13 +1,13 @@
-package com.bikehiringsystem;
+package com.BikeHiringManagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoApplication {
+public class BikeHiringApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
+		SpringApplication.run(BikeHiringApplication.class, args);
 	}
 
 }

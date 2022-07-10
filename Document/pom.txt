@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>web.application</groupId>
-    <artifactId>IdeaManagement</artifactId>
+    <artifactId>BikeHiringSystem</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Idea-Management</name>
-    <description>Demo project for Spring Boot</description>
+    <name>BikeHiringSystem</name>
+    <description>Bike Hiring System</description>
     <properties>
         <java.version>11</java.version>
     </properties>
