@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class BikeCategoryRequest {
 
+    private Long id;
     private String name;
     private Double price;
-    private String createdUser;
+    private String username;
 }

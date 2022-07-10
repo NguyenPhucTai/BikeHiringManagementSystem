@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Locale;
 
 @Service
 public class BikeCategoryService {
@@ -27,6 +28,27 @@ public class BikeCategoryService {
                 BikeCategory newBikeCategory = modelMapper.map(bikeCategoryRequest, BikeCategory.class);
                 newBikeCategory.setCreatedDate(new Date());
                 bikeCategoryRepository.save(newBikeCategory);
+                return 1;
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public Integer updateBikeCategory(BikeCategoryRequest bikeCategoryRequest){
+        try{
+
+            if(!bikeCategoryRepository.existsById(bikeCategoryRequest.getId())){
+                return -2;
+            }
+            else{
+                BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(bikeCategoryRequest.getId());
+                bikeCategory.setModifiedDate(new Date());
+                bikeCategory.setModifiedUser(bikeCategoryRequest.getUsername());
+                bikeCategory.setPrice(bikeCategoryRequest.getPrice());
+                bikeCategoryRepository.save(bikeCategory);
                 return 1;
             }
 

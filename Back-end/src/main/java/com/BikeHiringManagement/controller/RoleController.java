@@ -31,9 +31,9 @@ public class RoleController {
             if(result == 1){
                 return responseUtils.getResponseEntity(null, 1, "Create role successfully", HttpStatus.OK);
             }else if (result == -2){
-                return responseUtils.getResponseEntity(null, -2, "Role has been already existed", HttpStatus.INTERNAL_SERVER_ERROR);
+                return responseUtils.getResponseEntity(null, -2, "Role has been already existed", HttpStatus.OK);
             }
-            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
         }catch(Exception e){
             e.printStackTrace();
             return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
