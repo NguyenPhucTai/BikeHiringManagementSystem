@@ -101,10 +101,10 @@ public class AuthenticationController {
             user.setRoles(roles);
             userRepository.save(user);
 
-            return responseUtils.getResponseEntity(null, 1, "Success", HttpStatus.OK);
+            return responseUtils.getResponseEntity(null, 1, "Create account successfully", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "Fail", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, -1, "Create account fail", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -29,7 +29,7 @@ public class RoleController {
         try{
             Integer result = roleService.createRole(name);
             if(result == 1){
-                return responseUtils.getResponseEntity(null, 1, "Create Successfully", HttpStatus.OK);
+                return responseUtils.getResponseEntity(null, 1, "Create role successfully", HttpStatus.OK);
             }else if (result == -2){
                 return responseUtils.getResponseEntity(null, -2, "Role has been already existed", HttpStatus.INTERNAL_SERVER_ERROR);
             }
