@@ -1,8 +1,10 @@
-package com.BikeHiringManagement.service;
+package com.BikeHiringManagement.service.entity;
 
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.Bike;
 import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.User;
+import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeCategoryRequest;
 import com.BikeHiringManagement.repository.BikeCategoryRepository;
 import org.modelmapper.ModelMapper;
@@ -20,28 +22,31 @@ public class BikeCategoryService {
 
     @Autowired
     ModelMapper modelMapper;
-    public Integer createBikeCategory(BikeCategoryRequest bikeCategoryRequest){
+
+
+    public Result createBikeCategory(BikeCategoryRequest bikeCategoryRequest){
         try{
             if(bikeCategoryRepository.existsByName(bikeCategoryRequest.getName())){
-                return -2;
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has been existed!!!");
             }else{
                 BikeCategory newBikeCategory = modelMapper.map(bikeCategoryRequest, BikeCategory.class);
                 newBikeCategory.setCreatedDate(new Date());
+                newBikeCategory.setCreatedUser(bikeCategoryRequest.getUsername());
                 bikeCategoryRepository.save(newBikeCategory);
-                return 1;
+                return new Result(Constant.SUCCESS_CODE, "Create new bike category successfully");
             }
 
         }catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
 
-    public Integer updateBikeCategory(BikeCategoryRequest bikeCategoryRequest){
+    public Result updateBikeCategory(BikeCategoryRequest bikeCategoryRequest){
         try{
 
             if(!bikeCategoryRepository.existsById(bikeCategoryRequest.getId())){
-                return -2;
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
             else{
                 BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(bikeCategoryRequest.getId());
@@ -49,12 +54,12 @@ public class BikeCategoryService {
                 bikeCategory.setModifiedUser(bikeCategoryRequest.getUsername());
                 bikeCategory.setPrice(bikeCategoryRequest.getPrice());
                 bikeCategoryRepository.save(bikeCategory);
-                return 1;
+                return new Result(Constant.SUCCESS_CODE, "Update new bike category successfully");
             }
 
         }catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
 }

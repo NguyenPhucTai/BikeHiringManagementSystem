@@ -1,7 +1,8 @@
 package com.BikeHiringManagement.controller;
 
+import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeCategoryRequest;
-import com.BikeHiringManagement.service.BikeCategoryService;
+import com.BikeHiringManagement.service.entity.BikeCategoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +32,8 @@ public class BikeCategoryController {
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
             reqBody.setUsername(username);
-            Integer result = bikeCategoryService.createBikeCategory(reqBody);
-            if(result == 1){
-                return responseUtils.getResponseEntity(null, 1, "Create bike category successfully", HttpStatus.OK);
-            }else if (result == -2){
-                return responseUtils.getResponseEntity(null, -2, "Bike category has been already existed", HttpStatus.OK);
-            }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+            Result result = bikeCategoryService.createBikeCategory(reqBody);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }catch(Exception e){
             e.printStackTrace();
             return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -53,13 +49,8 @@ public class BikeCategoryController {
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
             reqBody.setUsername(username);
-            Integer result = bikeCategoryService.updateBikeCategory(reqBody);
-            if(result == 1){
-                return responseUtils.getResponseEntity(null, 1, "Edit successfully", HttpStatus.OK);
-            }else if (result == -2){
-                return responseUtils.getResponseEntity(null, -2, "Can not find bike category id: " +id, HttpStatus.OK);
-            }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+            Result result = bikeCategoryService.updateBikeCategory(reqBody);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }
         catch(Exception e){
             e.printStackTrace();

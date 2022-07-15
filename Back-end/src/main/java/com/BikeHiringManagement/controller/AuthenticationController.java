@@ -3,8 +3,6 @@ package com.BikeHiringManagement.controller;
 import com.BikeHiringManagement.entity.Role;
 import com.BikeHiringManagement.entity.User;
 import com.BikeHiringManagement.model.request.SignupRequest;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +27,7 @@ import com.BikeHiringManagement.utils.JwtUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.BikeHiringManagement.constant.constant.*;
+import static com.BikeHiringManagement.constant.Constant.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController

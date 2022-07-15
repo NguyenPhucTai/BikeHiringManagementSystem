@@ -1,15 +1,13 @@
-package com.BikeHiringManagement.service;
+package com.BikeHiringManagement.service.entity;
 
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.Role;
+import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-
-import static com.BikeHiringManagement.constant.constant.SYSTEM_ERROR;
-import static com.BikeHiringManagement.constant.constant.SYSTEM_ERROR_CODE;
 
 @Service
 public class RoleService {
@@ -17,21 +15,21 @@ public class RoleService {
     @Autowired
     RoleRepository roleRepository;
 
-    public Integer createRole(String name){
+    public Result createRole(String name){
         try{
             if(roleRepository.existsByName(name)){
-                return -2;
+                return new Result(Constant.LOGIC_ERROR_CODE, "The role name has been existed!!!");
             }else{
                 Role newRole = new Role();
                 newRole.setName(name);
                 newRole.setCreatedUser("Tai Phuc");
                 newRole.setCreatedDate(new Date());
                 roleRepository.save(newRole);
-                return 1;
+                return new Result(Constant.SUCCESS_CODE, "Create new role successfully");
             }
         }catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
 }
