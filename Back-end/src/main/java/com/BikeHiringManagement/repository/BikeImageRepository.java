@@ -4,6 +4,8 @@ import com.BikeHiringManagement.entity.BikeImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface BikeImageRepository extends JpaRepository<BikeImage, Long>, JpaSpecificationExecutor<BikeImage> {
+import java.util.List;
 
+public interface BikeImageRepository extends JpaRepository<BikeImage, Long>, JpaSpecificationExecutor<BikeImage> {
+    List<BikeImage> findAllByBikeId(Long id);
 }

@@ -79,14 +79,14 @@ public class BikeCategoryService {
         try {
             Sort sort = responseUtils.getSort(sortBy, sortType);
             Integer pageNum = page - 1;
-            Page<BikeCategory> pageTopic = bikeCategoryRepository.findAll(bikeCategorySpecification.filterBikeCategory(searchKey), PageRequest.of(pageNum, limit, sort));
+            Page<BikeCategory> pageResult = bikeCategoryRepository.findAll(bikeCategorySpecification.filterBikeCategory(searchKey), PageRequest.of(pageNum, limit, sort));
             return PageDto.builder()
-                    .content(pageTopic.getContent())
-                    .numberOfElements(pageTopic.getNumberOfElements())
+                    .content(pageResult.getContent())
+                    .numberOfElements(pageResult.getNumberOfElements())
                     .page(page)
-                    .size(pageTopic.getSize())
-                    .totalPages(pageTopic.getTotalPages())
-                    .totalElements(pageTopic.getTotalElements())
+                    .size(pageResult.getSize())
+                    .totalPages(pageResult.getTotalPages())
+                    .totalElements(pageResult.getTotalElements())
                     .build();
         } catch (Exception e) {
             return null;

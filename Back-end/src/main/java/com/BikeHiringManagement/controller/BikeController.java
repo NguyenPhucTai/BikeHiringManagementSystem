@@ -1,6 +1,7 @@
 package com.BikeHiringManagement.controller;
 
 
+import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeRequest;
 import com.BikeHiringManagement.service.entity.BikeService;
@@ -38,6 +39,23 @@ public class BikeController {
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }catch (Exception e) {
             e.printStackTrace();
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getBikeWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
+                                                     @RequestParam("page") Integer page,
+                                                     @RequestParam("limit") Integer limit,
+                                                     @RequestParam("sortBy") String sortBy,
+                                                     @RequestParam("sortType") String sortType) {
+        try {
+            PageDto result = bikeService.getBike(searchKey, page, limit, sortBy, sortType);
+            if (result != null) {
+                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
+            }
+            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+        } catch (Exception e) {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
