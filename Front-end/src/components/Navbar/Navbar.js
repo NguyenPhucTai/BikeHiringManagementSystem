@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { NavDropdown, Navbar, Nav } from "react-bootstrap";
-import { Home } from "@mui/icons-material";
 
 const MenuBar = () => {
 
@@ -16,7 +15,7 @@ const MenuBar = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto" variant="pills" defaultActiveKey="link-1">
                         <Nav.Link className="nav-item mx-lg-4" eventKey="link-1">
-                            <Link className="nav-link" to="/"><Home /></Link>
+                            <Link className="nav-link" to="/">Home</Link>
                         </Nav.Link>
                         <Nav.Link className="nav-item mx-lg-4" eventKey="link-2">
                             <Link className="nav-link" to="/about-us">About Us</Link>

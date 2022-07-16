@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles/style.scss';
+import '../styles/style.scss';
 // import logo from './asset/logo.jpg'
 
 const PageNotFound = props => (

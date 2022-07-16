@@ -4,9 +4,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
 import './styles/style.scss';
 // import { useSelector } from "react-redux";
-import PageNotFound from "./404";
+import PageNotFound from './pages/404';
 import MenuBar from './components/Navbar/Navbar';
 import Home from './pages/user-page/Home';
+import Test from "./pages/test";
+import TestUploadImage from './pages/test2';
 
 /** Access user page */
 function GlobalRoute({ children }) {
@@ -35,6 +37,8 @@ function App() {
 		<Fragment>
 			<GlobalRoute>
 				<Route path='/' exact element={<Home />} />
+				<Route path='/test' exact element={<Test />} />
+				<Route path='/test2' exact element={<TestUploadImage />} />
 				<Route path='*' element={<Navigate to='/404' />} />
 				<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
 			</GlobalRoute>
