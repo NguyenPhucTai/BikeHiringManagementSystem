@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { ErrorMessage, Formik, Form } from "formik";
+import { AxiosInstance } from "../api/AxiosClient";
+import { RequestHeader } from "../api/AxiosComponent";
+import { Formik, Form } from "formik";
 import { TextField } from "../components/Form/TextField";
 import { SelectField } from "../components/Form/SelectField";
 import { BikeCategories } from "../components/Form/SelectItem";
@@ -9,28 +10,35 @@ import { BikeSchema } from "../validation";
 import { BikeManagement } from "../api/EndPoint";
 import { storage } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { AlertMessage } from "../components/Modal/AlertMessage";
 
-const handleSubmit = async (values, setBikeId) => {
+const handleSubmit = async (bikeData, fileUpload, setAlert) => {
     const body = {
-        name: values.bikeName,
-        bikeNo: values.bikeNo,
-        bikeCategory: values.bikeCategory,
+        name: bikeData.bikeName,
+        bikeNo: bikeData.bikeNo,
+        bikeCategory: bikeData.bikeCategory,
+        files: fileUpload,
     };
-
-    await axios.post(BikeManagement.create, body, {
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-        }
+    console.log(body);
+    setAlert({
+        alertShow: true,
+        alertStatus: "success",
+        alertMessage: "Create success",
     })
-        .then((res) => {
-            if (res.data.data !== null) {
-                setBikeId(res.data.data);
-            }
-        })
-        .catch((error) => {
-            console.log(error)
-        });
+
+    // await AxiosInstance.post(BikeManagement.create, body, RequestHeader.checkAuthHeaders)
+    //     .then((res) => {
+    //         if (res.data.data !== null) {
+    //             console.log(res.data.data);
+    //         }
+    //     })
+    //     .catch((error) => {
+    //         setAlert({
+    //             alertShow: true,
+    //             alertStatus: "danger",
+    //             alertMessage: error,
+    //         })
+    //     });
 };
 
 const initialValues = {
@@ -41,19 +49,34 @@ const initialValues = {
 };
 
 const Test = (props) => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [bikeId, setBikeId] = useState(0);
+    const [isClicking, setIsClicking] = useState(false);
+    const [isSubmiting, setIsSubmitting] = useState(false);
+    const [imageUpload, setImageUpload] = useState([]);
     const [fileUpload, setFileUpload] = useState([]);
-    const [dataUpload, setDataUpload] = useState([]);
+    const [bikeData, setBikeData] = useState({
+        bikeName: "",
+        bikeNo: "",
+        bikeCategory: 0,
+    });
+    const [alert, setAlert] = useState({
+        alertShow: false,
+        alertStatus: "success",
+        alertMessage: "",
+
+    })
 
     /** Handle upload image to firebase */
     useEffect(() => {
-        if (dataUpload.length === 0) {
-            return;
-        }
         let upFiles = [];
-        if (isSubmitting) {
-            dataUpload.forEach((data) => {
+        if (isClicking && imageUpload.length === 0) {
+            setAlert({
+                alertShow: true,
+                alertStatus: "danger",
+                alertMessage: "Bike should have at least one image.",
+            })
+        }
+        else if (isClicking) {
+            imageUpload.forEach((data) => {
                 let fileName = `bike-image/${data.name}`;
                 let imageRef = ref(storage, fileName);
                 uploadBytes(imageRef, data).then(() => {
@@ -62,7 +85,7 @@ const Test = (props) => {
                             fileName: fileName.replace("bike-image/", ""),
                             filePath: url
                                 .replace(
-                                    "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-b185c.appspot.com/o",
+                                    "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o",
                                     ""
                                 )
                                 .replace("%", ""),
@@ -71,21 +94,31 @@ const Test = (props) => {
                 });
             });
             setFileUpload(upFiles);
+            setIsSubmitting(true);
         }
-        setIsSubmitting(false);
-    }, [isSubmitting, dataUpload]);
+        setIsClicking(false);
+    }, [isClicking, imageUpload]);
+    /** Handle upload image to firebase */
 
+    /** Handle submitting */
+    useEffect(() => {
+        if (isSubmiting) {
+            handleSubmit(bikeData, fileUpload, setAlert);
+        }
+    }, [isSubmiting])
+    /** Handle submitting */
+    
     const handleFileUpload = (event) => {
         let values = event.target.value
         values.forEach((data) => {
-            setDataUpload(prevState => {
+            setImageUpload(prevState => {
                 return [...prevState, event.target.value[values.indexOf(data)]];
             });
         })
     };
 
     const handleFileRemove = (file) => {
-        setDataUpload(prevState => {
+        setImageUpload(prevState => {
             let currentData = prevState;
             currentData.forEach((data) => {
                 if (data.path === file.path) {
@@ -101,12 +134,22 @@ const Test = (props) => {
         <div className="container">
             <h1 className="text-center">Form</h1>
 
+            <AlertMessage
+                isShow={alert.alertShow}
+                message={alert.alertMessage}
+                status={alert.alertStatus}
+            />
+
             <Formik
                 initialValues={initialValues}
                 validationSchema={BikeSchema}
                 onSubmit={(values) => {
-                    handleSubmit(values, setBikeId);
-                    setIsSubmitting(true);
+                    setAlert({
+                        alertShow: false,
+                        alertStatus: "success",
+                    })
+                    setBikeData(values)
+                    setIsClicking(true);
                 }}>
                 {({
                     isSubmiting,
@@ -138,6 +181,9 @@ const Test = (props) => {
                             placeholder={"Choose bike category"}
                             onChange={(selectOption) => {
                                 setFieldValue("bikeCategory", selectOption.value);
+                            }}
+                            onBlur={() => {
+                                handleBlur({ target: { name: "bikeCategory" } });
                             }}
                         />
                         <DropzoneArea

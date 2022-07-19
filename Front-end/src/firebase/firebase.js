@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBANlhOLbzZh34gqcSpHdjyLxilXJtZ88M",
-    authDomain: "bike-hiring-management-b185c.firebaseapp.com",
-    projectId: "bike-hiring-management-b185c",
-    storageBucket: "bike-hiring-management-b185c.appspot.com",
-    messagingSenderId: "206431925660",
-    appId: "1:206431925660:web:fe69bf155e65891ed0c459",
-    measurementId: "G-F80MX5DQ3B"
+    apiKey: "AIzaSyA2LdXcdlrW-VRotrds4fDd20F-4FpEWzw",
+    authDomain: "bike-hiring-management-d7a01.firebaseapp.com",
+    projectId: "bike-hiring-management-d7a01",
+    storageBucket: "bike-hiring-management-d7a01.appspot.com",
+    messagingSenderId: "353723223902",
+    appId: "1:353723223902:web:a184b83eb63a34e3b749cf",
+    measurementId: "G-FFKHGSPLVH"
 };
 
 const app = initializeApp(firebaseConfig);

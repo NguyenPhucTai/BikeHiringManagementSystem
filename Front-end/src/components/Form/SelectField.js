@@ -12,7 +12,6 @@ export const SelectField = ({ label, ...props }) => {
             </label>
             <Select
                 className={`shadow-none ${meta.touched && meta.error && "is-invalid"}`}
-                {...field}
                 {...props}
             />
             <ErrorMessage component='div' name={field.name} className='form-error text-danger' />
