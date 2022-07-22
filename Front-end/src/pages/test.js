@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AxiosInstance } from "../api/AxiosClient";
-import { RequestHeader } from "../api/AxiosComponent";
 import { Formik, Form } from "formik";
 import { TextField } from "../components/Form/TextField";
 import { SelectField } from "../components/Form/SelectField";
@@ -9,36 +8,73 @@ import { DropzoneArea } from "material-ui-dropzone";
 import { BikeSchema } from "../validation";
 import { BikeManagement } from "../api/EndPoint";
 import { storage } from "../firebase/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { AlertMessage } from "../components/Modal/AlertMessage";
+import { GenerateRandomString } from "../function/RandomString";
+import Cookies from 'universal-cookie';
+import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
+import { orange } from "@mui/material/colors";
 
-const handleSubmit = async (bikeData, fileUpload, setAlert) => {
+const cookies = new Cookies();
+
+const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload) => {
     const body = {
         name: bikeData.bikeName,
         bikeNo: bikeData.bikeNo,
         bikeCategory: bikeData.bikeCategory,
         files: fileUpload,
     };
-    console.log(body);
-    setAlert({
-        alertShow: true,
-        alertStatus: "success",
-        alertMessage: "Create success",
+    // setFileUpload([]);
+    // setAlert({
+    //     alertShow: true,
+    //     alertStatus: "success",
+    //     alertMessage: "Create success",
+    // })
+    // console.log(body)
+    // setIsSubmitting(false)
+    // setFileUpload([]);
+    // setAlert({
+    //     alertShow: true,
+    //     alertStatus: "success",
+    //     alertMessage: "Create success",
+    // })
+    await AxiosInstance.post(BikeManagement.create, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     })
-
-    // await AxiosInstance.post(BikeManagement.create, body, RequestHeader.checkAuthHeaders)
-    //     .then((res) => {
-    //         if (res.data.data !== null) {
-    //             console.log(res.data.data);
-    //         }
-    //     })
-    //     .catch((error) => {
-    //         setAlert({
-    //             alertShow: true,
-    //             alertStatus: "danger",
-    //             alertMessage: error,
-    //         })
-    //     });
+        .then((res) => {
+            setIsSubmitting(false)
+            if (res.data.code === 1) {
+                setAlert({
+                    alertShow: true,
+                    alertStatus: "success",
+                    alertMessage: "Create success",
+                })
+                setFileUpload([]);
+            } else {
+                setAlert({
+                    alertShow: true,
+                    alertStatus: "danger",
+                    alertMessage: res.data.message,
+                })
+                fileUpload.forEach((data) => {
+                    const imageRef = ref(storage, `bike-image/${data.fileName}`);
+                    deleteObject(imageRef).then(() => {
+                        // File deleted successfully
+                    }).catch((error) => {
+                        // Uh-oh, an error occurred!
+                    });
+                })
+                setFileUpload([]);
+            }
+        })
+        .catch((error) => {
+            setAlert({
+                alertShow: true,
+                alertStatus: "danger",
+                alertMessage: error,
+            })
+        });
 };
 
 const initialValues = {
@@ -49,6 +85,7 @@ const initialValues = {
 };
 
 const Test = (props) => {
+    // Upload bike
     const [isClicking, setIsClicking] = useState(false);
     const [isSubmiting, setIsSubmitting] = useState(false);
     const [imageUpload, setImageUpload] = useState([]);
@@ -58,42 +95,43 @@ const Test = (props) => {
         bikeNo: "",
         bikeCategory: 0,
     });
+    // Alert messaegg
     const [alert, setAlert] = useState({
         alertShow: false,
         alertStatus: "success",
         alertMessage: "",
-
     })
+    // Loading bar
+    const [loading, setLoading] = useState(false);
+    const timer = useRef();
 
     /** Handle upload image to firebase */
     useEffect(() => {
-        let upFiles = [];
+        // let upFiles = [];
         if (isClicking && imageUpload.length === 0) {
-            setAlert({
-                alertShow: true,
-                alertStatus: "danger",
-                alertMessage: "Bike should have at least one image.",
-            })
+            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload);
         }
         else if (isClicking) {
             imageUpload.forEach((data) => {
-                let fileName = `bike-image/${data.name}`;
+                let randomString = GenerateRandomString(10);
+                let fileName = `bike-image/${data.name}-${randomString}`;
                 let imageRef = ref(storage, fileName);
                 uploadBytes(imageRef, data).then(() => {
                     getDownloadURL(imageRef).then((url) => {
-                        upFiles.push({
-                            fileName: fileName.replace("bike-image/", ""),
-                            filePath: url
-                                .replace(
-                                    "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o",
-                                    ""
-                                )
-                                .replace("%", ""),
-                        });
+                        setFileUpload(prevState => {
+                            return [...prevState, {
+                                fileName: fileName.replace("bike-image/", ""),
+                                filePath: url
+                                    .replace(
+                                        "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o",
+                                        ""
+                                    )
+                                    .replace("%", ""),
+                            }];
+                        })
                     });
                 });
             });
-            setFileUpload(upFiles);
             setIsSubmitting(true);
         }
         setIsClicking(false);
@@ -102,12 +140,12 @@ const Test = (props) => {
 
     /** Handle submitting */
     useEffect(() => {
-        if (isSubmiting) {
-            handleSubmit(bikeData, fileUpload, setAlert);
+        if (isSubmiting && imageUpload.length === fileUpload.length) {
+            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload);
         }
-    }, [isSubmiting])
+    }, [isSubmiting, fileUpload])
     /** Handle submitting */
-    
+
     const handleFileUpload = (event) => {
         let values = event.target.value
         values.forEach((data) => {
@@ -130,6 +168,23 @@ const Test = (props) => {
         });
     };
 
+    /** Handle loading bar */
+    useEffect(() => {
+        return () => {
+            clearTimeout(timer.current);
+        };
+    }, []);
+
+    const handleButtonClick = () => {
+        if (!loading) {
+            setLoading(true);
+            timer.current = window.setTimeout(() => {
+                setLoading(false);
+            }, 3000);
+        }
+    };
+    /** Handle loading bar  */
+
     return (
         <div className="container">
             <h1 className="text-center">Form</h1>
@@ -139,10 +194,14 @@ const Test = (props) => {
                 message={alert.alertMessage}
                 status={alert.alertStatus}
             />
-
+            {loading && (
+                <Box sx={{ width: '100%' }}>
+                    <LinearProgress />
+                </Box>
+            )}
             <Formik
                 initialValues={initialValues}
-                validationSchema={BikeSchema}
+                // validationSchema={BikeSchema}
                 onSubmit={(values) => {
                     setAlert({
                         alertShow: false,
@@ -150,6 +209,7 @@ const Test = (props) => {
                     })
                     setBikeData(values)
                     setIsClicking(true);
+                    handleButtonClick()
                 }}>
                 {({
                     isSubmiting,
@@ -220,6 +280,7 @@ const Test = (props) => {
                     </Form>
                 )}
             </Formik>
+
         </div>
     )
 }

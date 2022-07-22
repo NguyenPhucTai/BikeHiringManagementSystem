@@ -32,7 +32,7 @@ const handleSignIn = async (values, setAlert) => {
                 setAlert({
                     alertShow: true,
                     alertStatus: "danger",
-                    alertMessage: "Alert!",
+                    alertMessage: res.data.message,
                 })
             }
         })
