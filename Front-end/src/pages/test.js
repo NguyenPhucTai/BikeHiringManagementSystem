@@ -44,6 +44,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
     })
         .then((res) => {
             setIsSubmitting(false)
+            console.log(res)
             if (res.data.code === 1) {
                 setAlert({
                     alertShow: true,
@@ -180,7 +181,7 @@ const Test = (props) => {
             setLoading(true);
             timer.current = window.setTimeout(() => {
                 setLoading(false);
-            }, 3000);
+            }, 10000);
         }
     };
     /** Handle loading bar  */
@@ -201,7 +202,7 @@ const Test = (props) => {
             )}
             <Formik
                 initialValues={initialValues}
-                // validationSchema={BikeSchema}
+                validationSchema={BikeSchema}
                 onSubmit={(values) => {
                     setAlert({
                         alertShow: false,
