@@ -35,7 +35,7 @@ public class SystemManager {
 //            String username = request.getEmail().substring(0, request.getEmail().indexOf("@"));
             UserDetailObject userDetails = new UserDetailObject();
             Optional<User> existUser = userRepository.findByUsername(request.getUsername());
-            if (existUser == null) {
+            if (existUser == null || existUser.isEmpty()) {
                 userDetails.setResponseMessage("user_not_exist");
                 return userDetails;
             } else {

@@ -77,6 +77,7 @@ public class BikeSpecification {
             }
 
             //------------------------CREATE SORT-----------------------------//
+            // Sort theo Name - Cate Name - Hired Number - Price
             if (sortType.equalsIgnoreCase("asc")) {
                 switch (sortBy) {
                     case "id":

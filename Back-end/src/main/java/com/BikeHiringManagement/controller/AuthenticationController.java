@@ -58,10 +58,10 @@ public class AuthenticationController {
             UserDetailObject userDetails = systemManager.login(loginRequest);
             if (userDetails != null) {
                 if (userDetails.getResponseMessage().equals("user_not_exist")) {
-                    return responseUtils.getResponseEntity(null, -1, "USER IS NOT EXIST", HttpStatus.OK);
+                    return responseUtils.getResponseEntity(null, 0, "USER IS NOT EXIST", HttpStatus.OK);
                 }
                 if (userDetails.getResponseMessage().equals("wrong_password")) {
-                    return responseUtils.getResponseEntity(null, -2, "WRONG CREDENTIAL", HttpStatus.OK);
+                    return responseUtils.getResponseEntity(null, 0, "WRONG CREDENTIAL", HttpStatus.OK);
                 }
                 List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                         .collect(Collectors.toList());
@@ -85,7 +85,7 @@ public class AuthenticationController {
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
         try {
             if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-                return responseUtils.getResponseEntity(null, -2, "Error: Username is already taken!", HttpStatus.BAD_REQUEST);
+                return responseUtils.getResponseEntity(null, 0, "Error: Username is already taken!", HttpStatus.BAD_REQUEST);
             }
             User user = modelMapper.map(signUpRequest, User.class);
             user.setCreatedDate(new Date());
@@ -94,7 +94,7 @@ public class AuthenticationController {
             Long roleId = signUpRequest.getRoleId();
             Set<Role> roles = systemManager.getSignUpRole(roleId);
             if(roles.isEmpty()){
-                return responseUtils.getResponseEntity(null, -2, "Not found the Role ID", HttpStatus.BAD_REQUEST);
+                return responseUtils.getResponseEntity(null, 0, "Not found the Role ID", HttpStatus.BAD_REQUEST);
             }
             user.setRoles(roles);
             userRepository.save(user);
