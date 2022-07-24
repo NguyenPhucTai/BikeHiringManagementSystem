@@ -18,7 +18,8 @@ import { orange } from "@mui/material/colors";
 
 const cookies = new Cookies();
 
-const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload) => {
+const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading) => {
+
     const body = {
         name: bikeData.bikeName,
         bikeNo: bikeData.bikeNo,
@@ -52,6 +53,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
                     alertMessage: "Create success",
                 })
                 setFileUpload([]);
+                setLoading(false);
             } else {
                 setAlert({
                     alertShow: true,
@@ -67,6 +69,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
                     });
                 })
                 setFileUpload([]);
+                setLoading(false);
             }
         })
         .catch((error) => {
@@ -75,6 +78,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
                 alertStatus: "danger",
                 alertMessage: error,
             })
+            setLoading(false);
         });
 };
 
@@ -108,9 +112,10 @@ const Test = (props) => {
 
     /** Handle upload image to firebase */
     useEffect(() => {
+
         // let upFiles = [];
         if (isClicking && imageUpload.length === 0) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload);
+            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
         }
         else if (isClicking) {
             imageUpload.forEach((data) => {
@@ -142,7 +147,7 @@ const Test = (props) => {
     /** Handle submitting */
     useEffect(() => {
         if (isSubmiting && imageUpload.length === fileUpload.length) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload);
+            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
         }
     }, [isSubmiting, fileUpload])
     /** Handle submitting */
@@ -176,16 +181,7 @@ const Test = (props) => {
         };
     }, []);
 
-    const handleButtonClick = () => {
-        if (!loading) {
-            setLoading(true);
-            timer.current = window.setTimeout(() => {
-                setLoading(false);
-            }, 10000);
-        }
-    };
     /** Handle loading bar  */
-
     return (
         <div className="container">
             <h1 className="text-center">Form</h1>
@@ -210,7 +206,7 @@ const Test = (props) => {
                     })
                     setBikeData(values)
                     setIsClicking(true);
-                    handleButtonClick()
+                    setLoading(true);
                 }}>
                 {({
                     isSubmiting,
