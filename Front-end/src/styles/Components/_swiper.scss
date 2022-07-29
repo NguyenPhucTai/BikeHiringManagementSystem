@@ -1,0 +1,52 @@
+.swiper-slide {
+    min-height: 25rem;
+    max-height: 25rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    padding: 0 25px;
+
+    img {
+        display: block;
+        min-height: 13rem;
+        max-height: 13rem;
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+
+    .bikeName {
+        font-weight: 700;
+        font-size: 18px;
+        color: $color-orange;
+        margin-bottom: 0.5rem;
+    }
+
+    .bikeTag {
+        margin-bottom: 0.5rem;
+    }
+
+    .bikePrice {
+        color: $color-coral;
+        font-weight: 600;
+
+        span {
+            font-weight: 500;
+            color: $color-black;
+        }
+    }
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    color: $color-coral !important;
+}
+
+.swiper-button-prev {
+    left: -3px !important;
+}
+
+.swiper-button-next {
+    right: -3px !important;
+}

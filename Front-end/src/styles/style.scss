@@ -6,6 +6,13 @@
 
 //Components
 @import './Components/nav';
+@import './Components/banner';
+@import './Components/swiper';
+//Swiper component
+@import "swiper/scss";
+@import "swiper/scss/pagination";
+@import "swiper/scss/navigation";
 
 //Pages
 @import './Pages/404';
+

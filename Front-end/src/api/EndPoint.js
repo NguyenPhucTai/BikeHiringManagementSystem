@@ -17,3 +17,5 @@ export const CategoryManagement = {
     update: "/bike-category/update/",
     get: "/bike-category/get/",
 }
+
+export const Firebase_URL = "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F"

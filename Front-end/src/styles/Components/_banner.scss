@@ -1,0 +1,28 @@
+.banner {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+
+    &__info {
+        width: 100%;
+        min-height: 32rem;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 2rem;
+        background-image: linear-gradient(to right, rgba($color: #000000, $alpha: 0), rgba($color: #000000, $alpha: 0.4));
+    }
+
+    &__detail {
+        max-width: 26.5rem;
+        text-align: right;
+
+        h2,
+        p {
+            color: $color-white;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+        }
+    }
+}

@@ -14,7 +14,6 @@ import { GenerateRandomString } from "../function/RandomString";
 import Cookies from 'universal-cookie';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
-import { orange } from "@mui/material/colors";
 
 const cookies = new Cookies();
 
