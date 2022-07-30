@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 
 public interface BikeImageRepository extends JpaRepository<BikeImage, Long>, JpaSpecificationExecutor<BikeImage> {
-    List<BikeImage> findAllByBikeId(Long id);
+    List<BikeImage> findAllByBikeIdOrderByNameAsc(Long id);
 }

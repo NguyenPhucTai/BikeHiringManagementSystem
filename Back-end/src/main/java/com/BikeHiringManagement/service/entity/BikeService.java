@@ -88,7 +88,7 @@ public class BikeService {
 
             List<BikeResponse> listResult = new ArrayList<>();
             for(BikeResponse bikeResponse : listRes){
-                List<BikeImage> listImage = bikeImageRepository.findAllByBikeId(bikeResponse.getId());
+                List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdOrderByNameAsc(bikeResponse.getId());
 
                 if(!listImage.isEmpty()){
 
