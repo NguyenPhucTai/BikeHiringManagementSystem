@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class BikeService {
@@ -73,12 +74,17 @@ public class BikeService {
         }
     }
 
-    public PageDto getBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType) {
+    public PageDto getBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId) {
         try {
             Map<String, Object> mapBike = bikeSpecification.getListBike(searchKey, page, limit, sortBy, sortType);
             List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
             Long totalItems = (Long) mapBike.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);
+
+            if(categoryId != null){
+                 listRes = listRes.stream().filter(c -> c.getCategoryId() == categoryId).collect(Collectors.toList());
+            }
+
 
             List<BikeResponse> listResult = new ArrayList<>();
             for(BikeResponse bikeResponse : listRes){
