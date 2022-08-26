@@ -6,10 +6,7 @@ const MenuBar = () => {
 
     return (
         <Fragment>
-            <div className="test">
-                <p>test</p>
-            </div>
-            <Navbar className="navbar-light px-3 px-lg-5" bg="light" expand="lg">
+            <Navbar className="navbar-light px-3 px-lg-5" fixed="top" bg="light" expand="lg">
                 <Link className="navbar-brand" to="/">Rent Motorcycles</Link>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">

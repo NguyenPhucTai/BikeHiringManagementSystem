@@ -25,20 +25,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
         bikeCategory: bikeData.bikeCategory,
         files: fileUpload,
     };
-    // setFileUpload([]);
-    // setAlert({
-    //     alertShow: true,
-    //     alertStatus: "success",
-    //     alertMessage: "Create success",
-    // })
-    // console.log(body)
-    // setIsSubmitting(false)
-    // setFileUpload([]);
-    // setAlert({
-    //     alertShow: true,
-    //     alertStatus: "success",
-    //     alertMessage: "Create success",
-    // })
+
     await AxiosInstance.post(BikeManagement.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     })
@@ -117,9 +104,11 @@ const Test = (props) => {
             handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
         }
         else if (isClicking) {
+            var index = 0;
             imageUpload.forEach((data) => {
+                index++;
                 let randomString = GenerateRandomString(10);
-                let fileName = `bike-image/${data.name}-${randomString}`;
+                let fileName = `bike-image/${index}-${data.name}-${randomString}`;
                 let imageRef = ref(storage, fileName);
                 uploadBytes(imageRef, data).then(() => {
                     getDownloadURL(imageRef).then((url) => {
@@ -128,10 +117,9 @@ const Test = (props) => {
                                 fileName: fileName.replace("bike-image/", ""),
                                 filePath: url
                                     .replace(
-                                        "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o",
+                                        "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F",
                                         ""
                                     )
-                                    .replace("%", ""),
                             }];
                         })
                     });

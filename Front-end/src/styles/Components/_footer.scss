@@ -1,0 +1,31 @@
+.footer {
+    background-color: $color-black;
+    padding: 3% 5%;
+
+    p, a {
+        color: $color-white;
+    }
+
+    span {
+        color: $color-coral;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    li {
+        display: inline-block;
+        margin: 0 20px 20px 0;
+    }
+
+    .icon {
+        fill: $color-coral;
+    }
+
+    .info:hover {
+        color: $color-coral;
+    }
+}

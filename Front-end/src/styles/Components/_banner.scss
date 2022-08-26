@@ -9,11 +9,11 @@
         justify-content: flex-end;
         align-items: center;
         padding: 2rem;
-        background-image: linear-gradient(to right, rgba($color: #000000, $alpha: 0), rgba($color: #000000, $alpha: 0.4));
+        background-image: linear-gradient(to right, rgba($color: #000000, $alpha: 0), rgba($color: #000000, $alpha: 0.5));
     }
 
     &__detail {
-        max-width: 26.5rem;
+        max-width: 28.5rem;
         text-align: right;
 
         h2,
@@ -23,6 +23,10 @@
 
         h2 {
             margin-bottom: 1rem;
+        }
+
+        p {
+            font-weight: 500;
         }
     }
 }

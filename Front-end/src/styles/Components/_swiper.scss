@@ -1,3 +1,7 @@
+.swiper {
+    padding: 0 20px !important;
+}
+
 .swiper-slide {
     min-height: 25rem;
     max-height: 25rem;
@@ -25,6 +29,9 @@
 
     .bikeTag {
         margin-bottom: 0.5rem;
+        .badge{
+            background-color: $color-green !important;
+        }
     }
 
     .bikePrice {
@@ -49,4 +56,8 @@
 
 .swiper-button-next {
     right: -3px !important;
+}
+
+.swiper-pagination-bullet-active{
+    background-color: $color-coral !important;
 }
