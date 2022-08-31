@@ -10,7 +10,7 @@ export const ListSwiper = ({ listBike, ...props }) => {
         <div className="listSwiper">
             <Swiper
                 breakpoints={{
-                    // when window width is >= 576px
+                    // when window width is >= 270px
                     270: {
                         slidesPerView: 1,
                     },

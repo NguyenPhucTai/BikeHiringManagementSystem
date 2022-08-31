@@ -6,7 +6,9 @@ import './styles/style.scss';
 // import { useSelector } from "react-redux";
 import PageNotFound from './pages/404';
 import MenuBar from './components/Navbar/Navbar';
+import Footer from './components/Footer/Footer';
 import Home from './pages/user-page/Home';
+import List from "./pages/user-page/List";
 import SignIn from "./pages/admin-page/SignIn";
 import Test from "./pages/test";
 import TestUploadImage from './pages/test2';
@@ -17,6 +19,7 @@ function GlobalRoute({ children }) {
 		<BrowserRouter>
 			<MenuBar />
 			<Routes>{children}</Routes>
+			<Footer />
 		</BrowserRouter>
 	);
 }
@@ -38,6 +41,7 @@ function App() {
 		<Fragment>
 			<GlobalRoute>
 				<Route path='/' exact element={<Home />} />
+				<Route path='/list' exact element={<List />} />
 				<Route path='/signin' exact element={<SignIn />} />
 				<Route path='/test' exact element={<Test />} />
 				<Route path='/test2' exact element={<TestUploadImage />} />

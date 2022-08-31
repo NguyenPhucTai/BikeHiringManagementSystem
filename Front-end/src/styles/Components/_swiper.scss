@@ -18,6 +18,10 @@
         width: 100%;
         border-radius: 10px;
         margin-bottom: 1rem;
+
+        opacity: 1;
+        -webkit-transition: .3s ease-in-out;
+        transition: .3s ease-in-out;
     }
 
     .bikeName {
@@ -29,8 +33,9 @@
 
     .bikeTag {
         margin-bottom: 0.5rem;
-        .badge{
-            background-color: $color-green !important;
+
+        .badge {
+            background-color: $color-green  !important;
             overflow-wrap: break-word !important;
         }
     }
@@ -44,11 +49,17 @@
             color: $color-black;
         }
     }
+
+    &:hover {
+        img {
+            opacity: .8;
+        }
+    }
 }
 
 .swiper-button-prev,
 .swiper-button-next {
-    color: $color-coral !important;
+    color: $color-coral  !important;
 }
 
 .swiper-button-prev {
@@ -59,6 +70,6 @@
     right: -3px !important;
 }
 
-.swiper-pagination-bullet-active{
-    background-color: $color-coral !important;
+.swiper-pagination-bullet-active {
+    background-color: $color-coral  !important;
 }

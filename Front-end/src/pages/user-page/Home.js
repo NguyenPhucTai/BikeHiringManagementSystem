@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { AxiosInstance } from "../../api/AxiosClient";
 import { Banner } from "../../components/Banner/Banner";
-import { Footer } from "../../components/Footer/Footer";
 import { ListSwiper } from "../../components/Swiper/Swiper";
 import { BikeManagement } from "../../api/EndPoint";
 import Cookies from 'universal-cookie';
@@ -21,7 +20,6 @@ const handleGetListBike = async (values, setListManual, setListAutomatic, catego
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
         params: paramsValue,
     }).then((res) => {
-        console.log(res)
         var listBike = res.data.data.content.map((data) => {
             return {
                 id: data.id,
@@ -67,7 +65,6 @@ function Home() {
                 <h2 className="text-center">Automatic Transmission Motorcycle</h2>
                 <ListSwiper listBike={listAutomatic} />
             </div>
-            <Footer />
         </Fragment>
     )
 }

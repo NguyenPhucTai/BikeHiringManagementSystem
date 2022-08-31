@@ -9,6 +9,7 @@
 @import './Components/footer';
 @import './Components/banner';
 @import './Components/swiper';
+@import './Components/pagenumber';
 //Swiper component
 @import "swiper/scss";
 @import "swiper/scss/pagination";
@@ -16,4 +17,5 @@
 
 //Pages
 @import './Pages/404';
+@import './Pages/list';
 

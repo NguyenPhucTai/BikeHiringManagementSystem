@@ -1,0 +1,13 @@
+.MuiPagination-ul {
+    justify-content: center;
+}
+
+.MuiPaginationItem-root {
+    color: $color-coral !important;
+    font-weight: 600 !important;
+}
+
+.Mui-selected {
+    color: $color-white !important;
+    background-color: $color-coral !important;
+}

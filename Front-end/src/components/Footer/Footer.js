@@ -3,7 +3,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import EmailIcon from '@mui/icons-material/Email';
 
-export const Footer = () => {
+const Footer = () => {
+    
     return (
         <div className="footer">
             <div className="row">
@@ -13,7 +14,7 @@ export const Footer = () => {
                 <div className="col-lg-8">
                     <ul>
                         <li>
-                            <a href="#" className="info"><LocationOnIcon className="icon" /> Address: 6/3A Bui Thi Xuan Street - Phuoc Tien Sub-district - Nha Trang - Khanh Hoa</a>
+                            <a href="#" className="info"><LocationOnIcon className="icon" /> Address: 6/3A Bui Thi Xuan Street - Phuoc Tien Ward - Nha Trang - Khanh Hoa</a>
                         </li>
                         <li>
                             <a href="tel:0766552288" className="info"><PhoneInTalkIcon className="icon" /> 07.66.55.22.88 (Ms. Be)</a>
@@ -30,3 +31,5 @@ export const Footer = () => {
         </div>
     )
 }
+
+export default Footer;
