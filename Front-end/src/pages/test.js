@@ -14,6 +14,8 @@ import { GenerateRandomString } from "../function/RandomString";
 import Cookies from 'universal-cookie';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 const cookies = new Cookies();
 
@@ -69,9 +71,12 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
 };
 
 const initialValues = {
+    bikeManualId: "",
     bikeName: "",
     bikeNo: "",
     bikeCategory: 0,
+    manufacturer: 0,
+    color: 0,
     files: [{}],
 };
 
@@ -206,30 +211,74 @@ const Test = (props) => {
                     setFieldValue,
                 }) => (
                     <Form className="d-flex flex-column">
-                        <TextField
-                            label={"Bike Name"}
-                            name={"bikeName"}
-                            type={"text"}
-                            placeholder={"Enter the bike name"}
-                        />
-                        <TextField
-                            label={"Bike No"}
-                            name={"bikeNo"}
-                            type={"text"}
-                            placeholder={"Enter your bike number"}
-                        />
-                        <SelectField
-                            label={"Bike Category"}
-                            name={"bikeCategory"}
-                            options={BikeCategories}
-                            placeholder={"Choose bike category"}
-                            onChange={(selectOption) => {
-                                setFieldValue("bikeCategory", selectOption.value);
-                            }}
-                            onBlur={() => {
-                                handleBlur({ target: { name: "bikeCategory" } });
-                            }}
-                        />
+                        <Row>
+                            <Col xs={12} sm={6}>
+                                <TextField
+                                    label={"Bike Manual Id"}
+                                    name={"bikeManualId"}
+                                    type={"text"}
+                                    placeholder={"Enter the bike manual id"}
+                                />
+                            </Col>
+                            <Col xs={12} sm={6}>
+                                <TextField
+                                    label={"Bike Name"}
+                                    name={"bikeName"}
+                                    type={"text"}
+                                    placeholder={"Enter the bike name"}
+                                />
+                            </Col>
+                            <Col xs={12} sm={6}>
+                                <TextField
+                                    label={"Bike No"}
+                                    name={"bikeNo"}
+                                    type={"text"}
+                                    placeholder={"Enter your bike number"}
+                                />
+                            </Col>
+                            <Col xs={12} sm={6}>
+                                <SelectField
+                                    label={"Bike Category"}
+                                    name={"bikeCategory"}
+                                    options={BikeCategories}
+                                    placeholder={"Choose bike category"}
+                                    onChange={(selectOption) => {
+                                        setFieldValue("bikeCategory", selectOption.value);
+                                    }}
+                                    onBlur={() => {
+                                        handleBlur({ target: { name: "bikeCategory" } });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs={12} sm={6}>
+                                <SelectField
+                                    label={"Bike Manufacturer"}
+                                    name={"manufacturer"}
+                                    options={BikeCategories}
+                                    placeholder={"Choose bike manufacturer"}
+                                    onChange={(selectOption) => {
+                                        setFieldValue("manufacturer", selectOption.value);
+                                    }}
+                                    onBlur={() => {
+                                        handleBlur({ target: { name: "manufacturer" } });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs={12} sm={6}>
+                                <SelectField
+                                    label={"Bike Color"}
+                                    name={"color"}
+                                    options={BikeCategories}
+                                    placeholder={"Choose bike color"}
+                                    onChange={(selectOption) => {
+                                        setFieldValue("color", selectOption.value);
+                                    }}
+                                    onBlur={() => {
+                                        handleBlur({ target: { name: "color" } });
+                                    }}
+                                />
+                            </Col>
+                        </Row>
                         <DropzoneArea
                             acceptedFiles={[
                                 ".png,.jpg,.jpeg",

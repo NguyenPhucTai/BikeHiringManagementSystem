@@ -26,12 +26,22 @@
 .dropdown-item {
     font-weight: 600;
     color: rgba(0, 0, 0, .55);
+    margin: 0px !important;
+    padding: 0.7rem 1rem;
 }
 
 .dropdown-item:focus,
 .dropdown-item:hover {
     background-color: $color-coral;
     color: rgba(0, 0, 0, .7);
+}
+
+.dropdown-menu {
+    padding: 0px !important;
+}
+
+.dropdown-divider {
+    margin: 0px;
 }
 
 @media screen and (max-width: 992px) {

@@ -39,7 +39,7 @@ export const ListSwiper = ({ listBike, ...props }) => {
                 {listBike.map((data) => {
                     return (
                         <SwiperSlide>
-                            <Link to={`/bike/${data.id}`}>
+                            <Link className="card-item" to={`/bike/${data.id}`}>
                                 <img src={Firebase_URL + data.filePath} alt={data.fileName} />
                                 <label className="bikeName">{data.name}</label>
                                 <div className="bikeTag">
@@ -51,7 +51,7 @@ export const ListSwiper = ({ listBike, ...props }) => {
                     )
                 })}
                 <SwiperSlide>
-                    <Link to={`/bike/1`}>
+                    <Link className="card-item" to={`/bike/1`}>
                         <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
                         <label className="bikeName">Bike 1</label>
                         <div className="bikeTag">
@@ -61,7 +61,7 @@ export const ListSwiper = ({ listBike, ...props }) => {
                     </Link>
                 </SwiperSlide>
                 <SwiperSlide>
-                    <Link to={`/bike/2`}>
+                    <Link className="card-item" to={`/bike/2`}>
                         <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
                         <label className="bikeName">Bike 2</label>
                         <div className="bikeTag">
@@ -71,7 +71,7 @@ export const ListSwiper = ({ listBike, ...props }) => {
                     </Link>
                 </SwiperSlide>
                 <SwiperSlide>
-                    <Link to={`/bike/3`}>
+                    <Link className="card-item" to={`/bike/3`}>
                         <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
                         <label className="bikeName">Bike 3</label>
                         <div className="bikeTag">
@@ -81,7 +81,7 @@ export const ListSwiper = ({ listBike, ...props }) => {
                     </Link>
                 </SwiperSlide>
                 <SwiperSlide>
-                    <Link to={`/bike/4`}>
+                    <Link className="card-item" to={`/bike/4`}>
                         <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
                         <label className="bikeName">Bike 4</label>
                         <div className="bikeTag">
