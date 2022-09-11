@@ -30,7 +30,7 @@ public class BikeController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createBike (@RequestBody BikeRequest bikeRequest,
-                                            HttpServletRequest request) {
+                                         HttpServletRequest request) {
 
         try {
             String jwt = jwtUtils.getJwtFromRequest(request);
