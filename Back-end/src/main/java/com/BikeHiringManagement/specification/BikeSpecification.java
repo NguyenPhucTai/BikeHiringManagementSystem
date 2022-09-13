@@ -1,8 +1,6 @@
 package com.BikeHiringManagement.specification;
 
-import com.BikeHiringManagement.entity.Bike;
-import com.BikeHiringManagement.entity.BikeCategory;
-import com.BikeHiringManagement.entity.BikeImage;
+import com.BikeHiringManagement.entity.*;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -43,38 +41,58 @@ public class BikeSpecification {
     }
 
 
-    public Map<String, Object> getListBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType){
+    public Map<String, Object> getListBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId){
         try{
             Map<String, Object> mapFinal = new HashMap<>();
+
+            //----------------------MAIN QUERY -----------------------------//
+            // Crate Query
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<BikeResponse> query = cb.createQuery(BikeResponse.class);
+
+            // Create root table
             Root<Bike> root = query.from(Bike.class);
             Root<BikeCategory> rootCate = query.from(BikeCategory.class);
+            Root<BikeColor> rootColor = query.from(BikeColor.class);
+            Root<BikeManufacturer> rootManufacturer = query.from(BikeManufacturer.class);
+
+            // Add condition for query
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("bikeCategory"), rootCate.get("id")));
+            predicates.add(cb.equal(root.get("bikeColor"), rootColor.get("id")));
+            predicates.add(cb.equal(root.get("bikeManufacturer"), rootManufacturer.get("id")));
             if (!StringUtils.isEmpty(searchKey)) {
                 predicates.add(cb.or(
                     cb.like(cb.lower(root.get("name")) , "%" + searchKey.toLowerCase() + "%"),
                     cb.like(cb.lower(root.get("bikeNo")) , "%" + searchKey.toLowerCase() + "%"),
-                    cb.like(cb.lower(rootCate.get("name")) , "%" + searchKey.toLowerCase() + "%")
+                    cb.like(cb.lower(rootCate.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                    cb.like(cb.lower(rootColor.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                    cb.like(cb.lower(rootManufacturer.get("name")) , "%" + searchKey.toLowerCase() + "%")
                 ));
             }
 
             //----------------------SUBQUERY COUNT-----------------------------//
             CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-            Root<Bike> rootCount = countQuery.from(Bike.class);
 
+            Root<Bike> rootCount = countQuery.from(Bike.class);
             Root<BikeCategory> rootCateCount = countQuery.from(BikeCategory.class);
+            Root<BikeColor> rootColorCount = countQuery.from(BikeColor.class);
+            Root<BikeManufacturer> rootManufacturerCount = countQuery.from(BikeManufacturer.class);
+
             List<Predicate> predicatesCount = new ArrayList<>();
             predicatesCount.add(cb.equal(rootCount.get("bikeCategory"), rootCateCount.get("id")));
-
+            predicatesCount.add(cb.equal(rootCount.get("bikeColor"), rootColorCount.get("id")));
+            predicatesCount.add(cb.equal(rootCount.get("bikeManufacturer"), rootManufacturerCount.get("id")));
             if (!StringUtils.isEmpty(searchKey)) {
                 predicatesCount.add(cb.or(
                         cb.like(cb.lower(rootCount.get("name")) , "%" + searchKey.toLowerCase() + "%"),
                         cb.like(cb.lower(rootCount.get("bikeNo")) , "%" + searchKey.toLowerCase() + "%"),
-                        cb.like(cb.lower(rootCateCount.get("name")) , "%" + searchKey.toLowerCase() + "%")
+                        cb.like(cb.lower(rootCateCount.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootColorCount.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootManufacturerCount.get("name")) , "%" + searchKey.toLowerCase() + "%")
                 ));
             }
+
 
             //------------------------CREATE SORT-----------------------------//
             // Sort theo Name - Cate Name - Hired Number - Price
@@ -83,14 +101,11 @@ public class BikeSpecification {
                     case "id":
                         query.orderBy(cb.asc(root.get("id")));
                         break;
-                    case "name":
-                        query.orderBy(cb.asc(root.get("name")));
-                        break;
-                    case "bikeNo":
-                        query.orderBy(cb.asc(root.get("bikeNo")));
-                        break;
                     case "bikeCategory":
                         query.orderBy(cb.asc(root.get("bikeCategory")));
+                        break;
+                    case "hiredNumber":
+                        query.orderBy(cb.asc(root.get("hiredNumber")));
                         break;
                 }
             } else {
@@ -98,14 +113,11 @@ public class BikeSpecification {
                     case "id":
                         query.orderBy(cb.desc(root.get("id")));
                         break;
-                    case "name":
-                        query.orderBy(cb.desc(root.get("name")));
-                        break;
-                    case "bikeNo":
-                        query.orderBy(cb.desc(root.get("bikeNo")));
-                        break;
                     case "bikeCategory":
                         query.orderBy(cb.desc(root.get("bikeCategory")));
+                        break;
+                    case "hiredNumber":
+                        query.orderBy(cb.desc(root.get("hiredNumber")));
                         break;
                 }
             }
@@ -114,15 +126,21 @@ public class BikeSpecification {
             query.multiselect(
                     root.get("id"),
                     root.get("name"),
+                    root.get("bikeManualId"),
                     root.get("bikeNo"),
                     root.get("hiredNumber"),
                     rootCate.get("id"),
                     rootCate.get("name"),
-                    rootCate.get("price")
+                    rootCate.get("price"),
+                    rootColor.get("id"),
+                    rootColor.get("name"),
+                    rootManufacturer.get("id"),
+                    rootManufacturer.get("name")
             ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
             List<BikeResponse> listResult = entityManager.createQuery(query) != null ? entityManager.createQuery(query).
                     setFirstResult((page - 1) * limit)
                     .setMaxResults(limit).getResultList() : new ArrayList<>();
+
             countQuery.select(cb.count(rootCount)).where(cb.and(predicatesCount.stream().toArray(Predicate[]::new)));
             Long count = entityManager.createQuery(countQuery).getSingleResult();
             mapFinal.put("data", listResult);

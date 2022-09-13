@@ -15,6 +15,9 @@ public class Order extends BaseEntity{
     @Column(name = "end_date")
     private Date endDate;
 
+    @Column(name = "location")
+    private String location;
+
     @Column(name = "deposit")
     private Double deposit;
 

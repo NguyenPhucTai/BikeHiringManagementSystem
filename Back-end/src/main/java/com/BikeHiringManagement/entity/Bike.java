@@ -20,6 +20,12 @@ public class Bike extends BaseEntity{
     @Column(name = "bike_category")
     private Long bikeCategory;
 
+    @Column(name = "bike_color")
+    private Long bikeColor;
+
+    @Column(name = "bike_manufacturer")
+    private Long bikeManufacturer;
+
     @Column(name = "status", length = 50, nullable = false)
     private String status = "AVAILABLE";
 

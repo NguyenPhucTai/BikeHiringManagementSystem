@@ -76,7 +76,7 @@ public class BikeService {
 
     public PageDto getBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId) {
         try {
-            Map<String, Object> mapBike = bikeSpecification.getListBike(searchKey, page, limit, sortBy, sortType);
+            Map<String, Object> mapBike = bikeSpecification.getListBike(searchKey, page, limit, sortBy, sortType, categoryId);
             List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
             Long totalItems = (Long) mapBike.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);

@@ -49,7 +49,7 @@ public class BikeController {
                                                      @RequestParam("limit") Integer limit,
                                                      @RequestParam("sortBy") String sortBy,
                                                      @RequestParam("sortType") String sortType,
-                                                     @RequestParam("categoryId") Long categoryId) {
+                                                     @RequestParam(value = "categoryId",required = false) Long categoryId) {
         try {
             PageDto result = bikeService.getBike(searchKey, page, limit, sortBy, sortType, categoryId);
             if (result != null) {
