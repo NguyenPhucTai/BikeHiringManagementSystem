@@ -5,8 +5,8 @@ export const BikeSchema = Yup.object().shape({
     bikeName: Yup.string().required("Bike Name is required"),
     bikeNo: Yup.string().required("Bike No is required"),
     bikeCategory: Yup.number().min(1, "Bike Category is required"),
-    manufacturer: Yup.number().min(1, "Bike Manufacturer is required"),
-    color: Yup.number().min(1, "Bike Color is required"),
+    bikeManufacturer: Yup.number().min(1, "Bike Manufacturer is required"),
+    bikeColor: Yup.number().min(1, "Bike Color is required"),
 });
 
 export const UserSchema = Yup.object().shape({

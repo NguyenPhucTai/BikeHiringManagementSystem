@@ -29,21 +29,27 @@ export const FilterSide = ({
                         <div key={"Select-Manufacturer"} className="form-group mb-3">
                             <label className='form-label'>Manufacturer</label>
                             {listManufacturer.map((data) => {
-                                <Form.Check
-                                    type={"checkbox"}
-                                    id={`${data.value}`}
-                                    label={`${data.value}`}
-                                />
+                                return (
+                                    <Form.Check
+                                        type={"checkbox"}
+                                        id={`${data.value}`}
+                                        label={`${data.value}`}
+                                        key={`${data.value}`}
+                                    />
+                                )
                             })}
                         </div>
                         <div key={"Select-Color"} className="form-group mb-3">
                             <label className='form-label'>Color</label>
                             {listColor.map((data) => {
-                                <Form.Check
-                                    type={"checkbox"}
-                                    id={`${data.value}`}
-                                    label={`${data.value}`}
-                                />
+                                return (
+                                    <Form.Check
+                                        type={"checkbox"}
+                                        id={`${data.value}`}
+                                        label={`${data.value}`}
+                                        key={`${data.value}`}
+                                    />
+                                )
                             })}
                         </div>
                         <div key={"Select-Status"} className="form-group mb-3">

@@ -23,8 +23,11 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
 
     const body = {
         name: bikeData.bikeName,
+        bikeManualId: bikeData.bikeManualId,
         bikeNo: bikeData.bikeNo,
         bikeCategory: bikeData.bikeCategory,
+        bikeColor: bikeData.bikeColor,
+        bikeManufacturer: bikeData.bikeManufacturer,
         files: fileUpload,
     };
 
@@ -70,13 +73,41 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
         });
 };
 
+const handleGetCategory = async (values, setListCategory) => {
+    var paramsValue = {
+        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
+        page: values === null || values.page === null ? 1 : values.page,
+        limit: values === null || values.limit === null ? 5 : values.limit,
+        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
+        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+    };
+    await AxiosInstance.get(BikeManagement.getCategory, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+        params: paramsValue,
+    }).then((res) => {
+        var listCategory = res.data.data.content.map((data) => {
+            return {
+                values: data.id,
+                label: data.name,
+                key: data.id,
+            }
+        })
+        setListCategory(listCategory)
+    })
+        .catch((error) => {
+            if (error && error.response) {
+                console.log("Error: ", error);
+            }
+        });
+};
+
 const initialValues = {
-    bikeManualId: "",
     bikeName: "",
+    bikeManualId: "",
     bikeNo: "",
     bikeCategory: 0,
-    manufacturer: 0,
-    color: 0,
+    bikeColor: 0,
+    bikeManufacturer: 0,
     files: [{}],
 };
 
@@ -91,7 +122,11 @@ const Test = (props) => {
         bikeNo: "",
         bikeCategory: 0,
     });
-    // Alert messaegg
+    const [listCategory, setListCategory] = useState([]);
+    const [listColor, setListColor] = useState([]);
+    const [listManufacturer, setListManufacturer] = useState([]);
+    const [loadingPage, setLoadingPage] = useState(true);
+    // Alert message
     const [alert, setAlert] = useState({
         alertShow: false,
         alertStatus: "success",
@@ -172,8 +207,14 @@ const Test = (props) => {
             clearTimeout(timer.current);
         };
     }, []);
-
     /** Handle loading bar  */
+
+    useEffect(() => {
+        if (loadingPage) {
+            handleGetCategory(null, setListCategory);
+        }
+    }, [loadingPage])
+
     return (
         <div className="container">
             <h1 className="text-center">Form</h1>
@@ -240,7 +281,7 @@ const Test = (props) => {
                                 <SelectField
                                     label={"Bike Category"}
                                     name={"bikeCategory"}
-                                    options={BikeCategories}
+                                    options={listCategory}
                                     placeholder={"Choose bike category"}
                                     onChange={(selectOption) => {
                                         setFieldValue("bikeCategory", selectOption.value);
@@ -253,28 +294,28 @@ const Test = (props) => {
                             <Col xs={12} sm={6}>
                                 <SelectField
                                     label={"Bike Manufacturer"}
-                                    name={"manufacturer"}
+                                    name={"bikeManufacturer"}
                                     options={BikeCategories}
                                     placeholder={"Choose bike manufacturer"}
                                     onChange={(selectOption) => {
-                                        setFieldValue("manufacturer", selectOption.value);
+                                        setFieldValue("bikeManufacturer", selectOption.value);
                                     }}
                                     onBlur={() => {
-                                        handleBlur({ target: { name: "manufacturer" } });
+                                        handleBlur({ target: { name: "bikeManufacturer" } });
                                     }}
                                 />
                             </Col>
                             <Col xs={12} sm={6}>
                                 <SelectField
                                     label={"Bike Color"}
-                                    name={"color"}
+                                    name={"bikeColor"}
                                     options={BikeCategories}
                                     placeholder={"Choose bike color"}
                                     onChange={(selectOption) => {
-                                        setFieldValue("color", selectOption.value);
+                                        setFieldValue("bikeColor", selectOption.value);
                                     }}
                                     onBlur={() => {
-                                        handleBlur({ target: { name: "color" } });
+                                        handleBlur({ target: { name: "bikeColor" } });
                                     }}
                                 />
                             </Col>

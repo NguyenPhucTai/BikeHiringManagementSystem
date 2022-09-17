@@ -15,7 +15,7 @@ const cookies = new Cookies();
 const handleGetListBike = async (values, categoryId, activePage, setMaxPage, setListMotor) => {
     var paramsValue = {
         searchKey: values === null || values.searchKey === null ? null : values.searchKey,
-        categoryId: categoryId === null ? 1 : categoryId,
+        categoryId: values === null || values.categoryId === null ? null : values.categoryId,
         page: activePage,
         limit: values === null || values.limit === null ? 12 : values.limit,
         sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
@@ -86,8 +86,8 @@ function List() {
                 </Col>
                 <Col lg={10}>
                     <div className="container">
-                        <SortBar />
                         <h2 className="text-center">List Motorcycle</h2>
+                        <SortBar />
                         <Row>
                             {listMotor.map((data) => {
                                 return (
