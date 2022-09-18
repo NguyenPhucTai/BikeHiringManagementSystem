@@ -54,7 +54,7 @@ public class BikeSpecification {
             Root<Bike> root = query.from(Bike.class);
             Root<BikeCategory> rootCate = query.from(BikeCategory.class);
             Root<BikeColor> rootColor = query.from(BikeColor.class);
-            Root<BikeManufacturer> rootManufacturer = query.from(BikeManufacturer.class);
+            Root<BikeManufacturerSpecification> rootManufacturer = query.from(BikeManufacturerSpecification.class);
 
             // Add condition for query
             List<Predicate> predicates = new ArrayList<>();
@@ -77,7 +77,7 @@ public class BikeSpecification {
             Root<Bike> rootCount = countQuery.from(Bike.class);
             Root<BikeCategory> rootCateCount = countQuery.from(BikeCategory.class);
             Root<BikeColor> rootColorCount = countQuery.from(BikeColor.class);
-            Root<BikeManufacturer> rootManufacturerCount = countQuery.from(BikeManufacturer.class);
+            Root<BikeManufacturerSpecification> rootManufacturerCount = countQuery.from(BikeManufacturerSpecification.class);
 
             List<Predicate> predicatesCount = new ArrayList<>();
             predicatesCount.add(cb.equal(rootCount.get("bikeCategory"), rootCateCount.get("id")));
