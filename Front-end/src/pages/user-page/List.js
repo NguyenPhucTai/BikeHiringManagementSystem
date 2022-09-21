@@ -44,42 +44,90 @@ const handleGetListBike = async (values, categoryId, activePage, setMaxPage, set
         });
 }
 
+const handleGetColor = async (values, setListColor) => {
+    var paramsValue = {
+        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
+        page: values === null || values.page === null ? 1 : values.page,
+        limit: values === null || values.limit === null ? 100 : values.limit,
+        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
+        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+    };
+    await AxiosInstance.get(BikeManagement.getColor, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+        params: paramsValue,
+    }).then((res) => {
+        var listColor = res.data.data.content.map((data) => {
+            return {
+                value: data.id,
+                label: data.name,
+                key: data.id,
+            }
+        })
+        setListColor(listColor)
+    })
+        .catch((error) => {
+            if (error && error.response) {
+                console.log("Error: ", error);
+            }
+        });
+};
+
+const handleGetManufacturer = async (values, setListManufacturer) => {
+    var paramsValue = {
+        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
+        page: values === null || values.page === null ? 1 : values.page,
+        limit: values === null || values.limit === null ? 100 : values.limit,
+        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
+        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+    };
+    await AxiosInstance.get(BikeManagement.getManufacturer, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+        params: paramsValue,
+    }).then((res) => {
+        var listManufacturer = res.data.data.content.map((data) => {
+            return {
+                value: data.id,
+                label: data.name,
+                key: data.id,
+            }
+        })
+        setListManufacturer(listManufacturer)
+    })
+        .catch((error) => {
+            if (error && error.response) {
+                console.log("Error: ", error);
+            }
+        });
+};
+
 function List() {
     const [activePage, setActivePage] = useState(1);
     const [maxPage, setMaxPage] = useState(10);
     const [listMotor, setListMotor] = useState([]);
-    const [listColor, setListColor] = useState([
-        { value: "red" },
-        { value: "black" },
-        { value: "blue" },
-        { value: "green" },
-        { value: "yellow" },
-        { value: "white" },
-        { value: "silver" },
-    ]);
-    const [listManufacturer, setListManufacturer] = useState([
-        { value: "red" },
-        { value: "black" },
-        { value: "blue" },
-        { value: "green" },
-        { value: "yellow" },
-        { value: "white" },
-        { value: "silver" },
-    ]);
+    const [listColor, setListColor] = useState([]);
+    const [listManufacturer, setListManufacturer] = useState([]);
+    const [loadingPage, setLoadingPage] = useState(true);
 
     const handleChangePage = (event, newPage) => {
         setActivePage(newPage);
     };
 
     useEffect(() => {
-        // console.log(activePage);
+        if (loadingPage) {
+            handleGetColor(null, setListColor);
+            handleGetManufacturer(null, setListManufacturer)
+            setLoadingPage(false)
+        }
+    }, [loadingPage])
+
+    useEffect(() => {
         handleGetListBike(null, null, activePage, setMaxPage, setListMotor);
     }, [activePage])
 
     return (
         <Fragment>
             <Row>
-                <Col lg={2}>
+                <Col lg={2} className="filter-side" style={{backgroundColor: "coral"}}>
                     <div className="container">
                         <FilterSide listColor={listColor} listManufacturer={listManufacturer} />
                     </div>
@@ -103,66 +151,6 @@ function List() {
                                     </Col>
                                 )
                             })}
-                            <Col className="column" xs={12} sm={6} md={4} lg={3}>
-                                <Link className="card-item" to={`/bike/1`}>
-                                    <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
-                                    <label className="bikeName">Bike 1</label>
-                                    <div className="bikeTag">
-                                        <Badge>Manual Transmission Motorcycle</Badge>
-                                    </div>
-                                    <p className="bikePrice">Price: <span>100k</span></p>
-                                </Link>
-                            </Col>
-                            <Col className="column" xs={12} sm={6} md={4} lg={3}>
-                                <Link className="card-item" to={`/bike/1`}>
-                                    <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
-                                    <label className="bikeName">Bike 1</label>
-                                    <div className="bikeTag">
-                                        <Badge>Manual Transmission Motorcycle</Badge>
-                                    </div>
-                                    <p className="bikePrice">Price: <span>100k</span></p>
-                                </Link>
-                            </Col>
-                            <Col className="column" xs={12} sm={6} md={4} lg={3}>
-                                <Link className="card-item" to={`/bike/1`}>
-                                    <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
-                                    <label className="bikeName">Bike 1</label>
-                                    <div className="bikeTag">
-                                        <Badge>Manual Transmission Motorcycle</Badge>
-                                    </div>
-                                    <p className="bikePrice">Price: <span>100k</span></p>
-                                </Link>
-                            </Col>
-                            <Col className="column" xs={12} sm={6} md={4} lg={3}>
-                                <Link className="card-item" to={`/bike/1`}>
-                                    <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
-                                    <label className="bikeName">Bike 1</label>
-                                    <div className="bikeTag">
-                                        <Badge>Manual Transmission Motorcycle</Badge>
-                                    </div>
-                                    <p className="bikePrice">Price: <span>100k</span></p>
-                                </Link>
-                            </Col>
-                            <Col className="column" xs={12} sm={6} md={4} lg={3}>
-                                <Link className="card-item" to={`/bike/1`}>
-                                    <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
-                                    <label className="bikeName">Bike 1</label>
-                                    <div className="bikeTag">
-                                        <Badge>Manual Transmission Motorcycle</Badge>
-                                    </div>
-                                    <p className="bikePrice">Price: <span>100k</span></p>
-                                </Link>
-                            </Col>
-                            <Col className="column" xs={12} sm={6} md={4} lg={3}>
-                                <Link className="card-item" to={`/bike/1`}>
-                                    <img src={Firebase_URL + "1-nouvo-black-1.jpg-yOwB5QazxX?alt=media&token=d34cbc3b-adca-414d-9cdc-ead45f6520ac"} alt="image1" />
-                                    <label className="bikeName">Bike 1</label>
-                                    <div className="bikeTag">
-                                        <Badge>Manual Transmission Motorcycle</Badge>
-                                    </div>
-                                    <p className="bikePrice">Price: <span>100k</span></p>
-                                </Link>
-                            </Col>
                         </Row>
                         <Pagination
                             count={maxPage}

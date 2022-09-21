@@ -77,7 +77,7 @@ const handleGetCategory = async (values, setListCategory) => {
     var paramsValue = {
         searchKey: values === null || values.searchKey === null ? null : values.searchKey,
         page: values === null || values.page === null ? 1 : values.page,
-        limit: values === null || values.limit === null ? 5 : values.limit,
+        limit: values === null || values.limit === null ? 100 : values.limit,
         sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
         sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
     };
@@ -87,12 +87,68 @@ const handleGetCategory = async (values, setListCategory) => {
     }).then((res) => {
         var listCategory = res.data.data.content.map((data) => {
             return {
-                values: data.id,
+                value: data.id,
                 label: data.name,
                 key: data.id,
             }
         })
         setListCategory(listCategory)
+    })
+        .catch((error) => {
+            if (error && error.response) {
+                console.log("Error: ", error);
+            }
+        });
+};
+
+const handleGetColor = async (values, setListColor) => {
+    var paramsValue = {
+        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
+        page: values === null || values.page === null ? 1 : values.page,
+        limit: values === null || values.limit === null ? 100 : values.limit,
+        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
+        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+    };
+    await AxiosInstance.get(BikeManagement.getColor, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+        params: paramsValue,
+    }).then((res) => {
+        var listColor = res.data.data.content.map((data) => {
+            return {
+                value: data.id,
+                label: data.name,
+                key: data.id,
+            }
+        })
+        setListColor(listColor)
+    })
+        .catch((error) => {
+            if (error && error.response) {
+                console.log("Error: ", error);
+            }
+        });
+};
+
+const handleGetManufacturer = async (values, setListManufacturer) => {
+    var paramsValue = {
+        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
+        page: values === null || values.page === null ? 1 : values.page,
+        limit: values === null || values.limit === null ? 100 : values.limit,
+        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
+        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+    };
+    await AxiosInstance.get(BikeManagement.getManufacturer, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+        params: paramsValue,
+    }).then((res) => {
+        var listManufacturer = res.data.data.content.map((data) => {
+            return {
+                value: data.id,
+                label: data.name,
+                key: data.id,
+            }
+        })
+        setListManufacturer(listManufacturer)
     })
         .catch((error) => {
             if (error && error.response) {
@@ -212,6 +268,9 @@ const Test = (props) => {
     useEffect(() => {
         if (loadingPage) {
             handleGetCategory(null, setListCategory);
+            handleGetColor(null, setListColor);
+            handleGetManufacturer(null, setListManufacturer)
+            setLoadingPage(false)
         }
     }, [loadingPage])
 
@@ -295,7 +354,7 @@ const Test = (props) => {
                                 <SelectField
                                     label={"Bike Manufacturer"}
                                     name={"bikeManufacturer"}
-                                    options={BikeCategories}
+                                    options={listManufacturer}
                                     placeholder={"Choose bike manufacturer"}
                                     onChange={(selectOption) => {
                                         setFieldValue("bikeManufacturer", selectOption.value);
@@ -309,7 +368,7 @@ const Test = (props) => {
                                 <SelectField
                                     label={"Bike Color"}
                                     name={"bikeColor"}
-                                    options={BikeCategories}
+                                    options={listColor}
                                     placeholder={"Choose bike color"}
                                     onChange={(selectOption) => {
                                         setFieldValue("bikeColor", selectOption.value);
