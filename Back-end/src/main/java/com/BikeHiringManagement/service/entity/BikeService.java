@@ -86,11 +86,6 @@ public class BikeService {
             Long totalItems = (Long) mapBike.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);
 
-            if(categoryId != null){
-                listRes = listRes.stream().filter(c -> c.getCategoryId() == categoryId).collect(Collectors.toList());
-            }
-
-
             List<BikeResponse> listResult = new ArrayList<>();
             for(BikeResponse bikeResponse : listRes){
                 List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdOrderByNameAsc(bikeResponse.getId());

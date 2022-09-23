@@ -1,8 +1,12 @@
 package com.BikeHiringManagement.specification;
 
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.*;
+import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.response.BikeResponse;
+import com.BikeHiringManagement.repository.BikeCategoryRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +23,12 @@ import java.util.Map;
 
 @Service
 public class BikeSpecification {
+
     @PersistenceContext
     EntityManager entityManager;
+
+    @Autowired
+    BikeCategoryRepository bikeCategoryRepository;
 
     public Specification<Bike> filterBike(String searchKey){
         return (root, query, cb) -> {
@@ -45,44 +53,66 @@ public class BikeSpecification {
         try{
             Map<String, Object> mapFinal = new HashMap<>();
 
-            //----------------------MAIN QUERY -----------------------------//
-            // Crate Query
+            //----------------------CREATE QUERY -----------------------------//
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaQuery<BikeResponse> query = cb.createQuery(BikeResponse.class);
 
-            // Create root table
+            // ROOT
+            CriteriaQuery<BikeResponse> query = cb.createQuery(BikeResponse.class);
             Root<Bike> root = query.from(Bike.class);
             Root<BikeCategory> rootCate = query.from(BikeCategory.class);
             Root<BikeColor> rootColor = query.from(BikeColor.class);
             Root<BikeManufacturer> rootManufacturer = query.from(BikeManufacturer.class);
 
-            // Add condition for query
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("bikeCategory"), rootCate.get("id")));
-            predicates.add(cb.equal(root.get("bikeColor"), rootColor.get("id")));
-            predicates.add(cb.equal(root.get("bikeManufacturer"), rootManufacturer.get("id")));
-            if (!StringUtils.isEmpty(searchKey)) {
-                predicates.add(cb.or(
-                    cb.like(cb.lower(root.get("name")) , "%" + searchKey.toLowerCase() + "%"),
-                    cb.like(cb.lower(root.get("bikeNo")) , "%" + searchKey.toLowerCase() + "%"),
-                    cb.like(cb.lower(rootCate.get("name")) , "%" + searchKey.toLowerCase() + "%"),
-                    cb.like(cb.lower(rootColor.get("name")) , "%" + searchKey.toLowerCase() + "%"),
-                    cb.like(cb.lower(rootManufacturer.get("name")) , "%" + searchKey.toLowerCase() + "%")
-                ));
-            }
-
-            //----------------------SUBQUERY COUNT-----------------------------//
+            // ROOT COUNT
             CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-
             Root<Bike> rootCount = countQuery.from(Bike.class);
             Root<BikeCategory> rootCateCount = countQuery.from(BikeCategory.class);
             Root<BikeColor> rootColorCount = countQuery.from(BikeColor.class);
             Root<BikeManufacturer> rootManufacturerCount = countQuery.from(BikeManufacturer.class);
 
+
+            //---------------------- CONDITION -----------------------------//
+
+            // CONDITION
+            // EXIST BY CATEGORY
+            Boolean isCategoryExist = false;
+            if(categoryId != null && bikeCategoryRepository.existsById(categoryId)){
+                isCategoryExist = true;
+            }
+
+
+            // CONDITION
+            // ROOT
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("bikeCategory"), rootCate.get("id")));
+            predicates.add(cb.equal(root.get("bikeColor"), rootColor.get("id")));
+            predicates.add(cb.equal(root.get("bikeManufacturer"), rootManufacturer.get("id")));
+
+            if(isCategoryExist){
+                predicates.add(cb.equal(rootCate.get("id"), categoryId));
+            }
+
+            if (!StringUtils.isEmpty(searchKey)) {
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(root.get("bikeNo")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootCate.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootColor.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootManufacturer.get("name")) , "%" + searchKey.toLowerCase() + "%")
+                ));
+            }
+
+            // CONDITION
+            // ROOT COUNT
             List<Predicate> predicatesCount = new ArrayList<>();
             predicatesCount.add(cb.equal(rootCount.get("bikeCategory"), rootCateCount.get("id")));
             predicatesCount.add(cb.equal(rootCount.get("bikeColor"), rootColorCount.get("id")));
             predicatesCount.add(cb.equal(rootCount.get("bikeManufacturer"), rootManufacturerCount.get("id")));
+
+            if(isCategoryExist){
+                predicatesCount.add(cb.equal(rootCateCount.get("id"), categoryId));
+            }
+
             if (!StringUtils.isEmpty(searchKey)) {
                 predicatesCount.add(cb.or(
                         cb.like(cb.lower(rootCount.get("name")) , "%" + searchKey.toLowerCase() + "%"),
