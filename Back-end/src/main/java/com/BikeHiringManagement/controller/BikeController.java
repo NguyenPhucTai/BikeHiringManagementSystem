@@ -3,7 +3,8 @@ package com.BikeHiringManagement.controller;
 
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.Result;
-import com.BikeHiringManagement.model.request.BikeRequest;
+import com.BikeHiringManagement.model.request.BikeCreateRequest;
+import com.BikeHiringManagement.model.request.PaginationBikeRequest;
 import com.BikeHiringManagement.service.entity.BikeService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.utils.JwtUtils;
@@ -29,7 +30,7 @@ public class BikeController {
     JwtUtils jwtUtils;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createBike (@RequestBody BikeRequest bikeRequest,
+    public ResponseEntity<?> createBike (@RequestBody BikeCreateRequest bikeRequest,
                                          HttpServletRequest request) {
 
         try {
@@ -43,6 +44,22 @@ public class BikeController {
         }
     }
 
+    @PostMapping("/get")
+    public ResponseEntity<?> getBikeWithSpec(@RequestBody PaginationBikeRequest reqBody){
+        try{
+            PageDto result = bikeService.getBike(reqBody);
+            if (result != null) {
+                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
+            }
+            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+        }
+        catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /*
     @GetMapping("/get")
     public ResponseEntity<?> getBikeWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
                                                      @RequestParam("page") Integer page,
@@ -60,4 +77,6 @@ public class BikeController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+     */
 }

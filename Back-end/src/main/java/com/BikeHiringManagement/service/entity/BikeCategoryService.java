@@ -2,11 +2,10 @@ package com.BikeHiringManagement.service.entity;
 
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
-import com.BikeHiringManagement.entity.Bike;
 import com.BikeHiringManagement.entity.BikeCategory;
-import com.BikeHiringManagement.entity.User;
 import com.BikeHiringManagement.model.Result;
-import com.BikeHiringManagement.model.request.BikeCategoryRequest;
+import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
+import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.repository.BikeCategoryRepository;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeCategorySpecification;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Locale;
 
 @Service
 public class BikeCategoryService {
@@ -36,7 +34,7 @@ public class BikeCategoryService {
     ModelMapper modelMapper;
 
 
-    public Result createBikeCategory(BikeCategoryRequest bikeCategoryRequest){
+    public Result createBikeCategory(BikeCategoryCreateRequest bikeCategoryRequest){
         try{
             if(bikeCategoryRepository.existsByName(bikeCategoryRequest.getName())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has been existed!!!");
@@ -54,7 +52,7 @@ public class BikeCategoryService {
         }
     }
 
-    public Result updateBikeCategory(BikeCategoryRequest bikeCategoryRequest){
+    public Result updateBikeCategory(BikeCategoryCreateRequest bikeCategoryRequest){
         try{
 
             if(!bikeCategoryRepository.existsById(bikeCategoryRequest.getId())){
@@ -75,6 +73,25 @@ public class BikeCategoryService {
         }
     }
 
+    public PageDto getBikeCategory(PaginationRequest filterObjectRequest) {
+        try {
+            Sort sort = responseUtils.getSort(filterObjectRequest.getSortBy(), filterObjectRequest.getSortType());
+            Integer pageNum = filterObjectRequest.getPage() - 1;
+            Page<BikeCategory> pageResult = bikeCategoryRepository.findAll(bikeCategorySpecification.filterBikeCategory(filterObjectRequest.getSearchKey()), PageRequest.of(pageNum, filterObjectRequest.getLimit(), sort));
+            return PageDto.builder()
+                    .content(pageResult.getContent())
+                    .numberOfElements(pageResult.getNumberOfElements())
+                    .page(filterObjectRequest.getPage())
+                    .size(pageResult.getSize())
+                    .totalPages(pageResult.getTotalPages())
+                    .totalElements(pageResult.getTotalElements())
+                    .build();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /*
     public PageDto getBikeCategory(String searchKey, Integer page, Integer limit, String sortBy, String sortType) {
         try {
             Sort sort = responseUtils.getSort(sortBy, sortType);
@@ -92,4 +109,5 @@ public class BikeCategoryService {
             return null;
         }
     }
+     */
 }

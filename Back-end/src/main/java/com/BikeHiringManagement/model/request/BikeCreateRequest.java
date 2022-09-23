@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BikeRequest {
+public class BikeCreateRequest {
     private String name;
     private String bikeNo;
     private String bikeManualId;

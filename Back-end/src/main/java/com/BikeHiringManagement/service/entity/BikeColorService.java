@@ -1,13 +1,12 @@
 package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
-import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeColor;
 import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeColorRepository;
 import com.BikeHiringManagement.service.ResponseUtils;
-import com.BikeHiringManagement.specification.BikeCategorySpecification;
 import com.BikeHiringManagement.specification.BikeColorSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +48,24 @@ public class BikeColorService {
         }
     }
 
+    public PageDto getBikeColor(PaginationRequest filterObjectRequest) {
+        try {
+            Sort sort = responseUtils.getSort(filterObjectRequest.getSortBy(), filterObjectRequest.getSortType());
+            Integer pageNum = filterObjectRequest.getPage() - 1;
+            Page<BikeColor> pageResult = bikeColorRepository.findAll(bikeColorSpecification.filterBikeColor(filterObjectRequest.getSearchKey()), PageRequest.of(pageNum, filterObjectRequest.getLimit(), sort));
+            return PageDto.builder()
+                    .content(pageResult.getContent())
+                    .numberOfElements(pageResult.getNumberOfElements())
+                    .page(filterObjectRequest.getPage())
+                    .size(pageResult.getSize())
+                    .totalPages(pageResult.getTotalPages())
+                    .totalElements(pageResult.getTotalElements())
+                    .build();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    /*
     public PageDto getBikeColor(String searchKey, Integer page, Integer limit, String sortBy, String sortType) {
         try {
             Sort sort = responseUtils.getSort(sortBy, sortType);
@@ -66,4 +83,5 @@ public class BikeColorService {
             return null;
         }
     }
+     */
 }

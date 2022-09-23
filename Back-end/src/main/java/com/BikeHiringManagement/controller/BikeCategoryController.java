@@ -2,7 +2,8 @@ package com.BikeHiringManagement.controller;
 
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.Result;
-import com.BikeHiringManagement.model.request.BikeCategoryRequest;
+import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
+import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.service.entity.BikeCategoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.utils.JwtUtils;
@@ -27,7 +28,7 @@ public class BikeCategoryController {
     BikeCategoryService bikeCategoryService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createBikeCategory(@RequestBody BikeCategoryRequest reqBody,
+    public ResponseEntity<?> createBikeCategory(@RequestBody BikeCategoryCreateRequest reqBody,
                                                 HttpServletRequest request) {
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
@@ -42,7 +43,7 @@ public class BikeCategoryController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<?> updateBikeCategory(@RequestBody BikeCategoryRequest reqBody,
+    public ResponseEntity<?> updateBikeCategory(@RequestBody BikeCategoryCreateRequest reqBody,
                                                 @PathVariable Long id,
                                                 HttpServletRequest request){
         try{
@@ -59,6 +60,22 @@ public class BikeCategoryController {
         }
     }
 
+    @PostMapping("/get")
+    public ResponseEntity<?> getBikeCategoryWithSpec(@RequestBody PaginationRequest reqBody){
+        try{
+            PageDto result = bikeCategoryService.getBikeCategory(reqBody);
+            if (result != null) {
+                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
+            }
+            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+        }
+        catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /*
     @GetMapping("/get")
     public ResponseEntity<?> getBikeCategoryWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
                                                      @RequestParam("page") Integer page,
@@ -75,5 +92,5 @@ public class BikeCategoryController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+     */
 }

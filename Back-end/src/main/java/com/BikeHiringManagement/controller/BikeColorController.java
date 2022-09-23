@@ -1,9 +1,8 @@
 package com.BikeHiringManagement.controller;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.Result;
-import com.BikeHiringManagement.model.request.BikeCategoryRequest;
+import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
-import com.BikeHiringManagement.service.entity.BikeCategoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.service.entity.BikeColorService;
 import com.BikeHiringManagement.utils.JwtUtils;
@@ -42,6 +41,21 @@ public class BikeColorController {
         }
     }
 
+    @PostMapping("/get")
+    public ResponseEntity<?> getBikeColorWithSpec(@RequestBody PaginationRequest reqBody){
+        try{
+            PageDto result = bikeColorService.getBikeColor(reqBody);
+            if (result != null) {
+                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
+            }
+            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+        }
+        catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /*
     @GetMapping("/get")
     public ResponseEntity<?> getBikeColorWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
                                                      @RequestParam("page") Integer page,
@@ -58,4 +72,5 @@ public class BikeColorController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+     */
 }
