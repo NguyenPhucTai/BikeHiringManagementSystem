@@ -2,37 +2,44 @@ import React, { useState, useEffect, useRef, Fragment } from "react";
 import { Formik, Form } from "formik";
 import { SortSelect } from "../Form/SortSelect";
 import { SearchField } from "../Form/SearchField";
-import { SortName, SortHiredNumber } from "../Form/SelectItem";
+import { SortType, SortBy } from "../Form/SelectItem";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { useDispatch } from "react-redux";
+import { listBikeAction } from "../../redux-store/listBike/listBike.slice";
 
 const initialValues = {
     search: "",
-}
+};
 
 const SortBar = () => {
+    const dispatch = useDispatch();
     return (
         <Fragment>
             <Row className="sort-bar mb-3">
                 <Col lg={3}>
                     <SortSelect
-                        options={SortName}
-                        placeholder={"Sort by name"}
-                        onChange={(value) => { console.log(value.value) }}
+                        options={SortBy}
+                        placeholder={"Sort by"}
+                        onChange={(value) => {
+                            dispatch(listBikeAction.sortByBike(value.value))
+                        }}
                     />
                 </Col>
                 <Col lg={3}>
                     <SortSelect
-                        options={SortHiredNumber}
-                        placeholder={"Sort by hired number"}
-                        onChange={(value) => { console.log(value.value) }}
+                        options={SortType}
+                        placeholder={"Sort type"}
+                        onChange={(value) => { 
+                            dispatch(listBikeAction.sortTypeBike(value.value)) 
+                        }}
                     />
                 </Col>
                 <Col lg={6}>
                     <Formik
-                        initialStatus={initialValues}
+                        initialValues={initialValues}
                         onSubmit={(values) => {
-                            console.log(1)
+                            dispatch(listBikeAction.searchBike({searchKey: values.search}));
                         }}>
                         {({
                             isSubmiting,
@@ -44,15 +51,18 @@ const SortBar = () => {
                             touched,
                             setFieldValue,
                         }) => (
-                            <Form>
+                            <Form className="d-flex flex-</Form>column">
                                 <SearchField
                                     name={"search"}
                                     type={"text"}
                                     placeholder={"Search..."}
                                 />
+                                <button type="submit" className="btn btn-dark btn-md mt-3">
+                                    Submit
+                                </button>
                             </Form>
                         )}
-                    </Formik >
+                    </Formik>
                 </Col>
             </Row>
         </Fragment >

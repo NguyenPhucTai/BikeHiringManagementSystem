@@ -3,8 +3,8 @@ import React from "react";
 import { createRoot } from 'react-dom/client';
 // React 17
 // import ReactDOM from "react-dom";
-// import { Provider } from "react-redux";
-// import store from "./redux-store/index";
+import { Provider } from "react-redux";
+import store from "./redux-store/index";
 import App from "./App";
 
 // React 18
@@ -12,9 +12,9 @@ const container = document.getElementById("root");
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
 root.render(
 	<React.StrictMode>
-		{/* <Provider store={store}> */}
+		<Provider store={store}>
 			<App />
-		{/* </Provider> */}
+		</Provider>
 	</React.StrictMode>
 );
 

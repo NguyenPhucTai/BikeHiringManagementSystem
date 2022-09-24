@@ -9,7 +9,7 @@ export const Role = {
 
 export const BikeManagement = {
     create: "/bike/create",
-    get: "/bike/get/",
+    get: "/bike/get",
     getCategory: "/bike-category/get",
     getColor: "/bike-color/get",
     getManufacturer: "/bike-manufacturer/get"

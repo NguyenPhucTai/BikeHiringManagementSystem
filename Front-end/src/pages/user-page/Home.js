@@ -7,35 +7,35 @@ import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
 
-const handleGetListBike = async (values, setListManual, setListAutomatic, categoryId) => {
-    var paramsValue = {
-        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
-        categoryId: categoryId === null ? 1 : categoryId,
-        page: values === null || values.page === null ? 1 : values.page,
-        limit: values === null || values.limit === null ? 7 : values.limit,
-        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
-        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+const handleGetListBike = async (categoryId, setListManual, setListAutomatic) => {
+    const body = {
+        searchKey: null,
+        categoryId: categoryId,
+        page: 1,
+        limit: 7,
+        sortBy: "name",
+        sortType: "ASC",
     };
-    await AxiosInstance.get(BikeManagement.get, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-        params: paramsValue,
-    }).then((res) => {
-        var listBike = res.data.data.content.map((data) => {
-            return {
-                id: data.id,
-                name: data.name,
-                bikeCategory: data.categoryName,
-                price: data.price,
-                filePath: data.imageList[0].filePath,
-                fileName: data.imageList[0].fileName,
+    await AxiosInstance.post(BikeManagement.get, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    })
+        .then((res) => {
+            var listBike = res.data.data.content.map((data) => {
+                return {
+                    id: data.id,
+                    name: data.name,
+                    bikeCategory: data.categoryName,
+                    price: data.price,
+                    filePath: data.imageList[0].filePath,
+                    fileName: data.imageList[0].fileName,
+                }
+            })
+            if (categoryId === 1) {
+                setListAutomatic(listBike)
+            } else {
+                setListManual(listBike)
             }
         })
-        if (categoryId === 1) {
-            setListAutomatic(listBike)
-        } else {
-            setListManual(listBike)
-        }
-    })
         .catch((error) => {
             if (error && error.response) {
                 console.log("Error: ", error);
@@ -50,8 +50,8 @@ function Home() {
 
     useEffect(() => {
         if (loadingPage) {
-            handleGetListBike(null, setListManual, setListAutomatic, 1);
-            handleGetListBike(null, setListManual, setListAutomatic, 2);
+            handleGetListBike(1, setListManual, setListAutomatic);
+            handleGetListBike(2, setListManual, setListAutomatic);
             setLoadingPage(false);
         }
     }, [loadingPage])

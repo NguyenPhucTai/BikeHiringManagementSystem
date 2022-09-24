@@ -73,17 +73,16 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
         });
 };
 
-const handleGetCategory = async (values, setListCategory) => {
-    var paramsValue = {
-        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
-        page: values === null || values.page === null ? 1 : values.page,
-        limit: values === null || values.limit === null ? 100 : values.limit,
-        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
-        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+const handleGetCategory = async (setListCategory) => {
+    const body = {
+        searchKey: null,
+        page: 1,
+        limit: 100,
+        sortBy: "name",
+        sortType: "ASC"
     };
-    await AxiosInstance.get(BikeManagement.getCategory, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-        params: paramsValue,
+    await AxiosInstance.get(BikeManagement.getCategory, body,{
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listCategory = res.data.data.content.map((data) => {
             return {
@@ -101,17 +100,16 @@ const handleGetCategory = async (values, setListCategory) => {
         });
 };
 
-const handleGetColor = async (values, setListColor) => {
-    var paramsValue = {
-        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
-        page: values === null || values.page === null ? 1 : values.page,
-        limit: values === null || values.limit === null ? 100 : values.limit,
-        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
-        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+const handleGetColor = async (setListColor) => {
+    const body = {
+        searchKey: null,
+        page: 1,
+        limit: 100,
+        sortBy: "name",
+        sortType: "ASC"
     };
-    await AxiosInstance.get(BikeManagement.getColor, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-        params: paramsValue,
+    await AxiosInstance.get(BikeManagement.getColor, body,{
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listColor = res.data.data.content.map((data) => {
             return {
@@ -129,17 +127,16 @@ const handleGetColor = async (values, setListColor) => {
         });
 };
 
-const handleGetManufacturer = async (values, setListManufacturer) => {
-    var paramsValue = {
-        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
-        page: values === null || values.page === null ? 1 : values.page,
-        limit: values === null || values.limit === null ? 100 : values.limit,
-        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
-        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+const handleGetManufacturer = async (setListManufacturer) => {
+    const body = {
+        searchKey: null,
+        page: 1,
+        limit: 100,
+        sortBy: "name",
+        sortType: "ASC"
     };
-    await AxiosInstance.get(BikeManagement.getManufacturer, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-        params: paramsValue,
+    await AxiosInstance.get(BikeManagement.getManufacturer, body,{
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listManufacturer = res.data.data.content.map((data) => {
             return {
@@ -167,7 +164,7 @@ const initialValues = {
     files: [{}],
 };
 
-const Test = (props) => {
+function Test() {
     // Upload bike
     const [isClicking, setIsClicking] = useState(false);
     const [isSubmiting, setIsSubmitting] = useState(false);
@@ -267,9 +264,9 @@ const Test = (props) => {
 
     useEffect(() => {
         if (loadingPage) {
-            handleGetCategory(null, setListCategory);
-            handleGetColor(null, setListColor);
-            handleGetManufacturer(null, setListManufacturer)
+            handleGetCategory(setListCategory);
+            handleGetColor(setListColor);
+            handleGetManufacturer(setListManufacturer)
             setLoadingPage(false)
         }
     }, [loadingPage])

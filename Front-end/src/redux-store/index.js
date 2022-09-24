@@ -2,11 +2,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 /** Where to import slice reducers */
-// import userSlice from "./user/user.slice";
+import listBikeSlice from "./listBike/listBike.slice";
 
 const store = configureStore({
     reducer: {
-        // user: userSlice.reducer,
+        listBike: listBikeSlice.reducer,
     },
 });
 

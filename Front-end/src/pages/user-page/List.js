@@ -9,21 +9,29 @@ import { Link } from "react-router-dom";
 import { Firebase_URL, BikeManagement } from "../../api/EndPoint";
 import Badge from 'react-bootstrap/Badge';
 import Cookies from 'universal-cookie';
+import { useSelector } from "react-redux";
 
 const cookies = new Cookies();
 
-const handleGetListBike = async (values, categoryId, activePage, setMaxPage, setListMotor) => {
-    var paramsValue = {
-        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
-        categoryId: values === null || values.categoryId === null ? null : values.categoryId,
+const handleGetListBike = async (
+    searchKey,
+    categoryId,
+    activePage,
+    sortBy,
+    sortType,
+    setMaxPage,
+    setListMotor) => {
+    const body = {
+        searchKey: searchKey,
+        categoryId: categoryId,
         page: activePage,
-        limit: values === null || values.limit === null ? 12 : values.limit,
-        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
-        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+        limit: 12,
+        sortBy: sortBy,
+        sortType: sortType,
     };
-    await AxiosInstance.get(BikeManagement.get, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-        params: paramsValue,
+    // console.log(body)
+    await AxiosInstance.post(BikeManagement.get, body,{
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listMotor = res.data.data.content.map((data) => {
             return {
@@ -36,6 +44,7 @@ const handleGetListBike = async (values, categoryId, activePage, setMaxPage, set
             }
         })
         setListMotor(listMotor)
+        setMaxPage(res.data.data.totalPages);
     })
         .catch((error) => {
             if (error && error.response) {
@@ -44,17 +53,16 @@ const handleGetListBike = async (values, categoryId, activePage, setMaxPage, set
         });
 }
 
-const handleGetColor = async (values, setListColor) => {
-    var paramsValue = {
-        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
-        page: values === null || values.page === null ? 1 : values.page,
-        limit: values === null || values.limit === null ? 100 : values.limit,
-        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
-        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+const handleGetColor = async (setListColor) => {
+    const body = {
+        searchKey: null,
+        page: 1,
+        limit: 100,
+        sortBy: "name",
+        sortType: "ASC"
     };
-    await AxiosInstance.get(BikeManagement.getColor, {
+    await AxiosInstance.post(BikeManagement.getColor, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-        params: paramsValue,
     }).then((res) => {
         var listColor = res.data.data.content.map((data) => {
             return {
@@ -72,17 +80,16 @@ const handleGetColor = async (values, setListColor) => {
         });
 };
 
-const handleGetManufacturer = async (values, setListManufacturer) => {
-    var paramsValue = {
-        searchKey: values === null || values.searchKey === null ? null : values.searchKey,
-        page: values === null || values.page === null ? 1 : values.page,
-        limit: values === null || values.limit === null ? 100 : values.limit,
-        sortBy: values === null || values.sortBy === null ? "name" : values.sortBy,
-        sortType: values === null || values.sortType === null ? "ASC" : values.sortType,
+const handleGetManufacturer = async (setListManufacturer) => {
+    const body = {
+        searchKey: null,
+        page: 1,
+        limit: 100,
+        sortBy: "name",
+        sortType: "ASC"
     };
-    await AxiosInstance.get(BikeManagement.getManufacturer, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-        params: paramsValue,
+    await AxiosInstance.post(BikeManagement.getManufacturer, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listManufacturer = res.data.data.content.map((data) => {
             return {
@@ -107,6 +114,9 @@ function List() {
     const [listColor, setListColor] = useState([]);
     const [listManufacturer, setListManufacturer] = useState([]);
     const [loadingPage, setLoadingPage] = useState(true);
+    const searchKey = useSelector((state) => state.listBike.searchKey);
+    const sortBy = useSelector((state) => state.listBike.sortBy);
+    const sortType = useSelector((state) => state.listBike.sortType);
 
     const handleChangePage = (event, newPage) => {
         setActivePage(newPage);
@@ -114,15 +124,17 @@ function List() {
 
     useEffect(() => {
         if (loadingPage) {
-            handleGetColor(null, setListColor);
-            handleGetManufacturer(null, setListManufacturer)
+            handleGetColor(setListColor);
+            handleGetManufacturer(setListManufacturer)
             setLoadingPage(false)
         }
     }, [loadingPage])
 
     useEffect(() => {
-        handleGetListBike(null, null, activePage, setMaxPage, setListMotor);
-    }, [activePage])
+        if (sortBy != undefined && sortType != undefined) {
+            handleGetListBike(searchKey, null, activePage, sortBy, sortType, setMaxPage, setListMotor);
+        }
+    }, [activePage, searchKey, sortBy, sortType])
 
     return (
         <Fragment>

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { AxiosInstance } from "../../api/AxiosClient";
 import Cookies from 'universal-cookie';
 import { Authen } from "../../api/EndPoint";
@@ -45,7 +45,7 @@ const handleSignIn = async (values, setAlert) => {
         })
 }
 
-const SignIn = (props) => {
+function SignIn() {
     const [alert, setAlert] = useState({
         alertShow: false,
         alertStatus: "success",

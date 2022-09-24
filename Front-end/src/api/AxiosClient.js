@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://4320-171-235-42-62.ngrok.io";
+const BASE_URL = "http://aef8-27-78-41-223.ngrok.io";
 
 const defaultConfig = {
     baseURL: BASE_URL,
