@@ -128,14 +128,17 @@ public class BikeSpecification {
             // Sort theo Name - Cate Name - Hired Number - Price
             if (sortType.equalsIgnoreCase("asc")) {
                 switch (sortBy) {
-                    case "id":
-                        query.orderBy(cb.asc(root.get("id")));
-                        break;
-                    case "bikeCategory":
-                        query.orderBy(cb.asc(root.get("bikeCategory")));
+                    case "name":
+                        query.orderBy(cb.asc(root.get("name")));
                         break;
                     case "hiredNumber":
                         query.orderBy(cb.asc(root.get("hiredNumber")));
+                        break;
+                    case "bikeColor":
+                        query.orderBy(cb.asc(root.get("bikeColor")));
+                        break;
+                    case "bikeManufacturer":
+                        query.orderBy(cb.asc(root.get("bikeManufacturer")));
                         break;
                 }
             } else {
@@ -143,11 +146,14 @@ public class BikeSpecification {
                     case "id":
                         query.orderBy(cb.desc(root.get("id")));
                         break;
-                    case "bikeCategory":
-                        query.orderBy(cb.desc(root.get("bikeCategory")));
-                        break;
                     case "hiredNumber":
                         query.orderBy(cb.desc(root.get("hiredNumber")));
+                        break;
+                    case "bikeColor":
+                        query.orderBy(cb.asc(root.get("bikeColor")));
+                        break;
+                    case "bikeManufacturer":
+                        query.orderBy(cb.asc(root.get("bikeManufacturer")));
                         break;
                 }
             }
