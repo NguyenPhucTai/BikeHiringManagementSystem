@@ -17,7 +17,7 @@ const SortBar = () => {
     return (
         <Fragment>
             <Row className="sort-bar mb-3">
-                <Col lg={3}>
+                <Col lg={3} xs={6}>
                     <SortSelect
                         options={SortBy}
                         placeholder={"Sort by"}
@@ -26,7 +26,7 @@ const SortBar = () => {
                         }}
                     />
                 </Col>
-                <Col lg={3}>
+                <Col lg={3} xs={6}>
                     <SortSelect
                         options={SortType}
                         placeholder={"Sort type"}
@@ -35,7 +35,7 @@ const SortBar = () => {
                         }}
                     />
                 </Col>
-                <Col lg={6}>
+                <Col lg={6} xs={12}>
                     <Formik
                         initialValues={initialValues}
                         onSubmit={(values) => {
@@ -51,15 +51,21 @@ const SortBar = () => {
                             touched,
                             setFieldValue,
                         }) => (
-                            <Form className="d-flex flex-</Form>column">
-                                <SearchField
-                                    name={"search"}
-                                    type={"text"}
-                                    placeholder={"Search..."}
-                                />
-                                <button type="submit" className="btn btn-dark btn-md mt-3">
-                                    Submit
-                                </button>
+                            <Form className="d-flex flex-column">
+                                <Row>
+                                    <Col lg={9} xs={12}>
+                                        <SearchField
+                                            name={"search"}
+                                            type={"text"}
+                                            placeholder={"Search..."}
+                                        />
+                                    </Col>
+                                    <Col lg={3} xs={12}>
+                                        <button type="submit" className="btn btn-dark btn-md" style={{width: '100%'}}>
+                                            Submit
+                                        </button>
+                                    </Col>
+                                </Row>
                             </Form>
                         )}
                     </Formik>

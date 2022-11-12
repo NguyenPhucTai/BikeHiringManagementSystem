@@ -3,11 +3,12 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import { Banner } from "../../components/Banner/Banner";
 import { ListSwiper } from "../../components/Swiper/Swiper";
 import { BikeManagement } from "../../api/EndPoint";
+import CircularProgress from '@mui/material/CircularProgress';
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
 
-const handleGetListBike = async (categoryId, setListManual, setListAutomatic) => {
+const handleGetListBike = async (categoryId, setListManual, setListAutomatic, setLoadingPage) => {
     const body = {
         searchKey: null,
         categoryId: categoryId,
@@ -35,6 +36,7 @@ const handleGetListBike = async (categoryId, setListManual, setListAutomatic) =>
             } else {
                 setListManual(listBike)
             }
+            setLoadingPage(false)
         })
         .catch((error) => {
             if (error && error.response) {
@@ -50,9 +52,8 @@ function Home() {
 
     useEffect(() => {
         if (loadingPage) {
-            handleGetListBike(1, setListManual, setListAutomatic);
-            handleGetListBike(2, setListManual, setListAutomatic);
-            setLoadingPage(false);
+            handleGetListBike(1, setListManual, setListAutomatic, setLoadingPage);
+            handleGetListBike(2, setListManual, setListAutomatic, setLoadingPage);
         }
     }, [loadingPage])
 
@@ -61,9 +62,19 @@ function Home() {
             <Banner />
             <div className="container">
                 <h2 className="text-center">Manual Transmission Motorcycle</h2>
-                <ListSwiper listBike={listManual} />
+                {loadingPage ?
+                    <div className="circular_progress">
+                        <CircularProgress />
+                    </div> :
+                    <ListSwiper listBike={listManual} />
+                }
                 <h2 className="text-center">Automatic Transmission Motorcycle</h2>
-                <ListSwiper listBike={listAutomatic} />
+                {loadingPage ?
+                    <div className="circular_progress">
+                        <CircularProgress />
+                    </div> :
+                    <ListSwiper listBike={listAutomatic} />
+                }
             </div>
         </Fragment>
     )

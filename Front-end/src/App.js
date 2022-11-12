@@ -9,6 +9,7 @@ import MenuBar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import Home from './pages/user-page/Home';
 import List from "./pages/user-page/List";
+import Detail from "./pages/user-page/Detail";
 import SignIn from "./pages/admin-page/SignIn";
 import Test from "./pages/test";
 import TestUploadImage from './pages/test2';
@@ -42,6 +43,9 @@ function App() {
 			<GlobalRoute>
 				<Route path='/' exact element={<Home />} />
 				<Route path='/list' exact element={<List />} />
+				<Route path='/list/manual' exact element={<List category={2} />} />
+				<Route path='/list/automatic' exact element={<List category={1} />} />
+				<Route path='/bike/:id' element={<Detail />} />
 				<Route path='/signin' exact element={<SignIn />} />
 				<Route path='/test' exact element={<Test />} />
 				<Route path='/test2' exact element={<TestUploadImage />} />

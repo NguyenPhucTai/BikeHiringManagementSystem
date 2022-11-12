@@ -25,9 +25,9 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
         name: bikeData.bikeName,
         bikeManualId: bikeData.bikeManualId,
         bikeNo: bikeData.bikeNo,
-        bikeCategory: bikeData.bikeCategory,
-        bikeColor: bikeData.bikeColor,
-        bikeManufacturer: bikeData.bikeManufacturer,
+        bikeCategoryId: bikeData.bikeCategory,
+        bikeColorId: bikeData.bikeColor,
+        bikeManufacturerId: bikeData.bikeManufacturer,
         files: fileUpload,
     };
 
@@ -81,7 +81,7 @@ const handleGetCategory = async (setListCategory) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.get(BikeManagement.getCategory, body,{
+    await AxiosInstance.post(BikeManagement.getCategory, body,{
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listCategory = res.data.data.content.map((data) => {
@@ -108,7 +108,7 @@ const handleGetColor = async (setListColor) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.get(BikeManagement.getColor, body,{
+    await AxiosInstance.post(BikeManagement.getColor, body,{
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listColor = res.data.data.content.map((data) => {
@@ -135,7 +135,7 @@ const handleGetManufacturer = async (setListManufacturer) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.get(BikeManagement.getManufacturer, body,{
+    await AxiosInstance.post(BikeManagement.getManufacturer, body,{
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listManufacturer = res.data.data.content.map((data) => {

@@ -1,5 +1,16 @@
 .navbar {
     box-shadow: rgb(50 50 93 / 25%) 0px 5px 15px -5px, rgb(0 0 0 / 30%) 0px 10px 15px -5px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    @media screen and (max-width: 1095px) {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+}
+
+.navbar-nav {
+    text-align: center;
 }
 
 .nav-item.dropdown:hover .dropdown-menu {
@@ -17,6 +28,11 @@
 
 .nav-link {
     font-weight: 600;
+    color: rgba(0, 0, 0, .55);
+}
+
+.dropdown {
+    padding: 0;
 }
 
 .dropdown-menu[data-bs-popper] {
@@ -30,8 +46,7 @@
     padding: 0.7rem 1rem;
 }
 
-.dropdown-item:focus,
-.dropdown-item:hover {
+.dropdown-item:focus {
     background-color: $color-coral;
     color: rgba(0, 0, 0, .7);
 }

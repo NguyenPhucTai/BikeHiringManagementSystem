@@ -22,7 +22,6 @@ const TestUploadImage = (props) => {
         let upFiles = [];
         if (isSubmitting) {
             dataUpload.forEach((data) => {
-                console.log(data)
                 let fileName = `bike-image/${data.name}`;
                 let imageRef = ref(storage, fileName);
                 console.log(imageRef)
