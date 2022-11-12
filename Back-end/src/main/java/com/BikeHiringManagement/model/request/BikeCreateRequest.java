@@ -9,8 +9,8 @@ public class BikeCreateRequest {
     private String name;
     private String bikeNo;
     private String bikeManualId;
-    private Long bikeCategory;
-    private Long bikeColor;
-    private Long bikeManufacturer;
+    private Long bikeCategoryId;
+    private Long bikeColorId;
+    private Long bikeManufacturerId;
     private List<AttachmentRequest> files;
 }

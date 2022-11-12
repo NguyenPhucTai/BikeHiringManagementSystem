@@ -84,9 +84,9 @@ public class BikeSpecification {
             // CONDITION
             // ROOT
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("bikeCategory"), rootCate.get("id")));
-            predicates.add(cb.equal(root.get("bikeColor"), rootColor.get("id")));
-            predicates.add(cb.equal(root.get("bikeManufacturer"), rootManufacturer.get("id")));
+            predicates.add(cb.equal(root.get("bikeCategoryId"), rootCate.get("id")));
+            predicates.add(cb.equal(root.get("bikeColorId"), rootColor.get("id")));
+            predicates.add(cb.equal(root.get("bikeManufacturerId"), rootManufacturer.get("id")));
 
             if(isCategoryExist){
                 predicates.add(cb.equal(rootCate.get("id"), categoryId));
@@ -105,9 +105,9 @@ public class BikeSpecification {
             // CONDITION
             // ROOT COUNT
             List<Predicate> predicatesCount = new ArrayList<>();
-            predicatesCount.add(cb.equal(rootCount.get("bikeCategory"), rootCateCount.get("id")));
-            predicatesCount.add(cb.equal(rootCount.get("bikeColor"), rootColorCount.get("id")));
-            predicatesCount.add(cb.equal(rootCount.get("bikeManufacturer"), rootManufacturerCount.get("id")));
+            predicatesCount.add(cb.equal(rootCount.get("bikeCategoryId"), rootCateCount.get("id")));
+            predicatesCount.add(cb.equal(rootCount.get("bikeColorId"), rootColorCount.get("id")));
+            predicatesCount.add(cb.equal(rootCount.get("bikeManufacturerId"), rootManufacturerCount.get("id")));
 
             if(isCategoryExist){
                 predicatesCount.add(cb.equal(rootCateCount.get("id"), categoryId));
@@ -135,10 +135,10 @@ public class BikeSpecification {
                         query.orderBy(cb.asc(root.get("hiredNumber")));
                         break;
                     case "bikeColor":
-                        query.orderBy(cb.asc(root.get("bikeColor")));
+                        query.orderBy(cb.asc(root.get("bikeColorId")));
                         break;
                     case "bikeManufacturer":
-                        query.orderBy(cb.asc(root.get("bikeManufacturer")));
+                        query.orderBy(cb.asc(root.get("bikeManufacturerId")));
                         break;
                 }
             } else {
@@ -150,10 +150,10 @@ public class BikeSpecification {
                         query.orderBy(cb.desc(root.get("hiredNumber")));
                         break;
                     case "bikeColor":
-                        query.orderBy(cb.asc(root.get("bikeColor")));
+                        query.orderBy(cb.desc(root.get("bikeColorId")));
                         break;
                     case "bikeManufacturer":
-                        query.orderBy(cb.asc(root.get("bikeManufacturer")));
+                        query.orderBy(cb.desc(root.get("bikeManufacturerId")));
                         break;
                 }
             }
@@ -171,7 +171,8 @@ public class BikeSpecification {
                     rootColor.get("id"),
                     rootColor.get("name"),
                     rootManufacturer.get("id"),
-                    rootManufacturer.get("name")
+                    rootManufacturer.get("name"),
+                    root.get("status")
             ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
             List<BikeResponse> listResult = entityManager.createQuery(query) != null ? entityManager.createQuery(query).
                     setFirstResult((page - 1) * limit)
@@ -183,6 +184,53 @@ public class BikeSpecification {
             mapFinal.put("count", count);
             return mapFinal;
         } catch (Exception e) {
+            e.printStackTrace();
+            return new HashMap<>();
+        }
+    }
+
+    public Map<String, Object> getBikeById(Long bikeId){
+        try{
+            Map<String, Object> mapFinal = new HashMap<>();
+
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<BikeResponse> query = cb.createQuery(BikeResponse.class);
+            Root<Bike> root = query.from(Bike.class);
+            Root<BikeCategory> rootCate = query.from(BikeCategory.class);
+            Root<BikeColor> rootColor = query.from(BikeColor.class);
+            Root<BikeManufacturer> rootManufacturer = query.from(BikeManufacturer.class);
+
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("bikeCategoryId"), rootCate.get("id")));
+            predicates.add(cb.equal(root.get("bikeColorId"), rootColor.get("id")));
+            predicates.add(cb.equal(root.get("bikeManufacturerId"), rootManufacturer.get("id")));
+
+            if(bikeId != null){
+                predicates.add(cb.equal(root.get("id"), bikeId));
+            }
+
+            query.multiselect(
+                    root.get("id"),
+                    root.get("name"),
+                    root.get("bikeManualId"),
+                    root.get("bikeNo"),
+                    root.get("hiredNumber"),
+                    rootCate.get("id"),
+                    rootCate.get("name"),
+                    rootCate.get("price"),
+                    rootColor.get("id"),
+                    rootColor.get("name"),
+                    rootManufacturer.get("id"),
+                    rootManufacturer.get("name"),
+                    root.get("status")
+            ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
+
+            BikeResponse result = entityManager.createQuery(query) != null ? entityManager.createQuery(query).
+                    getSingleResult() : new BikeResponse();
+
+            mapFinal.put("data", result);
+            return mapFinal;
+        }catch (Exception e) {
             e.printStackTrace();
             return new HashMap<>();
         }

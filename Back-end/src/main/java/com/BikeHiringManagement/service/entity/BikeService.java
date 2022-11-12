@@ -10,6 +10,7 @@ import com.BikeHiringManagement.model.request.BikeCreateRequest;
 import com.BikeHiringManagement.model.request.PaginationBikeRequest;
 import com.BikeHiringManagement.model.response.AttachmentResponse;
 import com.BikeHiringManagement.model.response.BikeResponse;
+import com.BikeHiringManagement.repository.BikeCategoryRepository;
 import com.BikeHiringManagement.repository.BikeImageRepository;
 import com.BikeHiringManagement.repository.BikeRepository;
 import com.BikeHiringManagement.service.ResponseUtils;
@@ -18,17 +19,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class BikeService {
 
     @Autowired
     BikeRepository bikeRepository;
+
+    @Autowired
+    BikeCategoryRepository bikeCategoryRepository;
 
     @Autowired
     BikeImageRepository bikeImageRepository;
@@ -72,7 +72,7 @@ public class BikeService {
         }
     }
 
-    public PageDto getBike(PaginationBikeRequest paginationBikeRequest) {
+    public PageDto getBikePagination(PaginationBikeRequest paginationBikeRequest) {
         try {
             String searchKey = paginationBikeRequest.getSearchKey();
             Integer page = paginationBikeRequest.getPage();
@@ -118,6 +118,34 @@ public class BikeService {
         }
     }
 
+    public Result getBikeById(Long bikeId){
+        try{
+            Result result = new Result();
+            Map<String, Object> mapBike = bikeSpecification.getBikeById(bikeId);
+            BikeResponse bikeResponse = (BikeResponse) mapBike.get("data");
+
+            List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdOrderByNameAsc(bikeResponse.getId());
+            List<AttachmentResponse> listImageResponse = new ArrayList<>();
+            if(!listImage.isEmpty()){
+                for(BikeImage bikeImage : listImage){
+                    AttachmentResponse attachmentResponse = new AttachmentResponse();
+                    attachmentResponse.setFilePath(bikeImage.getPath());
+                    attachmentResponse.setFileName(bikeImage.getName());
+                    listImageResponse.add(attachmentResponse);
+                }
+            }
+            bikeResponse.setImageList(listImageResponse);
+
+            result.setMessage("Get successful");
+            result.setCode(Constant.SUCCESS_CODE);
+            result.setObject(bikeResponse);
+            return  result;
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
+        }
+    }
 
     /*
     public PageDto getBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId) {
