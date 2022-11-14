@@ -1,4 +1,4 @@
-package com.BikeHiringManagement.controller;
+package com.BikeHiringManagement.controller.Authenticate;
 
 
 import com.BikeHiringManagement.constant.Constant;
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/bike")
+@RequestMapping("/admin/bike")
 public class BikeController {
 
     @Autowired

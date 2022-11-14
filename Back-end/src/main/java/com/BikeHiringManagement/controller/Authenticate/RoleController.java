@@ -1,4 +1,4 @@
-package com.BikeHiringManagement.controller;
+package com.BikeHiringManagement.controller.Authenticate;
 
 
 import com.BikeHiringManagement.model.Result;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/admin/role")
 public class RoleController {
 
     @Autowired

@@ -1,10 +1,10 @@
-package com.BikeHiringManagement.controller;
+package com.BikeHiringManagement.controller.Authenticate;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.service.ResponseUtils;
-import com.BikeHiringManagement.service.entity.BikeColorService;
+import com.BikeHiringManagement.service.entity.BikeManufacturerService;
 import com.BikeHiringManagement.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/bike-color")
-public class BikeColorController {
+@RequestMapping("/admin/bike-manufacturer")
+public class BikeManufacturerController {
     @Autowired
     ResponseUtils responseUtils;
 
@@ -24,7 +24,7 @@ public class BikeColorController {
     JwtUtils jwtUtils;
 
     @Autowired
-    BikeColorService bikeColorService;
+    BikeManufacturerService bikeManufacturerService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createBikeColor(@RequestBody ObjectNameRequest reqBody,
@@ -33,7 +33,7 @@ public class BikeColorController {
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
             reqBody.setUsername(username);
-            Result result = bikeColorService.createBikeColor(reqBody);
+            Result result = bikeManufacturerService.createBikeManufacturer(reqBody);
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }catch(Exception e){
             e.printStackTrace();
@@ -42,9 +42,9 @@ public class BikeColorController {
     }
 
     @PostMapping("/get")
-    public ResponseEntity<?> getBikeColorWithSpec(@RequestBody PaginationRequest reqBody){
+    public ResponseEntity<?> getBikeManufacturerWithSpec(@RequestBody PaginationRequest reqBody){
         try{
-            PageDto result = bikeColorService.getBikeColor(reqBody);
+            PageDto result = bikeManufacturerService.getBikeManufacturer(reqBody);
             if (result != null) {
                 return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
             }
@@ -57,13 +57,13 @@ public class BikeColorController {
 
     /*
     @GetMapping("/get")
-    public ResponseEntity<?> getBikeColorWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
+    public ResponseEntity<?> getBikeManufacturerWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
                                                      @RequestParam("page") Integer page,
                                                      @RequestParam("limit") Integer limit,
                                                      @RequestParam("sortBy") String sortBy,
                                                      @RequestParam("sortType") String sortType) {
         try {
-            PageDto result = bikeColorService.getBikeColor(searchKey, page, limit, sortBy, sortType);
+            PageDto result = bikeManufacturerService.getBikeManufacturer(searchKey, page, limit, sortBy, sortType);
             if (result != null) {
                 return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
             }
@@ -74,3 +74,4 @@ public class BikeColorController {
     }
      */
 }
+
