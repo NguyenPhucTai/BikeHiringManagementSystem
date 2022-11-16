@@ -5,6 +5,8 @@ import com.BikeHiringManagement.entity.BikeManufacturer;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
+import com.BikeHiringManagement.model.response.BikeManufacturerResponse;
+import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.repository.BikeManufacturerRepository;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeManufacturerSpecification;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+
 @Service
 public class BikeManufacturerService {
     @Autowired
@@ -23,6 +26,7 @@ public class BikeManufacturerService {
 
     @Autowired
     BikeManufacturerSpecification bikeManufacturerSpecification;
+
     @Autowired
     ResponseUtils responseUtils;
 
@@ -65,6 +69,24 @@ public class BikeManufacturerService {
         }
     }
 
+    public Result getBikeManufacturerById(Long id){
+        try{
+            Result result = new Result();
+            BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(id);
+            if(!bikeManufacturerRepository.existsById(id)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "Bike manufacturer id is invalid !!!");
+            }
+
+            result.setMessage("Get successful");
+            result.setCode(Constant.SUCCESS_CODE);
+            result.setObject(bikeManufacturer);
+            return  result;
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
+        }
+    }
     /*
     public PageDto getBikeManufacturer(String searchKey, Integer page, Integer limit, String sortBy, String sortType) {
         try {

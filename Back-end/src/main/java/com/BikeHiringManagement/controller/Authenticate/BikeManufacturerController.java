@@ -1,11 +1,17 @@
 package com.BikeHiringManagement.controller.Authenticate;
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
+import com.BikeHiringManagement.entity.BikeManufacturer;
 import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
+import com.BikeHiringManagement.model.response.BikeManufacturerResponse;
+import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.service.entity.BikeManufacturerService;
 import com.BikeHiringManagement.utils.JwtUtils;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +33,7 @@ public class BikeManufacturerController {
     BikeManufacturerService bikeManufacturerService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createBikeColor(@RequestBody ObjectNameRequest reqBody,
+    public ResponseEntity<?> createBikeManafacturer(@RequestBody ObjectNameRequest reqBody,
                                              HttpServletRequest request) {
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
@@ -55,23 +61,21 @@ public class BikeManufacturerController {
         }
     }
 
-    /*
+
     @GetMapping("/get")
-    public ResponseEntity<?> getBikeManufacturerWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
-                                                     @RequestParam("page") Integer page,
-                                                     @RequestParam("limit") Integer limit,
-                                                     @RequestParam("sortBy") String sortBy,
-                                                     @RequestParam("sortType") String sortType) {
+    public ResponseEntity<?> getBikeManufacturerWithId(@RequestParam Long bikeManafacturerId) {
         try {
-            PageDto result = bikeManufacturerService.getBikeManufacturer(searchKey, page, limit, sortBy, sortType);
-            if (result != null) {
-                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
+            Result result = bikeManufacturerService.getBikeManufacturerById(bikeManafacturerId);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
-        } catch (Exception e) {
+            return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
+        }catch(Exception e){
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            }
     }
-     */
+
 }
 
