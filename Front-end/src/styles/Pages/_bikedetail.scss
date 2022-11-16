@@ -1,0 +1,17 @@
+.public {
+    .detail{
+        &-header{
+            .bikeName{
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+
+        &-body{
+            .body-title{
+                color: $color-gray-75;
+                text-transform: capitalize;
+            }
+        }
+    }
+}

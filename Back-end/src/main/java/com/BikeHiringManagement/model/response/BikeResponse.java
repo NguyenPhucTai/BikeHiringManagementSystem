@@ -18,7 +18,7 @@ public class BikeResponse {
     private Long bikeColorId;
     private String bikeColor;
     private Long bikeManufacturerId;
-    private String bikeManufacturer;
+    private String bikeManufacturerName;
     private String status;
     private List<AttachmentResponse> imageList;
 
@@ -26,7 +26,7 @@ public class BikeResponse {
     public BikeResponse() {
     }
 
-    public BikeResponse(Long id, String name, String bikeManualId, String bikeNo, Integer hiredNumber, Long bikeCategoryId, String bikeCategoryName, Double price, Long bikeColorId, String bikeColor, Long bikeManufacturerId, String bikeManufacturer, String status) {
+    public BikeResponse(Long id, String name, String bikeManualId, String bikeNo, Integer hiredNumber, Long bikeCategoryId, String bikeCategoryName, Double price, Long bikeColorId, String bikeColor, Long bikeManufacturerId, String bikeManufacturerName, String status) {
         this.id = id;
         this.name = name;
         this.bikeManualId = bikeManualId;
@@ -38,7 +38,7 @@ public class BikeResponse {
         this.bikeColorId = bikeColorId;
         this.bikeColor = bikeColor;
         this.bikeManufacturerId = bikeManufacturerId;
-        this.bikeManufacturer = bikeManufacturer;
+        this.bikeManufacturerName = bikeManufacturerName;
         this.status = status;
     }
 

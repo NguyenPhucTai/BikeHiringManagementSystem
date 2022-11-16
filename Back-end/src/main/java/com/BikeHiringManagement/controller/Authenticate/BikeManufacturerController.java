@@ -1,17 +1,12 @@
 package com.BikeHiringManagement.controller.Authenticate;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
-import com.BikeHiringManagement.entity.BikeManufacturer;
 import com.BikeHiringManagement.model.Result;
-import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
-import com.BikeHiringManagement.model.response.BikeManufacturerResponse;
-import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.service.entity.BikeManufacturerService;
 import com.BikeHiringManagement.utils.JwtUtils;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

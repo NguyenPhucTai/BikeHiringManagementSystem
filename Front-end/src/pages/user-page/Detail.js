@@ -8,6 +8,7 @@ import { Firebase_URL, BikeManagement } from "../../api/EndPoint";
 import ImageGallery from "react-image-gallery";
 import Badge from 'react-bootstrap/Badge';
 import Cookies from 'universal-cookie';
+import { green } from "@mui/material/colors";
 
 const cookies = new Cookies();
 
@@ -17,7 +18,11 @@ const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingPage,
     }).then((res) => {
         var bikeDetail = {
             name: res.data.data.name,
-            bikeCategory: res.data.data.bikeCategoryName,
+            bikeNo: res.data.data.bikeNo,
+            bikeCategoryName: res.data.data.bikeCategoryName,
+            bikeColor: res.data.data.bikeColor,
+            bikeManufacturerName: res.data.data.bikeManufacturerName,
+            status: res.data.data.status,
             price: res.data.data.price
         }
         var listImage = res.data.data.imageList
@@ -66,12 +71,34 @@ const Detail = props => {
                                 items={listImage}
                             />
                         </Col>
-                        <Col lg={6} xs={12}>
-                            <label className="bikeName">{bikeDetail.name}</label>
+                        <Col lg={6} xs={12} className="public">
+                            <div className="detail-header">
+                                <h2 className="bikeName">{bikeDetail.name}</h2>
+                                <Badge>{bikeDetail.bikeCategoryName}</Badge>
+                            </div>
+                            <div className="detail-body">
+                                <Row>
+                                    <Col lg={3} xs={6}><label className="body-title">Bike No:</label></Col>
+                                    <Col lg={9} xs={6}><label>{bikeDetail.bikeNo}</label></Col>
+                                    <Col lg={3} xs={6}><label className="body-title">Bike Color:</label></Col>
+                                    <Col lg={9} xs={6}><label>{bikeDetail.bikeColor}</label></Col>
+                                    <Col lg={3} xs={6}><label className="body-title">Bike Manufacturer:</label></Col>
+                                    <Col lg={9} xs={6}><label>{bikeDetail.bikeManufacturerName}</label></Col>
+                                    <Col lg={3} xs={6}><label className="body-title">Status:</label></Col>
+                                    <Col lg={9} xs={6}>{bikeDetail.status === "AVAILABLE" ?
+                                        <label style={{ color: 'green' }}>{bikeDetail.status}</label> :
+                                        <label style={{ color: 'red' }}>{bikeDetail.status}</label>}
+                                    </Col>
+                                </Row>
+                            </div>
+                            <div className="detail-footer">
+                                <h3 className="bikePrice">{bikeDetail.price}</h3>
+                            </div>
+                            {/* <label className="bikeName">{bikeDetail.name}</label>
                             <div className="bikeTag">
                                 <Badge>{bikeDetail.bikeCategory}</Badge>
                             </div>
-                            <p className="bikePrice">Price: <span>{bikeDetail.price}</span></p>
+                            <p className="bikePrice">Price: <span>{bikeDetail.price}</span></p> */}
                         </Col>
                     </Row>
                 }

@@ -5,8 +5,6 @@ import com.BikeHiringManagement.entity.BikeManufacturer;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
-import com.BikeHiringManagement.model.response.BikeManufacturerResponse;
-import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.repository.BikeManufacturerRepository;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeManufacturerSpecification;
