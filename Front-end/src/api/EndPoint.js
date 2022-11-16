@@ -4,22 +4,22 @@ export const Authen = {
 }
 
 export const Role = {
-    create: "/role/create/",
+    create: "/admin/role/create/",
 }
 
 export const BikeManagement = {
-    create: "/bike/create",
-    get: "/bike/get",
-    getCategory: "/bike-category/get",
-    getColor: "/bike-color/get",
-    getManufacturer: "/bike-manufacturer/get",
-    getDetail: "/bike/get?bikeId="
+    create: "/admin/bike/create",
+    get: "/public/bike/get",
+    getCategory: "/public/bike-category/get",
+    getColor: "/public/bike-color/get",
+    getManufacturer: "/public/bike-manufacturer/get",
+    getDetail: "/public/bike/get?bikeId="
 };
 
 export const CategoryManagement = {
-    create: "/bike-category/create",
-    update: "/bike-category/update/",
-    get: "/bike-category/get",
+    create: "/admin/bike-category/create",
+    update: "/admin/bike-category/update/",
+    get: "/public/bike-category/get",
 }
 
 export const Firebase_URL = "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F"
