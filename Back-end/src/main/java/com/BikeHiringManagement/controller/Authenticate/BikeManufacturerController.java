@@ -2,8 +2,11 @@ package com.BikeHiringManagement.controller.Authenticate;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
+import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
+import com.BikeHiringManagement.repository.BikeManufacturerRepository;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.service.entity.BikeManufacturerService;
 import com.BikeHiringManagement.utils.JwtUtils;
@@ -72,5 +75,40 @@ public class BikeManufacturerController {
             }
     }
 
+    @PostMapping("/update/{id}")
+    public ResponseEntity<?> updateBikeManufacturerCategory(@RequestBody BikeManafacturerRequest reqBody,
+                                                            @PathVariable Long id,
+                                                            HttpServletRequest request){
+        try{
+            reqBody.setId(id);
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            reqBody.setUsername(username);
+            Result result = bikeManufacturerService.updateBikeManufacturer(reqBody);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBikeManufacturerCategory(BikeManafacturerRequest reqBody,
+                                                            @PathVariable Long id,
+                                                            HttpServletRequest request){
+        try{
+            reqBody.setId(id);
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            reqBody.setUsername(username);
+            Result result = bikeManufacturerService.deleteBikeManufacturer(reqBody);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 

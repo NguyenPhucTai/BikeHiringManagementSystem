@@ -5,4 +5,6 @@ import java.util.List;
 @Data
 public class BikeManafacturerRequest {
     private Long id;
+    private String name;
+    private String username;
 }

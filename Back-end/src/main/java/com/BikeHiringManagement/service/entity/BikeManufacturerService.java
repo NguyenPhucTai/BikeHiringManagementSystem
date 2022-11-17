@@ -1,8 +1,11 @@
 package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
+import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeManufacturer;
 import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
+import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeManufacturerRepository;
@@ -105,4 +108,46 @@ public class BikeManufacturerService {
     }
 
      */
+
+    public Result updateBikeManufacturer(BikeManafacturerRequest bikeManafacturerRequest){
+        try{
+
+            if(!bikeManufacturerRepository.existsById(bikeManafacturerRequest.getId())){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
+            }
+            else{
+                BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManafacturerRequest.getId());
+                bikeManufacturer.setModifiedDate(new Date());
+                bikeManufacturer.setModifiedUser(bikeManafacturerRequest.getUsername());
+                bikeManufacturer.setName(bikeManafacturerRequest.getName());
+                bikeManufacturerRepository.save(bikeManufacturer);
+                return new Result(Constant.SUCCESS_CODE, "Update new bike manufacturer successfully");
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
+
+    public Result deleteBikeManufacturer(BikeManafacturerRequest bikeManafacturerRequest){
+        try{
+
+            if(!bikeManufacturerRepository.existsById(bikeManafacturerRequest.getId())){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
+            }
+            else{
+                BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManafacturerRequest.getId());
+                bikeManufacturer.setModifiedDate(new Date());
+                bikeManufacturer.setModifiedUser(bikeManafacturerRequest.getUsername());
+                bikeManufacturer.setIsDeleted(true);
+                bikeManufacturerRepository.save(bikeManufacturer);
+                return new Result(Constant.SUCCESS_CODE, "Delete bike manufacturer successfully");
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
 }
