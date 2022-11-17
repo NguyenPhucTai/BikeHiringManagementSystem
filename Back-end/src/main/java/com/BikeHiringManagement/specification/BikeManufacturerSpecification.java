@@ -30,6 +30,7 @@ public class BikeManufacturerSpecification {
                             cb.like(root.get("name"), "%" + searchKey + "%")));
                 }
             }
+            predicates.add(cb.isFalse(root.get("isDeleted")));
             return cb.and(predicates.stream().toArray(Predicate[]::new));
         };
     }

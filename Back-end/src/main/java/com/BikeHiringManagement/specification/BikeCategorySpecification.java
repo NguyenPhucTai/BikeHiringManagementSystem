@@ -25,14 +25,19 @@ public class BikeCategorySpecification {
             if (!StringUtils.isEmpty(searchKey)) {
                 try {
                     Double parseDouble = Double.parseDouble(searchKey);
-                    predicates.add(cb.or(cb.like(root.get("createdUser"), "%" + searchKey + "%"),
+                    predicates.add(cb.or(
+                            cb.like(root.get("createdUser"), "%" + searchKey + "%"),
                             cb.like(root.get("name"), "%" + searchKey + "%"),
-                            cb.equal(root.get("price"), parseDouble)));
+                            cb.equal(root.get("price"), parseDouble)
+                    ));
                 } catch (Exception e) {
-                    predicates.add(cb.or(cb.like(root.get("createdUser"), "%" + searchKey + "%"),
-                            cb.like(root.get("name"), "%" + searchKey + "%")));
+                    predicates.add(cb.or(
+                            cb.like(root.get("createdUser"), "%" + searchKey + "%"),
+                            cb.like(root.get("name"), "%" + searchKey + "%")
+                    ));
                 }
             }
+            predicates.add(cb.isFalse(root.get("isDeleted")));
             return cb.and(predicates.stream().toArray(Predicate[]::new));
         };
     }

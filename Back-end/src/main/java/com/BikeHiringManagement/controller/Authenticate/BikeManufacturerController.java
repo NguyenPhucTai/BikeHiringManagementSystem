@@ -93,16 +93,12 @@ public class BikeManufacturerController {
         }
     }
 
-    @GetMapping("/delete/{id}")
-    public ResponseEntity<?> deleteBikeManufacturerCategory(BikeManafacturerRequest reqBody,
-                                                            @PathVariable Long id,
-                                                            HttpServletRequest request){
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBikeManufacturerCategory(@PathVariable Long id, HttpServletRequest request){
         try{
-            reqBody.setId(id);
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            reqBody.setUsername(username);
-            Result result = bikeManufacturerService.deleteBikeManufacturer(reqBody);
+            Result result = bikeManufacturerService.deleteBikeManufacturer(id, username);
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }
         catch(Exception e){

@@ -58,14 +58,12 @@ public class BikeCategoryService {
             if(!bikeCategoryRepository.existsById(bikeCategoryRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
-            else{
-                BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(bikeCategoryRequest.getId());
-                bikeCategory.setModifiedDate(new Date());
-                bikeCategory.setModifiedUser(bikeCategoryRequest.getUsername());
-                bikeCategory.setPrice(bikeCategoryRequest.getPrice());
-                bikeCategoryRepository.save(bikeCategory);
-                return new Result(Constant.SUCCESS_CODE, "Update new bike category successfully");
-            }
+            BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(bikeCategoryRequest.getId());
+            bikeCategory.setModifiedDate(new Date());
+            bikeCategory.setModifiedUser(bikeCategoryRequest.getUsername());
+            bikeCategory.setPrice(bikeCategoryRequest.getPrice());
+            bikeCategoryRepository.save(bikeCategory);
+            return new Result(Constant.SUCCESS_CODE, "Update new bike category successfully");
 
         }catch (Exception e) {
             e.printStackTrace();

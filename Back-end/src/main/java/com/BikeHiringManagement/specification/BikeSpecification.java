@@ -88,6 +88,8 @@ public class BikeSpecification {
             predicates.add(cb.equal(root.get("bikeColorId"), rootColor.get("id")));
             predicates.add(cb.equal(root.get("bikeManufacturerId"), rootManufacturer.get("id")));
 
+            predicates.add(cb.isFalse(root.get("isDeleted")));
+
             if(isCategoryExist){
                 predicates.add(cb.equal(rootCate.get("id"), categoryId));
             }
@@ -108,6 +110,8 @@ public class BikeSpecification {
             predicatesCount.add(cb.equal(rootCount.get("bikeCategoryId"), rootCateCount.get("id")));
             predicatesCount.add(cb.equal(rootCount.get("bikeColorId"), rootColorCount.get("id")));
             predicatesCount.add(cb.equal(rootCount.get("bikeManufacturerId"), rootManufacturerCount.get("id")));
+
+            predicatesCount.add(cb.isFalse(rootCount.get("isDeleted")));
 
             if(isCategoryExist){
                 predicatesCount.add(cb.equal(rootCateCount.get("id"), categoryId));

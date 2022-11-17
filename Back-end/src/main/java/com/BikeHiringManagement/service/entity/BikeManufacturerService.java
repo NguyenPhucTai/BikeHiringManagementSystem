@@ -115,14 +115,12 @@ public class BikeManufacturerService {
             if(!bikeManufacturerRepository.existsById(bikeManafacturerRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
-            else{
-                BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManafacturerRequest.getId());
-                bikeManufacturer.setModifiedDate(new Date());
-                bikeManufacturer.setModifiedUser(bikeManafacturerRequest.getUsername());
-                bikeManufacturer.setName(bikeManafacturerRequest.getName());
-                bikeManufacturerRepository.save(bikeManufacturer);
-                return new Result(Constant.SUCCESS_CODE, "Update new bike manufacturer successfully");
-            }
+            BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManafacturerRequest.getId());
+            bikeManufacturer.setModifiedDate(new Date());
+            bikeManufacturer.setModifiedUser(bikeManafacturerRequest.getUsername());
+            bikeManufacturer.setName(bikeManafacturerRequest.getName());
+            bikeManufacturerRepository.save(bikeManufacturer);
+            return new Result(Constant.SUCCESS_CODE, "Update new bike manufacturer successfully");
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -130,20 +128,22 @@ public class BikeManufacturerService {
         }
     }
 
-    public Result deleteBikeManufacturer(BikeManafacturerRequest bikeManafacturerRequest){
+    public Result deleteBikeManufacturer(Long id, String username){
         try{
-
-            if(!bikeManufacturerRepository.existsById(bikeManafacturerRequest.getId())){
+            if(!bikeManufacturerRepository.existsById(id)){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
-            else{
-                BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManafacturerRequest.getId());
-                bikeManufacturer.setModifiedDate(new Date());
-                bikeManufacturer.setModifiedUser(bikeManafacturerRequest.getUsername());
-                bikeManufacturer.setIsDeleted(true);
-                bikeManufacturerRepository.save(bikeManufacturer);
-                return new Result(Constant.SUCCESS_CODE, "Delete bike manufacturer successfully");
+
+            BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(id);
+            if(bikeManufacturer.getIsDeleted() == true){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
+
+            bikeManufacturer.setModifiedDate(new Date());
+            bikeManufacturer.setModifiedUser(username);
+            bikeManufacturer.setIsDeleted(true);
+            bikeManufacturerRepository.save(bikeManufacturer);
+            return new Result(Constant.SUCCESS_CODE, "Delete bike manufacturer successfully");
 
         }catch (Exception e) {
             e.printStackTrace();
