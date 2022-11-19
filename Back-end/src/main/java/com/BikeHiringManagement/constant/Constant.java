@@ -13,4 +13,13 @@ public class Constant {
     public static final String USER_PAGE = "";
     public static final String CLIENT_CONTEXTPATH = "http://localhost:3000";
 
+    // Repository name
+    public static final Integer BIKE_CATEGORY = 1;
+    public static final Integer BIKE_COLOR = 2;
+    public static final Integer BIKE_IMAGE = 3;
+    public static final Integer BIKE_MANUFACTURER = 4;
+    public static final Integer BIKE = 5;
+
+
+
 }

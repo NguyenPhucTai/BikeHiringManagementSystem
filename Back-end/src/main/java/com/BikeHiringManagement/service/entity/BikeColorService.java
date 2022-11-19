@@ -65,23 +65,4 @@ public class BikeColorService {
             return null;
         }
     }
-    /*
-    public PageDto getBikeColor(String searchKey, Integer page, Integer limit, String sortBy, String sortType) {
-        try {
-            Sort sort = responseUtils.getSort(sortBy, sortType);
-            Integer pageNum = page - 1;
-            Page<BikeColor> pageResult = bikeColorRepository.findAll(bikeColorSpecification.filterBikeColor(searchKey), PageRequest.of(pageNum, limit, sort));
-            return PageDto.builder()
-                    .content(pageResult.getContent())
-                    .numberOfElements(pageResult.getNumberOfElements())
-                    .page(page)
-                    .size(pageResult.getSize())
-                    .totalPages(pageResult.getTotalPages())
-                    .totalElements(pageResult.getTotalElements())
-                    .build();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-     */
 }

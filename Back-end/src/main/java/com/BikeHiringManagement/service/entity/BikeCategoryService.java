@@ -7,6 +7,7 @@ import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.repository.BikeCategoryRepository;
+import com.BikeHiringManagement.service.CheckEntityExistService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeCategorySpecification;
 import org.modelmapper.ModelMapper;
@@ -33,10 +34,12 @@ public class BikeCategoryService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    CheckEntityExistService checkEntityExistService;
 
     public Result createBikeCategory(BikeCategoryCreateRequest bikeCategoryRequest){
         try{
-            if(bikeCategoryRepository.existsByName(bikeCategoryRequest.getName())){
+            if(checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "name", bikeCategoryRequest.getName())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has been existed!!!");
             }else{
                 BikeCategory newBikeCategory = modelMapper.map(bikeCategoryRequest, BikeCategory.class);
@@ -55,7 +58,7 @@ public class BikeCategoryService {
     public Result updateBikeCategory(BikeCategoryCreateRequest bikeCategoryRequest){
         try{
 
-            if(!bikeCategoryRepository.existsById(bikeCategoryRequest.getId())){
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "id", bikeCategoryRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
             BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(bikeCategoryRequest.getId());
@@ -89,23 +92,4 @@ public class BikeCategoryService {
         }
     }
 
-    /*
-    public PageDto getBikeCategory(String searchKey, Integer page, Integer limit, String sortBy, String sortType) {
-        try {
-            Sort sort = responseUtils.getSort(sortBy, sortType);
-            Integer pageNum = page - 1;
-            Page<BikeCategory> pageResult = bikeCategoryRepository.findAll(bikeCategorySpecification.filterBikeCategory(searchKey), PageRequest.of(pageNum, limit, sort));
-            return PageDto.builder()
-                    .content(pageResult.getContent())
-                    .numberOfElements(pageResult.getNumberOfElements())
-                    .page(page)
-                    .size(pageResult.getSize())
-                    .totalPages(pageResult.getTotalPages())
-                    .totalElements(pageResult.getTotalElements())
-                    .build();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-     */
 }

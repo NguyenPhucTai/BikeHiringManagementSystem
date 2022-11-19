@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface BikeImageRepository extends JpaRepository<BikeImage, Long>, JpaSpecificationExecutor<BikeImage> {
     List<BikeImage> findAllByBikeIdOrderByNameAsc(Long id);
+    Boolean existsByName(String name);
 }
