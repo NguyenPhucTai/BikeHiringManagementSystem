@@ -94,7 +94,7 @@ public class BikeManufacturerController {
     }
 
     @PostMapping("/delete/{id}")
-    public ResponseEntity<?> deleteBikeManufacturerCategory(@PathVariable Long id, HttpServletRequest request){
+    public ResponseEntity<?> deleteBikeManufacturer(@PathVariable Long id, HttpServletRequest request){
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);

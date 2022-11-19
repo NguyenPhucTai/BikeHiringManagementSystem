@@ -3,6 +3,8 @@ import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.BikeColor;
 import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.request.BikeColorRequest;
+import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeColorRepository;
@@ -67,6 +69,48 @@ public class BikeColorService {
                     .build();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public Result updateBikeColor(BikeColorRequest bikeColorRequest){
+        try{
+
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "id", bikeColorRequest.getId())){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has not been existed!!!");
+            }
+            BikeColor bikeColor = bikeColorRepository.findBikeColorById(bikeColorRequest.getId());
+            bikeColor.setModifiedDate(new Date());
+            bikeColor.setModifiedUser(bikeColorRequest.getUsername());
+            bikeColor.setName(bikeColorRequest.getName());
+            bikeColorRepository.save(bikeColor);
+            return new Result(Constant.SUCCESS_CODE, "Update new bike color successfully");
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
+
+    public Result deleteBikeColor(Long id, String username){
+        try{
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "id", id)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has not been existed!!!");
+            }
+
+            BikeColor bikeColor = bikeColorRepository.findBikeColorById(id);
+            if(bikeColor.getIsDeleted() == true){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has not been existed!!!");
+            }
+
+            bikeColor.setModifiedDate(new Date());
+            bikeColor.setModifiedUser(username);
+            bikeColor.setIsDeleted(true);
+            bikeColorRepository.save(bikeColor);
+            return new Result(Constant.SUCCESS_CODE, "Delete bike color successfully");
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
 }

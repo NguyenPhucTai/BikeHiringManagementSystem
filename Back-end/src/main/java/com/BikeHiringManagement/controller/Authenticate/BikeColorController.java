@@ -1,6 +1,9 @@
 package com.BikeHiringManagement.controller.Authenticate;
 import com.BikeHiringManagement.dto.PageDto;
+import com.BikeHiringManagement.entity.BikeColor;
 import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.request.BikeColorRequest;
+import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.service.ResponseUtils;
@@ -54,6 +57,39 @@ public class BikeColorController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity<?> updateBikeColorCategory(@RequestBody BikeColorRequest reqBody,
+                                                     @PathVariable Long id,
+                                                     HttpServletRequest request){
+        try{
+            reqBody.setId(id);
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            reqBody.setUsername(username);
+            Result result = bikeColorService.updateBikeColor(reqBody);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBikeColor(@PathVariable Long id, HttpServletRequest request){
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = bikeColorService.deleteBikeColor(id, username);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     /*
     @GetMapping("/get")
