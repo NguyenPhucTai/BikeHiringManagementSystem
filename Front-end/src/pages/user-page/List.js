@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Pagination from '@mui/material/Pagination';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from "react-router-dom";
-import { Firebase_URL, BikeManagement } from "../../api/EndPoint";
+import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
 import Badge from 'react-bootstrap/Badge';
 import Cookies from 'universal-cookie';
 import { useSelector } from "react-redux";
@@ -31,8 +31,8 @@ const handleGetListBike = async (
         sortType: sortType,
     };
     // console.log(body)
-    await AxiosInstance.post(BikeManagement.get, body, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    await AxiosInstance.post(PublicAPI.getBikePagination, body, {
+        headers: {}
     }).then((res) => {
         var listMotor = res.data.data.content.map((data) => {
             return {
@@ -87,7 +87,7 @@ const List = props => {
         if (sortBy != undefined && sortType != undefined) {
             handleGetListBike(searchKey, categoryId, activePage, sortBy, sortType, setMaxPage, setListMotor, setLoadingPage);
         }
-    }, [activePage, searchKey, categoryId, sortBy, sortType])
+    }, [activePage, searchKey, categoryId])
 
     return (
         <Fragment>

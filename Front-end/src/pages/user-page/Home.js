@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import { AxiosInstance } from "../../api/AxiosClient";
 import { Banner } from "../../components/Banner/Banner";
 import { ListSwiper } from "../../components/Swiper/Swiper";
-import { BikeManagement } from "../../api/EndPoint";
+import { PublicAPI } from "../../api/EndPoint";
 import CircularProgress from '@mui/material/CircularProgress';
 import Cookies from 'universal-cookie';
 
@@ -17,8 +17,8 @@ const handleGetListBike = async (categoryId, setListManual, setListAutomatic, se
         sortBy: "name",
         sortType: "ASC",
     };
-    await AxiosInstance.post(BikeManagement.get, body, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    await AxiosInstance.post(PublicAPI.getBikePagination, body, {
+        headers: {}
     })
         .then((res) => {
             var listBike = res.data.data.content.map((data) => {

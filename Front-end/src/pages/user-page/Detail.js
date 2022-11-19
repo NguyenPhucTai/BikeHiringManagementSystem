@@ -4,7 +4,7 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Firebase_URL, BikeManagement } from "../../api/EndPoint";
+import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
 import ImageGallery from "react-image-gallery";
 import Badge from 'react-bootstrap/Badge';
 import Cookies from 'universal-cookie';
@@ -13,8 +13,8 @@ import { green } from "@mui/material/colors";
 const cookies = new Cookies();
 
 const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingPage, Firebase_URL) => {
-    await AxiosInstance.get(BikeManagement.getDetail + id, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    await AxiosInstance.get(PublicAPI.getBikeDetail + id, {
+        headers: {}
     }).then((res) => {
         var bikeDetail = {
             name: res.data.data.name,
