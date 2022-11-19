@@ -6,6 +6,7 @@ import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeColorRepository;
+import com.BikeHiringManagement.service.CheckEntityExistService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeColorSpecification;
 import org.modelmapper.ModelMapper;
@@ -30,9 +31,12 @@ public class BikeColorService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    CheckEntityExistService checkEntityExistService;
+
     public Result createBikeColor(ObjectNameRequest bikeColorRequest){
         try{
-            if(bikeColorRepository.existsByName(bikeColorRequest.getName())){
+            if(checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "name", bikeColorRequest.getName())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has been existed!!!");
             }else{
                 BikeColor newBikeColor = modelMapper.map(bikeColorRequest, BikeColor.class);

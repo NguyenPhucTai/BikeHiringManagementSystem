@@ -9,6 +9,7 @@ import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeManufacturerRepository;
+import com.BikeHiringManagement.service.CheckEntityExistService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeManufacturerSpecification;
 import org.modelmapper.ModelMapper;
@@ -34,9 +35,12 @@ public class BikeManufacturerService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    CheckEntityExistService checkEntityExistService;
+
     public Result createBikeManufacturer(ObjectNameRequest bikeManufacturerRequest){
         try{
-            if(bikeManufacturerRepository.existsByName(bikeManufacturerRequest.getName())){
+            if(checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "name", bikeManufacturerRequest.getName())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has been existed!!!");
             }else{
                 BikeManufacturer newBikeManufacturer = modelMapper.map(bikeManufacturerRequest, BikeManufacturer.class);
@@ -88,31 +92,11 @@ public class BikeManufacturerService {
             return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
         }
     }
-    /*
-    public PageDto getBikeManufacturer(String searchKey, Integer page, Integer limit, String sortBy, String sortType) {
-        try {
-            Sort sort = responseUtils.getSort(sortBy, sortType);
-            Integer pageNum = page - 1;
-            Page<BikeManufacturer> pageResult = bikeManufacturerRepository.findAll(bikeManufacturerSpecification.filterBikeManufacturer(searchKey), PageRequest.of(pageNum, limit, sort));
-            return PageDto.builder()
-                    .content(pageResult.getContent())
-                    .numberOfElements(pageResult.getNumberOfElements())
-                    .page(page)
-                    .size(pageResult.getSize())
-                    .totalPages(pageResult.getTotalPages())
-                    .totalElements(pageResult.getTotalElements())
-                    .build();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-     */
 
     public Result updateBikeManufacturer(BikeManafacturerRequest bikeManafacturerRequest){
         try{
 
-            if(!bikeManufacturerRepository.existsById(bikeManafacturerRequest.getId())){
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "id", bikeManafacturerRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
             BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManafacturerRequest.getId());
@@ -130,7 +114,7 @@ public class BikeManufacturerService {
 
     public Result deleteBikeManufacturer(Long id, String username){
         try{
-            if(!bikeManufacturerRepository.existsById(id)){
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "id", id)){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
 

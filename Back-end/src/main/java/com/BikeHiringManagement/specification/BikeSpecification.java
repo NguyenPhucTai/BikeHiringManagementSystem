@@ -5,6 +5,7 @@ import com.BikeHiringManagement.entity.*;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.repository.BikeCategoryRepository;
+import com.BikeHiringManagement.service.CheckEntityExistService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,6 +30,9 @@ public class BikeSpecification {
 
     @Autowired
     BikeCategoryRepository bikeCategoryRepository;
+
+    @Autowired
+    CheckEntityExistService checkEntityExistService;
 
     public Specification<Bike> filterBike(String searchKey){
         return (root, query, cb) -> {
@@ -76,7 +80,7 @@ public class BikeSpecification {
             // CONDITION
             // EXIST BY CATEGORY
             Boolean isCategoryExist = false;
-            if(categoryId != null && bikeCategoryRepository.existsById(categoryId)){
+            if(categoryId != null && checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "id", categoryId)){
                 isCategoryExist = true;
             }
 
