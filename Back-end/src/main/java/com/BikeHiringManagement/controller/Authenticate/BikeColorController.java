@@ -1,4 +1,5 @@
 package com.BikeHiringManagement.controller.Authenticate;
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.BikeColor;
 import com.BikeHiringManagement.model.Result;
@@ -54,6 +55,21 @@ public class BikeColorController {
             return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
         }
         catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getBikeColorWithId(@RequestParam Long bikeColorId) {
+        try {
+            Result result = bikeColorService.getBikeColorById(bikeColorId);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
+        }catch(Exception e){
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -2,6 +2,7 @@ package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.BikeColor;
+import com.BikeHiringManagement.entity.BikeManufacturer;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeColorRequest;
 import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
@@ -71,7 +72,24 @@ public class BikeColorService {
             return null;
         }
     }
+    public Result getBikeColorById(Long id){
+        try{
+            Result result = new Result();
+            BikeColor bikeColor = bikeColorRepository.findBikeColorById(id);
+            if(!bikeColorRepository.existsById(id)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "Bike color id is invalid !!!");
+            }
 
+            result.setMessage("Get successful");
+            result.setCode(Constant.SUCCESS_CODE);
+            result.setObject(bikeColor);
+            return  result;
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
+        }
+    }
     public Result updateBikeColor(BikeColorRequest bikeColorRequest){
         try{
 
