@@ -47,6 +47,8 @@ public class BikeColorService {
                 newBikeColor.setCreatedDate(new Date());
                 newBikeColor.setCreatedUser(bikeColorRequest.getUsername());
                 bikeColorRepository.save(newBikeColor);
+
+                BikeColor test = bikeColorRepository.save(newBikeColor);
                 return new Result(Constant.SUCCESS_CODE, "Create new bike color successfully");
             }
 

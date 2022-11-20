@@ -48,7 +48,7 @@ public class CheckEntityExistService {
                 if (type == "name")
                     if(bikeCategoryRepository.existsByName(name))
                         isExisted = true;
-
+                break;
             case BIKE_COLOR:
                 if (type == "id")
                     if(bikeColorRepository.existsById(id))
@@ -56,7 +56,7 @@ public class CheckEntityExistService {
                 if (type == "name")
                     if(bikeColorRepository.existsByName(name))
                         isExisted = true;
-
+                break;
             case BIKE_IMAGE:
                 if (type == "id")
                     if(bikeImageRepository.existsById(id))
@@ -64,7 +64,7 @@ public class CheckEntityExistService {
                 if (type == "name")
                     if(bikeImageRepository.existsByName(name))
                         isExisted = true;
-
+                break;
             case BIKE_MANUFACTURER:
                 if (type == "id")
                     if(bikeManufacturerRepository.existsById(id))
@@ -72,7 +72,7 @@ public class CheckEntityExistService {
                 if (type == "name")
                     if(bikeManufacturerRepository.existsByName(name))
                         isExisted = true;
-
+                break;
             case BIKE:
                 if (type == "id")
                     if(bikeRepository.existsById(id))
@@ -80,6 +80,7 @@ public class CheckEntityExistService {
                 if (type == "name")
                     if(bikeRepository.existsByName(name))
                         isExisted = true;
+                break;
         }
         return isExisted;
     }

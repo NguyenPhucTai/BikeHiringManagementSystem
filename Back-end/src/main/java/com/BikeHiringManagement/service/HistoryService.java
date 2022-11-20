@@ -3,13 +3,12 @@ package com.BikeHiringManagement.service;
 import com.BikeHiringManagement.entity.History;
 import com.BikeHiringManagement.model.HistoryObject;
 import com.BikeHiringManagement.repository.HistoryRepository;
+import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.Map.*;
 
 @Service
@@ -19,22 +18,20 @@ public class HistoryService {
     HistoryRepository historyRepository;
 
     public void saveHistory(String actionType, Object object, HistoryObject historyObject){
-
+        History history = new History();
+        history.setUserName(historyObject.getUsername());
+        history.setDate(new Date());
+        history.setActionType(actionType);
         switch (actionType) {
             case "LOGIN":
-                History historyLogin = new History();
-                historyLogin.setUserName(historyObject.getUsername());
-                historyLogin.setDate(new Date());
-                historyLogin.setActionType(actionType);
-                historyRepository.save(historyLogin);
+                historyRepository.save(history);
+                break;
             case "CREATE":
-                History historyCreate = new History();
-                historyCreate.setUserName(historyObject.getUsername());
-                historyCreate.setDate(new Date());
-                historyCreate.setActionType(actionType);
-                historyCreate.setEntityName(object.getClass().getSimpleName());
-                historyCreate.setEntityId(historyObject.getEntityId());
-                historyRepository.save(historyCreate);
+            case "DELETE":
+                history.setEntityName(object.getClass().getSimpleName());
+                history.setEntityId(historyObject.getEntityId());
+                historyRepository.save(history);
+                break;
             case "UPDATE":
                 HashMap<String, Object> result = getDiffObject(historyObject);
                 List<History> saveList = new ArrayList<>();
@@ -50,20 +47,12 @@ public class HistoryService {
                     saveList.add(historyUpdate);
                 }
                 historyRepository.saveAll(saveList);
-            case "DELETE":
-                History historyDelete = new History();
-                historyDelete.setUserName(historyObject.getUsername());
-                historyDelete.setDate(new Date());
-                historyDelete.setActionType(actionType);
-                historyDelete.setEntityName(object.getClass().getSimpleName());
-                historyDelete.setEntityId(historyObject.getEntityId());
-                historyRepository.save(historyDelete);
+                break;
         }
     }
 
     public HashMap<String, Object> getDiffObject (HistoryObject historyObject){
         HashMap<String, Object> result = new HashMap<>();
-
         for(Entry<String, Object> entry: historyObject.getOriginalMap().entrySet()){
             if(!entry.getValue().toString().equalsIgnoreCase(historyObject.getNewMap().get(entry.getKey()).toString())){
                 result.put(entry.getKey(), entry.getValue());
@@ -71,4 +60,5 @@ public class HistoryService {
         }
         return result;
     }
+
 }

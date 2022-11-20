@@ -21,8 +21,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class BikeCategoryService {
@@ -83,10 +85,8 @@ public class BikeCategoryService {
 
             historyObject.getOriginalMap().put("name", bikeCategory.getName());
             historyObject.getOriginalMap().put("price", bikeCategory.getPrice());
-
             historyObject.getNewMap().put("name", bikeCategoryRequest.getName());
             historyObject.getNewMap().put("price", bikeCategoryRequest.getPrice());
-
             historyService.saveHistory(Constant.HISTORY_UPDATE, bikeCategory, historyObject);
 
             bikeCategory.setModifiedDate(new Date());
@@ -130,18 +130,16 @@ public class BikeCategoryService {
             if(bikeCategory.getIsDeleted() == true){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
+            bikeCategory.setModifiedDate(new Date());
+            bikeCategory.setModifiedUser(username);
+            bikeCategory.setIsDeleted(true);
+            bikeCategoryRepository.save(bikeCategory);
 
             HistoryObject historyObject = new HistoryObject();
             historyObject.setUsername(username);
             historyObject.setEntityId(bikeCategory.getId());
             historyService.saveHistory(Constant.HISTORY_DELETE, bikeCategory, historyObject);
-
-            bikeCategory.setModifiedDate(new Date());
-            bikeCategory.setModifiedUser(username);
-            bikeCategory.setIsDeleted(true);
-            bikeCategoryRepository.save(bikeCategory);
             return new Result(Constant.SUCCESS_CODE, "Delete bike category successfully");
-
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
