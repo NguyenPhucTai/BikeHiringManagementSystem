@@ -5,6 +5,7 @@ import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.Bike;
 import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeColor;
+import com.BikeHiringManagement.model.ComparedObject;
 import com.BikeHiringManagement.model.HistoryObject;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
@@ -82,11 +83,8 @@ public class BikeCategoryService {
             HistoryObject historyObject = new HistoryObject();
             historyObject.setUsername(bikeCategoryRequest.getUsername());
             historyObject.setEntityId(bikeCategory.getId());
-
-            historyObject.getOriginalMap().put("name", bikeCategory.getName());
-            historyObject.getOriginalMap().put("price", bikeCategory.getPrice());
-            historyObject.getNewMap().put("name", bikeCategoryRequest.getName());
-            historyObject.getNewMap().put("price", bikeCategoryRequest.getPrice());
+            historyObject.getComparingMap().put("name", new ComparedObject(bikeCategory.getName(), bikeCategoryRequest.getName()));
+            historyObject.getComparingMap().put("price", new ComparedObject(bikeCategory.getPrice(), bikeCategoryRequest.getPrice()));
             historyService.saveHistory(Constant.HISTORY_UPDATE, bikeCategory, historyObject);
 
             bikeCategory.setModifiedDate(new Date());
@@ -122,7 +120,7 @@ public class BikeCategoryService {
 
     public Result deleteBikeCategory(Long id, String username){
         try{
-            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "id", id)){
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "id", id)){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
 

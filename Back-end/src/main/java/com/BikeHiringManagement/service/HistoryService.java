@@ -1,6 +1,7 @@
 package com.BikeHiringManagement.service;
 
 import com.BikeHiringManagement.entity.History;
+import com.BikeHiringManagement.model.ComparedObject;
 import com.BikeHiringManagement.model.HistoryObject;
 import com.BikeHiringManagement.repository.HistoryRepository;
 import org.modelmapper.internal.util.Assert;
@@ -17,7 +18,7 @@ public class HistoryService {
     @Autowired
     HistoryRepository historyRepository;
 
-    public void saveHistory(String actionType, Object object, HistoryObject historyObject){
+    public void saveHistory(String actionType, Object object, HistoryObject historyObject) {
         History history = new History();
         history.setUserName(historyObject.getUsername());
         history.setDate(new Date());
@@ -33,9 +34,9 @@ public class HistoryService {
                 historyRepository.save(history);
                 break;
             case "UPDATE":
-                HashMap<String, Object> result = getDiffObject(historyObject);
+                HashMap<String, Object> result = getDiffObjectNewVersion(historyObject);
                 List<History> saveList = new ArrayList<>();
-                for(Entry<String, Object> entry: result.entrySet()){
+                for (Entry<String, Object> entry : result.entrySet()) {
                     History historyUpdate = new History();
                     historyUpdate.setUserName(historyObject.getUsername());
                     historyUpdate.setDate(new Date());
@@ -51,14 +52,12 @@ public class HistoryService {
         }
     }
 
-    public HashMap<String, Object> getDiffObject (HistoryObject historyObject){
+    public HashMap<String, Object> getDiffObjectNewVersion (HistoryObject historyObject){
         HashMap<String, Object> result = new HashMap<>();
-        for(Entry<String, Object> entry: historyObject.getOriginalMap().entrySet()){
-            if(!entry.getValue().toString().equalsIgnoreCase(historyObject.getNewMap().get(entry.getKey()).toString())){
-                result.put(entry.getKey(), entry.getValue());
-            }
+        for(Entry<String, ComparedObject> entry: historyObject.getComparingMap().entrySet()){
+           if(!entry.getValue().getChangedValue().toString().equalsIgnoreCase(entry.getValue().getOriginalValue().toString()))
+               result.put(entry.getKey(), entry.getValue().getOriginalValue());
         }
         return result;
     }
-
 }
