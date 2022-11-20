@@ -2,12 +2,16 @@ package com.BikeHiringManagement.service.entity;
 
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
+import com.BikeHiringManagement.entity.Bike;
 import com.BikeHiringManagement.entity.BikeCategory;
+import com.BikeHiringManagement.entity.BikeColor;
+import com.BikeHiringManagement.model.HistoryObject;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.repository.BikeCategoryRepository;
 import com.BikeHiringManagement.service.CheckEntityExistService;
+import com.BikeHiringManagement.service.HistoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeCategorySpecification;
 import org.modelmapper.ModelMapper;
@@ -18,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 
 @Service
 public class BikeCategoryService {
@@ -37,6 +42,9 @@ public class BikeCategoryService {
     @Autowired
     CheckEntityExistService checkEntityExistService;
 
+    @Autowired
+    HistoryService historyService;
+
     public Result createBikeCategory(BikeCategoryCreateRequest bikeCategoryRequest){
         try{
             if(checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "name", bikeCategoryRequest.getName())){
@@ -45,7 +53,13 @@ public class BikeCategoryService {
                 BikeCategory newBikeCategory = modelMapper.map(bikeCategoryRequest, BikeCategory.class);
                 newBikeCategory.setCreatedDate(new Date());
                 newBikeCategory.setCreatedUser(bikeCategoryRequest.getUsername());
-                bikeCategoryRepository.save(newBikeCategory);
+                BikeCategory savedBikeCategory =  bikeCategoryRepository.save(newBikeCategory);
+
+                HistoryObject historyObject = new HistoryObject();
+                historyObject.setUsername(bikeCategoryRequest.getUsername());
+                historyObject.setEntityId(savedBikeCategory.getId());
+                historyService.saveHistory(Constant.HISTORY_CREATE, savedBikeCategory, historyObject);
+
                 return new Result(Constant.SUCCESS_CODE, "Create new bike category successfully");
             }
 
@@ -62,9 +76,23 @@ public class BikeCategoryService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
             BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(bikeCategoryRequest.getId());
+
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(bikeCategoryRequest.getUsername());
+            historyObject.setEntityId(bikeCategory.getId());
+
+            historyObject.getOriginalMap().put("name", bikeCategory.getName());
+            historyObject.getOriginalMap().put("price", bikeCategory.getPrice());
+
+            historyObject.getNewMap().put("name", bikeCategoryRequest.getName());
+            historyObject.getNewMap().put("price", bikeCategoryRequest.getPrice());
+
+            historyService.saveHistory(Constant.HISTORY_UPDATE, bikeCategory, historyObject);
+
             bikeCategory.setModifiedDate(new Date());
             bikeCategory.setModifiedUser(bikeCategoryRequest.getUsername());
             bikeCategory.setPrice(bikeCategoryRequest.getPrice());
+            bikeCategory.setName(bikeCategoryRequest.getName());
             bikeCategoryRepository.save(bikeCategory);
             return new Result(Constant.SUCCESS_CODE, "Update new bike category successfully");
 
@@ -89,6 +117,34 @@ public class BikeCategoryService {
                     .build();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public Result deleteBikeCategory(Long id, String username){
+        try{
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "id", id)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
+            }
+
+            BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(id);
+            if(bikeCategory.getIsDeleted() == true){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
+            }
+
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(username);
+            historyObject.setEntityId(bikeCategory.getId());
+            historyService.saveHistory(Constant.HISTORY_DELETE, bikeCategory, historyObject);
+
+            bikeCategory.setModifiedDate(new Date());
+            bikeCategory.setModifiedUser(username);
+            bikeCategory.setIsDeleted(true);
+            bikeCategoryRepository.save(bikeCategory);
+            return new Result(Constant.SUCCESS_CODE, "Delete bike category successfully");
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
 

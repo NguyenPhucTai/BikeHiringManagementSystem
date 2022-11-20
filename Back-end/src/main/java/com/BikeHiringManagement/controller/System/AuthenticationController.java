@@ -1,8 +1,11 @@
 package com.BikeHiringManagement.controller.System;
 
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.Role;
 import com.BikeHiringManagement.entity.User;
+import com.BikeHiringManagement.model.HistoryObject;
 import com.BikeHiringManagement.model.request.SignupRequest;
+import com.BikeHiringManagement.service.HistoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,6 +54,8 @@ public class AuthenticationController {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    HistoryService historyService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
@@ -70,6 +75,11 @@ public class AuthenticationController {
                 if (!roles.isEmpty()) {
                     userInfo.setRole(roles.get(0));
                 }
+                //
+                HistoryObject historyObject = new HistoryObject();
+                historyObject.setUsername(userDetails.getUsername());
+                historyService.saveHistory(Constant.HISTORY_LOGIN, null, historyObject);
+
                 return responseUtils.getResponseEntity(
                         new JwtResponse(userDetails.getJwt(), userInfo, roles),1,"Login success!", HttpStatus.OK);
             }

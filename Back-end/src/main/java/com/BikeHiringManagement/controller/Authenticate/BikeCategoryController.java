@@ -74,6 +74,19 @@ public class BikeCategoryController {
         }
     }
 
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBikeCategory(@PathVariable Long id, HttpServletRequest request){
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = bikeCategoryService.deleteBikeCategory(id, username);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     /*
     @GetMapping("/get")
