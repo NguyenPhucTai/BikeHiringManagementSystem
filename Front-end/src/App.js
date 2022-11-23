@@ -13,7 +13,8 @@ import Detail from "./pages/user-page/Detail";
 import SignIn from "./pages/admin-page/SignIn";
 import Test from "./pages/test";
 import TestUploadImage from './pages/test2';
-import ManagementBikeCategory from "./pages/admin-page/ManagementBikeCategory";
+import ManageBikeCategory from "./pages/admin-page/ManageBikeCategory";
+import TestPopupPage from "./pages/TestPopupPage";
 
 /** Access user page */
 function GlobalRoute({ children }) {
@@ -52,7 +53,8 @@ function App() {
 				<Route path='/test2' exact element={<TestUploadImage />} />
 				<Route path='*' element={<Navigate to='/404' />} />
 				<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
-				<Route path='/manage/category' exact element={<ManagementBikeCategory />} />
+				<Route path='/manage/category' exact element={<ManageBikeCategory />} />
+				<Route path='/testpopup' exact element={<TestPopupPage />} />
 			</GlobalRoute>
 		</Fragment>
 	)
