@@ -3,6 +3,8 @@ import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeManufacturer;
+import com.BikeHiringManagement.model.ComparedObject;
+import com.BikeHiringManagement.model.HistoryObject;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
 import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
@@ -10,6 +12,7 @@ import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeManufacturerRepository;
 import com.BikeHiringManagement.service.CheckEntityExistService;
+import com.BikeHiringManagement.service.HistoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeManufacturerSpecification;
 import org.modelmapper.ModelMapper;
@@ -38,6 +41,8 @@ public class BikeManufacturerService {
     @Autowired
     CheckEntityExistService checkEntityExistService;
 
+    @Autowired
+    HistoryService historyService;
     public Result createBikeManufacturer(ObjectNameRequest bikeManufacturerRequest){
         try{
             if(checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "name", bikeManufacturerRequest.getName())){
@@ -46,7 +51,13 @@ public class BikeManufacturerService {
                 BikeManufacturer newBikeManufacturer = modelMapper.map(bikeManufacturerRequest, BikeManufacturer.class);
                 newBikeManufacturer.setCreatedDate(new Date());
                 newBikeManufacturer.setCreatedUser(bikeManufacturerRequest.getUsername());
-                bikeManufacturerRepository.save(newBikeManufacturer);
+                BikeManufacturer savedBikeManufacturer =  bikeManufacturerRepository.save(newBikeManufacturer);
+
+                HistoryObject historyObject = new HistoryObject();
+                historyObject.setUsername(bikeManufacturerRequest.getUsername());
+                historyObject.setEntityId(savedBikeManufacturer.getId());
+                historyService.saveHistory(Constant.HISTORY_CREATE, savedBikeManufacturer, historyObject);
+
                 return new Result(Constant.SUCCESS_CODE, "Create new bike manufacturer successfully");
             }
 
@@ -100,6 +111,13 @@ public class BikeManufacturerService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
             BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManafacturerRequest.getId());
+
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(bikeManafacturerRequest.getUsername());
+            historyObject.setEntityId(bikeManufacturer.getId());
+            historyObject.getComparingMap().put("name", new ComparedObject(bikeManufacturer.getName(), bikeManafacturerRequest.getName()));
+            historyService.saveHistory(Constant.HISTORY_UPDATE, bikeManufacturer, historyObject);
+
             bikeManufacturer.setModifiedDate(new Date());
             bikeManufacturer.setModifiedUser(bikeManafacturerRequest.getUsername());
             bikeManufacturer.setName(bikeManafacturerRequest.getName());
@@ -122,13 +140,16 @@ public class BikeManufacturerService {
             if(bikeManufacturer.getIsDeleted() == true){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
-
             bikeManufacturer.setModifiedDate(new Date());
             bikeManufacturer.setModifiedUser(username);
             bikeManufacturer.setIsDeleted(true);
             bikeManufacturerRepository.save(bikeManufacturer);
-            return new Result(Constant.SUCCESS_CODE, "Delete bike manufacturer successfully");
 
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(username);
+            historyObject.setEntityId(bikeManufacturer.getId());
+            historyService.saveHistory(Constant.HISTORY_DELETE, bikeManufacturer, historyObject);
+            return new Result(Constant.SUCCESS_CODE, "Delete bike manufacturer successfully");
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");

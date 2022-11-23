@@ -1,8 +1,11 @@
 package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
+import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeColor;
 import com.BikeHiringManagement.entity.BikeManufacturer;
+import com.BikeHiringManagement.model.ComparedObject;
+import com.BikeHiringManagement.model.HistoryObject;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeColorRequest;
 import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
@@ -10,6 +13,7 @@ import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeColorRepository;
 import com.BikeHiringManagement.service.CheckEntityExistService;
+import com.BikeHiringManagement.service.HistoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeColorSpecification;
 import org.modelmapper.ModelMapper;
@@ -38,6 +42,9 @@ public class BikeColorService {
     @Autowired
     CheckEntityExistService checkEntityExistService;
 
+    @Autowired
+    HistoryService historyService;
+
     public Result createBikeColor(ObjectNameRequest bikeColorRequest){
         try{
             if(checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "name", bikeColorRequest.getName())){
@@ -46,9 +53,13 @@ public class BikeColorService {
                 BikeColor newBikeColor = modelMapper.map(bikeColorRequest, BikeColor.class);
                 newBikeColor.setCreatedDate(new Date());
                 newBikeColor.setCreatedUser(bikeColorRequest.getUsername());
-                bikeColorRepository.save(newBikeColor);
+                BikeColor savedBikeColor =  bikeColorRepository.save(newBikeColor);
 
-                BikeColor test = bikeColorRepository.save(newBikeColor);
+                HistoryObject historyObject = new HistoryObject();
+                historyObject.setUsername(bikeColorRequest.getUsername());
+                historyObject.setEntityId(savedBikeColor.getId());
+                historyService.saveHistory(Constant.HISTORY_CREATE, savedBikeColor, historyObject);
+
                 return new Result(Constant.SUCCESS_CODE, "Create new bike color successfully");
             }
 
@@ -100,6 +111,13 @@ public class BikeColorService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has not been existed!!!");
             }
             BikeColor bikeColor = bikeColorRepository.findBikeColorById(bikeColorRequest.getId());
+
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(bikeColorRequest.getUsername());
+            historyObject.setEntityId(bikeColor.getId());
+            historyObject.getComparingMap().put("name", new ComparedObject(bikeColor.getName(), bikeColorRequest.getName()));
+            historyService.saveHistory(Constant.HISTORY_UPDATE, bikeColor, historyObject);
+
             bikeColor.setModifiedDate(new Date());
             bikeColor.setModifiedUser(bikeColorRequest.getUsername());
             bikeColor.setName(bikeColorRequest.getName());
@@ -127,8 +145,12 @@ public class BikeColorService {
             bikeColor.setModifiedUser(username);
             bikeColor.setIsDeleted(true);
             bikeColorRepository.save(bikeColor);
-            return new Result(Constant.SUCCESS_CODE, "Delete bike color successfully");
 
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(username);
+            historyObject.setEntityId(bikeColor.getId());
+            historyService.saveHistory(Constant.HISTORY_DELETE, bikeColor, historyObject);
+            return new Result(Constant.SUCCESS_CODE, "Delete bike color successfully");
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");

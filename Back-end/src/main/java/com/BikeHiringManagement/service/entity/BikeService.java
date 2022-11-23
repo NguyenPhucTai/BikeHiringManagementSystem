@@ -13,6 +13,7 @@ import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.repository.BikeCategoryRepository;
 import com.BikeHiringManagement.repository.BikeImageRepository;
 import com.BikeHiringManagement.repository.BikeRepository;
+import com.BikeHiringManagement.service.HistoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeSpecification;
 import org.modelmapper.ModelMapper;
@@ -42,6 +43,8 @@ public class BikeService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    HistoryService historyService;
     public Result createBike(BikeCreateRequest bikeRequest, String username){
         try{
             if(bikeRepository.existsByBikeNoAndName(bikeRequest.getBikeNo(), bikeRequest.getName())){
