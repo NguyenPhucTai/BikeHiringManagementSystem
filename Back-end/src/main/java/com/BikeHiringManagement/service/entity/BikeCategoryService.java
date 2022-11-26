@@ -50,21 +50,21 @@ public class BikeCategoryService {
 
     public Result createBikeCategory(BikeCategoryCreateRequest bikeCategoryRequest){
         try{
-            if(checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "name", bikeCategoryRequest.getName())){
+            if(bikeCategoryRepository.existsBikeCategoriesByNameAndAndIsDeleted(bikeCategoryRequest.getName(), false)){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has been existed!!!");
-            }else{
-                BikeCategory newBikeCategory = modelMapper.map(bikeCategoryRequest, BikeCategory.class);
-                newBikeCategory.setCreatedDate(new Date());
-                newBikeCategory.setCreatedUser(bikeCategoryRequest.getUsername());
-                BikeCategory savedBikeCategory =  bikeCategoryRepository.save(newBikeCategory);
-
-                HistoryObject historyObject = new HistoryObject();
-                historyObject.setUsername(bikeCategoryRequest.getUsername());
-                historyObject.setEntityId(savedBikeCategory.getId());
-                historyService.saveHistory(Constant.HISTORY_CREATE, savedBikeCategory, historyObject);
-
-                return new Result(Constant.SUCCESS_CODE, "Create new bike category successfully");
             }
+
+            BikeCategory newBikeCategory = modelMapper.map(bikeCategoryRequest, BikeCategory.class);
+            newBikeCategory.setCreatedDate(new Date());
+            newBikeCategory.setCreatedUser(bikeCategoryRequest.getUsername());
+            BikeCategory savedBikeCategory =  bikeCategoryRepository.save(newBikeCategory);
+
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(bikeCategoryRequest.getUsername());
+            historyObject.setEntityId(savedBikeCategory.getId());
+            historyService.saveHistory(Constant.HISTORY_CREATE, savedBikeCategory, historyObject);
+
+            return new Result(Constant.SUCCESS_CODE, "Create new bike category successfully");
 
         }catch (Exception e) {
             e.printStackTrace();

@@ -24,6 +24,7 @@ export const BikeManagement = {
 export const CategoryManagement = {
     create: "/admin/bike-category/create",
     update: "/admin/bike-category/update/",
+    delete: "/admin/bike-category/delete/",
     getById: "/admin/bike-category/get",
     getPagination: "/admin/bike-category/get",
 }

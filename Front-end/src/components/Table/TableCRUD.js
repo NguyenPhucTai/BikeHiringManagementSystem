@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 
 export const TableCRUD = props => {
 
-    const { setShowPopup, setTitlePopup, tableTitleList, data } = props;
+    const { setShowPopup, setTitlePopup, tableTitleList, listData, setDataID } = props;
 
     return (
         <Fragment>
@@ -19,7 +19,7 @@ export const TableCRUD = props => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((element) => {
+                    {listData.map((element) => {
                         return (
                             <tr key={element.id}>
                                 {
@@ -30,9 +30,9 @@ export const TableCRUD = props => {
                                     })
                                 }
                                 <td key={'buttonRow'}>
-                                    <button className="btn btn-success" onClick={() => { setShowPopup(true); setTitlePopup("View") }}>View</button>
-                                    <button className="btn btn-primary">Update</button>
-                                    <button className="btn btn-danger">Delete</button>
+                                    <button className="btn btn-success" onClick={() => { setShowPopup(true); setTitlePopup("View"); setDataID(element.id) }}>View</button>
+                                    <button className="btn btn-primary" onClick={() => { setShowPopup(true); setTitlePopup("Update"); setDataID(element.id) }}>Update</button>
+                                    <button className="btn btn-danger" onClick={() => { setShowPopup(true); setTitlePopup("Delete"); setDataID(element.id) }}>Delete</button>
                                 </td>
                             </tr>
                         )
