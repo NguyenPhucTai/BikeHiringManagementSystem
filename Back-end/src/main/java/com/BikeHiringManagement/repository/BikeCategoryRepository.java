@@ -8,6 +8,8 @@ public interface BikeCategoryRepository extends JpaRepository<BikeCategory, Long
     Boolean existsByName(String name);
     boolean existsById(Long id);
     boolean existsByIdAndIsDeleted(Long id, Boolean check);
+
+    boolean existsByNameAndIsDeleted(String name, Boolean check);
     boolean existsBikeCategoriesByNameAndAndIsDeleted(String name, Boolean isDeleted);
 
 

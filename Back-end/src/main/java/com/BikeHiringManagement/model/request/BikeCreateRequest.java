@@ -6,6 +6,8 @@ import java.util.List;
 
 @Data
 public class BikeCreateRequest {
+
+    private Long id;
     private String name;
     private String bikeNo;
     private String bikeManualId;
@@ -13,4 +15,5 @@ public class BikeCreateRequest {
     private Long bikeColorId;
     private Long bikeManufacturerId;
     private List<AttachmentRequest> files;
+    private String username;
 }

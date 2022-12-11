@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface BikeColorRepository extends JpaRepository<BikeColor, Long>, JpaSpecificationExecutor<BikeColor> {
-    Boolean existsByName(String name);
 
+    boolean existsByNameAndIsDeleted(String name, Boolean check);
+    boolean existsByIdAndIsDeleted(Long id, Boolean check);
     BikeColor findBikeColorById(Long id);
 }

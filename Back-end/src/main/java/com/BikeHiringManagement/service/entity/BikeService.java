@@ -3,9 +3,13 @@ package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.Bike;
+import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeImage;
+import com.BikeHiringManagement.model.ComparedObject;
+import com.BikeHiringManagement.model.HistoryObject;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.AttachmentRequest;
+import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
 import com.BikeHiringManagement.model.request.BikeCreateRequest;
 import com.BikeHiringManagement.model.request.PaginationBikeRequest;
 import com.BikeHiringManagement.model.response.AttachmentResponse;
@@ -13,6 +17,7 @@ import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.repository.BikeCategoryRepository;
 import com.BikeHiringManagement.repository.BikeImageRepository;
 import com.BikeHiringManagement.repository.BikeRepository;
+import com.BikeHiringManagement.service.CheckEntityExistService;
 import com.BikeHiringManagement.service.HistoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeSpecification;
@@ -45,6 +50,14 @@ public class BikeService {
 
     @Autowired
     HistoryService historyService;
+
+    @Autowired
+    CheckEntityExistService checkEntityExistService;
+
+    /*
+    @Autowired
+    HistoryService historyService;
+     */
     public Result createBike(BikeCreateRequest bikeRequest, String username){
         try{
             if(bikeRepository.existsByBikeNoAndName(bikeRequest.getBikeNo(), bikeRequest.getName())){
@@ -68,6 +81,12 @@ public class BikeService {
             }
 
             bikeImageRepository.saveAll(saveList);
+
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(username);
+            historyObject.setEntityId(savedBike.getId());
+            historyService.saveHistory(Constant.HISTORY_CREATE, savedBike, historyObject);
+
             return new Result(Constant.SUCCESS_CODE, "Create new bike successfully");
         }catch (Exception e) {
             e.printStackTrace();
@@ -195,4 +214,52 @@ public class BikeService {
         }
     }
      */
+    public Result deleteBike(Long id, String username){
+        try{
+            Bike bike = bikeRepository.findBikeById(id);
+            if(bike.getIsDeleted() == true){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike has not been existed!!!");
+            }
+            bike.setModifiedDate(new Date());
+            bike.setModifiedUser(username);
+            bike.setIsDeleted(true);
+            bikeRepository.save(bike);
+
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(username);
+            historyObject.setEntityId(bike.getId());
+            historyService.saveHistory(Constant.HISTORY_DELETE, bike, historyObject);
+            return new Result(Constant.SUCCESS_CODE, "Delete bike successfully");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
+
+    public Result updateBike(BikeCreateRequest bikeRequest){
+        try{
+
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeRequest.getId())){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike has not been existed!!!");
+            }
+            Bike bike = bikeRepository.findBikeById(bikeRequest.getId());
+            /*
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(bikeCategoryRequest.getUsername());
+            historyObject.setEntityId(bikeCategory.getId());
+            historyObject.getComparingMap().put("name", new ComparedObject(bikeCategory.getName(), bikeCategoryRequest.getName()));
+            historyObject.getComparingMap().put("price", new ComparedObject(bikeCategory.getPrice(), bikeCategoryRequest.getPrice()));
+            historyService.saveHistory(Constant.HISTORY_UPDATE, bikeCategory, historyObject);
+            */
+            bike.setModifiedDate(new Date());
+            bike.setModifiedUser(bikeRequest.getUsername());
+            bike.setName(bikeRequest.getName());
+            bikeRepository.save(bike);
+            return new Result(Constant.SUCCESS_CODE, "Update new bike successfully");
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
 }

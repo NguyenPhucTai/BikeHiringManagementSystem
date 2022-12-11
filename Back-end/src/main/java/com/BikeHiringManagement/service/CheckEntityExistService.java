@@ -43,42 +43,42 @@ public class CheckEntityExistService {
         switch (constantNumber){
             case BIKE_CATEGORY:
                 if (type == "id")
-                    if(bikeCategoryRepository.existsById(id))
+                    if(bikeCategoryRepository.existsByIdAndIsDeleted(id,false))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeCategoryRepository.existsByName(name))
+                    if(bikeCategoryRepository.existsByNameAndIsDeleted(name, false))
                         isExisted = true;
                 break;
             case BIKE_COLOR:
                 if (type == "id")
-                    if(bikeColorRepository.existsById(id))
+                    if(bikeColorRepository.existsByIdAndIsDeleted(id, false))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeColorRepository.existsByName(name))
+                    if(bikeColorRepository.existsByNameAndIsDeleted(name, false))
                         isExisted = true;
                 break;
             case BIKE_IMAGE:
                 if (type == "id")
-                    if(bikeImageRepository.existsById(id))
+                    if(bikeImageRepository.existsByIdAndIsDeleted(id, false))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeImageRepository.existsByName(name))
+                    if(bikeImageRepository.existsByNameAndIsDeleted(name, false))
                         isExisted = true;
                 break;
             case BIKE_MANUFACTURER:
                 if (type == "id")
-                    if(bikeManufacturerRepository.existsById(id))
+                    if(bikeManufacturerRepository.existsByIdAndIsDeleted(id, false))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeManufacturerRepository.existsByName(name))
+                    if(bikeManufacturerRepository.existsByNameAndIsDeleted(name, false))
                         isExisted = true;
                 break;
             case BIKE:
                 if (type == "id")
-                    if(bikeRepository.existsById(id))
+                    if(bikeRepository.existsByIdAndIsDeleted(id, false))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeRepository.existsByName(name))
+                    if(bikeRepository.existsByNameAndIsDeleted(name, false))
                         isExisted = true;
                 break;
         }

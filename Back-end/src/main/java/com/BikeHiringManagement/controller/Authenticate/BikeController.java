@@ -4,6 +4,7 @@ package com.BikeHiringManagement.controller.Authenticate;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
 import com.BikeHiringManagement.model.request.BikeCreateRequest;
 import com.BikeHiringManagement.model.request.PaginationBikeRequest;
 import com.BikeHiringManagement.model.response.BikeResponse;
@@ -97,4 +98,35 @@ public class BikeController {
     }
 
      */
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBike(@PathVariable Long id, HttpServletRequest request){
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = bikeService.deleteBike(id, username);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity<?> updateBike(@RequestBody BikeCreateRequest reqBody,
+                                                @PathVariable Long id,
+                                                HttpServletRequest request){
+        try{
+            reqBody.setId(id);
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            reqBody.setUsername(username);
+            Result result = bikeService.updateBike(reqBody);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -18,7 +18,7 @@ public class Constant {
     public static final Integer BIKE_COLOR = 2;
     public static final Integer BIKE_IMAGE = 3;
     public static final Integer BIKE_MANUFACTURER = 4;
-
+    public static final Integer BIKE = 5;
     // History log
     // Action name
     public static final String HISTORY_LOGIN = "LOGIN";
