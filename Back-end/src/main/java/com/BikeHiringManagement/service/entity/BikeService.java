@@ -110,7 +110,7 @@ public class BikeService {
 
             List<BikeResponse> listResult = new ArrayList<>();
             for(BikeResponse bikeResponse : listRes){
-                List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdOrderByNameAsc(bikeResponse.getId());
+                List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(bikeResponse.getId(), false);
 
                 if(!listImage.isEmpty()){
 
@@ -146,7 +146,7 @@ public class BikeService {
             Map<String, Object> mapBike = bikeSpecification.getBikeById(bikeId);
             BikeResponse bikeResponse = (BikeResponse) mapBike.get("data");
 
-            List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdOrderByNameAsc(bikeResponse.getId());
+            List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(bikeResponse.getId(),false);
             List<AttachmentResponse> listImageResponse = new ArrayList<>();
             if(!listImage.isEmpty()){
                 for(BikeImage bikeImage : listImage){
@@ -199,18 +199,56 @@ public class BikeService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike has not been existed!!!");
             }
             Bike bike = bikeRepository.findBikeById(bikeRequest.getId());
-            /*
-            HistoryObject historyObject = new HistoryObject();
-            historyObject.setUsername(bikeCategoryRequest.getUsername());
-            historyObject.setEntityId(bikeCategory.getId());
-            historyObject.getComparingMap().put("name", new ComparedObject(bikeCategory.getName(), bikeCategoryRequest.getName()));
-            historyObject.getComparingMap().put("price", new ComparedObject(bikeCategory.getPrice(), bikeCategoryRequest.getPrice()));
-            historyService.saveHistory(Constant.HISTORY_UPDATE, bikeCategory, historyObject);
-            */
+
             bike.setModifiedDate(new Date());
             bike.setModifiedUser(bikeRequest.getUsername());
             bike.setName(bikeRequest.getName());
+            bike.setBikeManualId(bikeRequest.getBikeManualId());
+            bike.setBikeNo(bikeRequest.getBikeNo());
+            bike.setBikeCategoryId(bikeRequest.getBikeCategoryId());
+            bike.setBikeColorId(bikeRequest.getBikeColorId());
+            bike.setBikeManufacturerId(bikeRequest.getBikeManufacturerId());
+            bike.setStatus(bikeRequest.getStatus());
+
+            bikeImageRepository.updateIsDelete(bike.getId());
+
+            List<BikeImage> saveList = new ArrayList<>();
+            for(AttachmentRequest item : bikeRequest.getFiles()){
+                BikeImage bikeImage = new BikeImage();
+                bikeImage.setBikeId(bike.getId());
+                bikeImage.setName(item.getFileName());
+                bikeImage.setPath(item.getFilePath());
+                bikeImage.setModifiedDate(new Date());
+                bikeImage.setModifiedUser(bikeRequest.getUsername());
+                saveList.add(bikeImage);
+            }
+            bikeImageRepository.saveAll(saveList);
             bikeRepository.save(bike);
+
+
+            //History Bike
+            HistoryObject historyBikeObject = new HistoryObject();
+            historyBikeObject.setUsername(bikeRequest.getUsername());
+            historyBikeObject.setEntityId(bike.getId());
+            historyBikeObject.getComparingMap().put("name", new ComparedObject(bike.getName(), bikeRequest.getName()));
+            historyBikeObject.getComparingMap().put("bikeManualId", new ComparedObject(bike.getBikeManualId(), bikeRequest.getBikeManualId()));
+            historyBikeObject.getComparingMap().put("bikeNo", new ComparedObject(bike.getBikeNo(), bikeRequest.getBikeNo()));
+            historyBikeObject.getComparingMap().put("bikeCategoryId", new ComparedObject(bike.getBikeCategoryId(), bikeRequest.getBikeCategoryId()));
+            historyBikeObject.getComparingMap().put("bikeColorId", new ComparedObject(bike.getBikeColorId(), bikeRequest.getBikeColorId()));
+            historyBikeObject.getComparingMap().put("bikeManufacturerId", new ComparedObject(bike.getBikeManufacturerId(), bikeRequest.getBikeManufacturerId()));
+            historyBikeObject.getComparingMap().put("status", new ComparedObject(bike.getStatus(), bikeRequest.getStatus()));
+            historyService.saveHistory(Constant.HISTORY_UPDATE, bike, historyBikeObject);
+
+            //History Bike Image
+//            for(AttachmentRequest item : bikeRequest.getFiles()){
+//                HistoryObject historyBikeImageObject = new HistoryObject();
+//                historyBikeImageObject.setUsername(bikeRequest.getUsername());
+//                historyBikeImageObject.setEntityId(bike.getId());
+//                historyBikeImageObject.getComparingMap().put("name", new ComparedObject(bike.getName(), bikeRequest.getName()));
+//            }
+
+
+
             return new Result(Constant.SUCCESS_CODE, "Update new bike successfully");
 
         }catch (Exception e) {

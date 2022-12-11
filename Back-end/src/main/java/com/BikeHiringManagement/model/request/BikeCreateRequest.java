@@ -15,5 +15,6 @@ public class BikeCreateRequest {
     private Long bikeColorId;
     private Long bikeManufacturerId;
     private List<AttachmentRequest> files;
+    private String status;
     private String username;
 }
