@@ -3,23 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     searchKey: null,
     color: [],
-
-    /*
-        filterList = [
-            {type: "Color", value: 1},
-            {type: "Color", value: 2},
-            {type: "Color", value: 3},
-            {type: "Manufacturer", value: 1}
-        ]
-    */
     manufacturer: [],
     status: null,
     sortBy: "id",
-    sortType: "DESC"
+    sortType: "ASC",
+    isSubmitting: false
 };
 
-const listBikeSlice = createSlice({
-    name: "listBike",
+const reduxSlice = createSlice({
+    name: "redux",
     initialState: initialState,
     reducers: {
         searchBike(state, action) {
@@ -31,13 +23,16 @@ const listBikeSlice = createSlice({
         sortTypeBike(state, action) {
             state.sortType = action.payload;
         },
-        filterBike(state, action){
+        filterBike(state, action) {
             state.color = action.payload.color;
             state.manufacturer = action.payload.manufacturer;
+        },
+        setIsSubmitting(state, action) {
+            state.isSubmitting = action.payload.isSubmitting;
         }
     }
 });
 
-export const listBikeAction = listBikeSlice.actions;
+export const reduxAction = reduxSlice.actions;
 
-export default listBikeSlice;
+export default reduxSlice;

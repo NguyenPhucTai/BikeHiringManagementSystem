@@ -8,6 +8,9 @@ import { Popup } from '../../components/Modal/Popup';
 import { TextField } from '../../components/Form/TextField';
 import { Formik, Form } from 'formik';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { reduxAction } from "../../redux-store/redux/redux.slice";
 
 const cookies = new Cookies();
 const initialValues = {
@@ -15,83 +18,15 @@ const initialValues = {
     price: 0,
 };
 
-const handleCreateData = async (values, setAlert, setListData, setLoadingPage) => {
+
+const handleGetDataPagination = async (setListData, setLoadingPage, reduxFilter) => {
+    console.log(reduxFilter)
     const body = {
-        name: values.name,
-        price: values.price,
-    };
-    await AxiosInstance.post(CategoryManagement.create, body, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
-    }).then((res) => {
-        if (res.data.code === 1) {
-            setAlert({
-                alertShow: true,
-                alertStatus: "success",
-                alertMessage: res.data.message,
-            })
-            handleGetDataPagination(setListData, setLoadingPage);
-        } else {
-            setAlert({
-                alertShow: true,
-                alertStatus: "danger",
-                alertMessage: res.data.message,
-            })
-        }
-    }).catch((error) => {
-        if (error && error.response) {
-            console.log("Error: ", error);
-        }
-        setAlert({
-            alertShow: true,
-            alertStatus: "danger",
-            alertMessage: error,
-        })
-    });
-
-}
-
-const handleUpdateData = async (values, dataID, setAlert, setListData, setLoadingPage) => {
-    const body = {
-        name: values.name,
-        price: values.price,
-    };
-    await AxiosInstance.post(CategoryManagement.update + dataID, body, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
-    }).then((res) => {
-        if (res.data.code === 1) {
-            setAlert({
-                alertShow: true,
-                alertStatus: "success",
-                alertMessage: res.data.message,
-            })
-            handleGetDataPagination(setListData, setLoadingPage);
-        } else {
-            setAlert({
-                alertShow: true,
-                alertStatus: "danger",
-                alertMessage: res.data.message,
-            })
-        }
-    }).catch((error) => {
-        if (error && error.response) {
-            console.log("Error: ", error);
-        }
-        setAlert({
-            alertShow: true,
-            alertStatus: "danger",
-            alertMessage: error,
-        })
-    });
-
-}
-
-const handleGetDataPagination = async (setListData, setLoadingPage) => {
-    const body = {
-        searchKey: null,
+        searchKey: reduxFilter.reduxSearchKey,
         page: 1,
         limit: 5,
-        sortBy: "name",
-        sortType: "ASC"
+        sortBy: reduxFilter.reduxSortBy,
+        sortType: reduxFilter.reduxSortType
     };
     await AxiosInstance.post(CategoryManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
@@ -112,7 +47,80 @@ const handleGetDataPagination = async (setListData, setLoadingPage) => {
     });
 };
 
-const handleDeleteData = async (dataID, setAlert, setListData, setLoadingPage, setShowCloseButton) => {
+const handleCreateData = async (values, setAlert, setListData, setLoadingPage, setShowCloseButton, reduxFilter) => {
+    const body = {
+        name: values.name,
+        price: values.price,
+    };
+    await AxiosInstance.post(CategoryManagement.create, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            setAlert({
+                alertShow: true,
+                alertStatus: "success",
+                alertMessage: res.data.message,
+            })
+            setShowCloseButton(true);
+            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+        } else {
+            setAlert({
+                alertShow: true,
+                alertStatus: "danger",
+                alertMessage: res.data.message,
+            })
+        }
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+        setAlert({
+            alertShow: true,
+            alertStatus: "danger",
+            alertMessage: error,
+        })
+    });
+
+}
+
+const handleUpdateData = async (values, dataID, setAlert, setListData, setLoadingPage, setShowCloseButton, reduxFilter) => {
+    const body = {
+        name: values.name,
+        price: values.price,
+    };
+    await AxiosInstance.post(CategoryManagement.update + dataID, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            setAlert({
+                alertShow: true,
+                alertStatus: "success",
+                alertMessage: res.data.message,
+            })
+            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+            setShowCloseButton(true);
+        } else {
+            setAlert({
+                alertShow: true,
+                alertStatus: "danger",
+                alertMessage: res.data.message,
+            })
+        }
+
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+        setAlert({
+            alertShow: true,
+            alertStatus: "danger",
+            alertMessage: error,
+        })
+    });
+
+}
+
+const handleDeleteData = async (dataID, setAlert, setListData, setLoadingPage, setShowCloseButton, reduxFilter) => {
     await AxiosInstance.post(CategoryManagement.delete + dataID, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
@@ -122,7 +130,7 @@ const handleDeleteData = async (dataID, setAlert, setListData, setLoadingPage, s
                 alertStatus: "success",
                 alertMessage: res.data.message,
             })
-            handleGetDataPagination(setListData, setLoadingPage);
+            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
         } else {
             setAlert({
                 alertShow: true,
@@ -145,6 +153,17 @@ const handleDeleteData = async (dataID, setAlert, setListData, setLoadingPage, s
 }
 
 function ManageBikeCategory() {
+
+    //Redux
+    const dispatch = useDispatch();
+    let reduxFilter = {
+        reduxSearchKey: useSelector((state) => state.redux.searchKey),
+        reduxSortBy: useSelector((state) => state.redux.sortBy),
+        reduxSortType: useSelector((state) => state.redux.sortType),
+    }
+    const reduxIsSubmitting = useSelector((state) => state.redux.isSubmiting);
+
+
     const tableTitleList = ['ID', 'NAME', 'PRICE']
     const [loadingPage, setLoadingPage] = useState(true);
     const [listData, setListData] = useState([]);
@@ -159,101 +178,133 @@ function ManageBikeCategory() {
     })
 
     useEffect(() => {
-        handleGetDataPagination(setListData, setLoadingPage);
+        if (loadingPage === true) {
+            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+        }
     }, [loadingPage])
+
+    useEffect(() => {
+        if (reduxIsSubmitting === true) {
+            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+            dispatch(reduxAction.setIsSubmitting({ isSubmiting: false }));
+        }
+    }, [reduxIsSubmitting])
 
 
     let popupTitle;
     if (titlePopup === "Create") {
         popupTitle = <Popup showPopup={showPopup} title={"Create"} child={
-            <Fragment>
-                <AlertMessage
-                    isShow={alert.alertShow}
-                    message={alert.alertMessage}
-                    status={alert.alertStatus}
-                />
-                <Formik
-                    initialValues={initialValues}
-                    onSubmit={(values) => {
-                        handleCreateData(values, setAlert, setListData, setLoadingPage);
-                    }}>
-                    {({
-                        isSubmiting,
-                        handleChange,
-                        handleBlur,
-                        handleSubmit,
-                        values,
-                        errors,
-                        touched,
-                        setFieldValue,
-                    }) => (
-                        <Form className="d-flex flex-column">
-                            <TextField
-                                label={"Name"}
-                                name={"name"}
-                                type={"text"}
-                                placeholder={"Enter the category name"}
-                            />
-                            <TextField
-                                label={"Price"}
-                                name={"price"}
-                                type={"number"}
-                                placeholder={"Enter the category price"}
-                            />
-                            <div className="popup-button">
-                                <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
-                                <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setAlert({ alertShow: false }) }}>Cancel</button>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </Fragment>
+            showCloseButton ?
+                < Fragment >
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
+                    <div className="popup-button">
+                        <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setShowCloseButton(false); setAlert({ alertShow: false }) }}>Close</button>
+                    </div>
+                </ Fragment>
+                :
+                <Fragment>
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
+                    <Formik
+                        initialValues={initialValues}
+                        onSubmit={(values) => {
+                            handleCreateData(values, setAlert, setListData, setLoadingPage, setShowCloseButton, reduxFilter);
+                        }}>
+                        {({
+                            isSubmiting,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            setFieldValue,
+                        }) => (
+                            <Form className="d-flex flex-column">
+                                <TextField
+                                    label={"Name"}
+                                    name={"name"}
+                                    type={"text"}
+                                    placeholder={"Enter the category name"}
+                                />
+                                <TextField
+                                    label={"Price"}
+                                    name={"price"}
+                                    type={"number"}
+                                    placeholder={"Enter the category price"}
+                                />
+                                <div className="popup-button">
+                                    <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
+                                    <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setAlert({ alertShow: false }) }}>Cancel</button>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </Fragment>
         } />
     } else if (titlePopup === "Update") {
         popupTitle = <Popup showPopup={showPopup} setShowPopup={setShowPopup} title={"Update"} child={
-            <Fragment>
-                <AlertMessage
-                    isShow={alert.alertShow}
-                    message={alert.alertMessage}
-                    status={alert.alertStatus}
-                />
-
-                <Formik
-                    initialValues={initialValues}
-                    onSubmit={(values) => {
-                        handleUpdateData(values, dataID, setAlert, setListData, setLoadingPage);
-                    }}>
-                    {({
-                        isSubmiting,
-                        handleChange,
-                        handleBlur,
-                        handleSubmit,
-                        values,
-                        errors,
-                        touched,
-                        setFieldValue,
-                    }) => (
-                        <Form className="d-flex flex-column">
-                            <TextField
-                                label={"Name"}
-                                name={"name"}
-                                type={"text"}
-                                placeholder={"Enter the category name"}
-                            />
-                            <TextField
-                                label={"Price"}
-                                name={"price"}
-                                type={"number"}
-                                placeholder={"Enter the category price"}
-                            />
-                            <div className="popup-button">
-                                <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
-                                <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setAlert({ alertShow: false }) }}>Cancel</button>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </Fragment>
+            showCloseButton ?
+                < Fragment >
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
+                    <div className="popup-button">
+                        <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setShowCloseButton(false); setAlert({ alertShow: false }) }}>Close</button>
+                    </div>
+                </ Fragment>
+                :
+                <Fragment>
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
+                    <Formik
+                        initialValues={initialValues}
+                        onSubmit={(values) => {
+                            handleUpdateData(values, dataID, setAlert, setListData, setLoadingPage, setShowCloseButton, reduxFilter);
+                        }}>
+                        {({
+                            isSubmiting,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            setFieldValue,
+                        }) => (
+                            <Form className="d-flex flex-column">
+                                <TextField
+                                    label={"Name"}
+                                    name={"name"}
+                                    type={"text"}
+                                    placeholder={"Enter the category name"}
+                                />
+                                <TextField
+                                    label={"Price"}
+                                    name={"price"}
+                                    type={"number"}
+                                    placeholder={"Enter the category price"}
+                                />
+                                <div className="popup-button">
+                                    <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
+                                    <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setAlert({ alertShow: false }) }}>Cancel</button>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </Fragment>
         } />
     } else if (titlePopup === "View") {
         popupTitle = <Popup showPopup={showPopup} setShowPopup={setShowPopup} title={"View"} child={
@@ -279,7 +330,7 @@ function ManageBikeCategory() {
                         <p>This process cannot be undone</p>
                     </div>
                     <div className="popup-button">
-                        <button className="btn btn-danger btn-action" onClick={() => handleDeleteData(dataID, setAlert, setListData, setLoadingPage, setShowCloseButton)}>{titlePopup}</button>
+                        <button className="btn btn-danger btn-action" onClick={() => handleDeleteData(dataID, setAlert, setListData, setLoadingPage, setShowCloseButton, reduxFilter)}>{titlePopup}</button>
                         <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false) }}>Cancel</button>
                     </div>
                 </Fragment >

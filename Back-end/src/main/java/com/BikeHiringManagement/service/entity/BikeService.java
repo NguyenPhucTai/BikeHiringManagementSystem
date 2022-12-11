@@ -169,51 +169,7 @@ public class BikeService {
         }
     }
 
-    /*
-    public PageDto getBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId) {
-        try {
-            Map<String, Object> mapBike = bikeSpecification.getListBike(searchKey, page, limit, sortBy, sortType, categoryId);
-            List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
-            Long totalItems = (Long) mapBike.get("count");
-            Integer totalPage = responseUtils.getPageCount(totalItems, limit);
 
-            if(categoryId != null){
-                 listRes = listRes.stream().filter(c -> c.getCategoryId() == categoryId).collect(Collectors.toList());
-            }
-
-
-            List<BikeResponse> listResult = new ArrayList<>();
-            for(BikeResponse bikeResponse : listRes){
-                List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdOrderByNameAsc(bikeResponse.getId());
-
-                if(!listImage.isEmpty()){
-
-                    List<AttachmentResponse> listImageResponse = new ArrayList<>();
-                    for(BikeImage bikeImage : listImage){
-                        AttachmentResponse attachmentResponse = new AttachmentResponse();
-                        attachmentResponse.setFilePath(bikeImage.getPath());
-                        attachmentResponse.setFileName(bikeImage.getName());
-                        listImageResponse.add(attachmentResponse);
-                    }
-                    bikeResponse.setImageList(listImageResponse);
-                }
-                listResult.add(bikeResponse);
-            }
-
-            return PageDto.builder()
-                    .content(listResult)
-                    .numberOfElements(Math.toIntExact(totalItems))
-                    .page(page)
-                    .size(limit)
-                    .totalPages(totalPage)
-                    .totalElements(totalItems)
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-     */
     public Result deleteBike(Long id, String username){
         try{
             Bike bike = bikeRepository.findBikeById(id);
@@ -262,4 +218,50 @@ public class BikeService {
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
+
+      /*
+    public PageDto getBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId) {
+        try {
+            Map<String, Object> mapBike = bikeSpecification.getListBike(searchKey, page, limit, sortBy, sortType, categoryId);
+            List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
+            Long totalItems = (Long) mapBike.get("count");
+            Integer totalPage = responseUtils.getPageCount(totalItems, limit);
+
+            if(categoryId != null){
+                 listRes = listRes.stream().filter(c -> c.getCategoryId() == categoryId).collect(Collectors.toList());
+            }
+
+
+            List<BikeResponse> listResult = new ArrayList<>();
+            for(BikeResponse bikeResponse : listRes){
+                List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdOrderByNameAsc(bikeResponse.getId());
+
+                if(!listImage.isEmpty()){
+
+                    List<AttachmentResponse> listImageResponse = new ArrayList<>();
+                    for(BikeImage bikeImage : listImage){
+                        AttachmentResponse attachmentResponse = new AttachmentResponse();
+                        attachmentResponse.setFilePath(bikeImage.getPath());
+                        attachmentResponse.setFileName(bikeImage.getName());
+                        listImageResponse.add(attachmentResponse);
+                    }
+                    bikeResponse.setImageList(listImageResponse);
+                }
+                listResult.add(bikeResponse);
+            }
+
+            return PageDto.builder()
+                    .content(listResult)
+                    .numberOfElements(Math.toIntExact(totalItems))
+                    .page(page)
+                    .size(limit)
+                    .totalPages(totalPage)
+                    .totalElements(totalItems)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+     */
 }

@@ -8,10 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from "react-router-dom";
 import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
 import Badge from 'react-bootstrap/Badge';
-import Cookies from 'universal-cookie';
 import { useSelector } from "react-redux";
-
-const cookies = new Cookies();
 
 const handleGetListBike = async (
     searchKey,
@@ -60,9 +57,9 @@ const List = props => {
     const [maxPage, setMaxPage] = useState(10);
     const [listMotor, setListMotor] = useState([]);
     const [loadingPage, setLoadingPage] = useState(true);
-    const searchKey = useSelector((state) => state.listBike.searchKey);
-    const sortBy = useSelector((state) => state.listBike.sortBy);
-    const sortType = useSelector((state) => state.listBike.sortType);
+    const searchKey = useSelector((state) => state.redux.searchKey);
+    const sortBy = useSelector((state) => state.redux.sortBy);
+    const sortType = useSelector((state) => state.redux.sortType);
     const [categoryId, setCategoryId] = useState(null);
 
     const handleChangePage = (event, newPage) => {
@@ -84,7 +81,7 @@ const List = props => {
     }, [props.category])
 
     useEffect(() => {
-        if (sortBy != undefined && sortType != undefined) {
+        if (sortBy !== undefined && sortType !== undefined) {
             handleGetListBike(searchKey, categoryId, activePage, sortBy, sortType, setMaxPage, setListMotor, setLoadingPage);
         }
     }, [activePage, searchKey, categoryId])

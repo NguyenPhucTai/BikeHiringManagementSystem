@@ -50,8 +50,8 @@ public class BikeCategoryService {
 
     public Result createBikeCategory(BikeCategoryCreateRequest bikeCategoryRequest){
         try{
-            if(bikeCategoryRepository.existsBikeCategoriesByNameAndAndIsDeleted(bikeCategoryRequest.getName(), false)){
-                return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has been existed!!!");
+            if(checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "name", bikeCategoryRequest.getName())){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
 
             BikeCategory newBikeCategory = modelMapper.map(bikeCategoryRequest, BikeCategory.class);
@@ -78,6 +78,11 @@ public class BikeCategoryService {
             if(!checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "id", bikeCategoryRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
+
+            if(checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "name", bikeCategoryRequest.getName())){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
+            }
+
             BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(bikeCategoryRequest.getId());
 
             HistoryObject historyObject = new HistoryObject();

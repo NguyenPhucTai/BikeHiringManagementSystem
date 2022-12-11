@@ -104,23 +104,26 @@ public class BikeManufacturerService {
         }
     }
 
-    public Result updateBikeManufacturer(BikeManafacturerRequest bikeManafacturerRequest){
+    public Result updateBikeManufacturer(BikeManafacturerRequest bikeManufacturerRequest){
         try{
 
-            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "id", bikeManafacturerRequest.getId())){
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "id", bikeManufacturerRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
-            BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManafacturerRequest.getId());
+            if(checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "name", bikeManufacturerRequest.getName())){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has been existed!!!");
+            }
+            BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManufacturerRequest.getId());
 
             HistoryObject historyObject = new HistoryObject();
-            historyObject.setUsername(bikeManafacturerRequest.getUsername());
+            historyObject.setUsername(bikeManufacturerRequest.getUsername());
             historyObject.setEntityId(bikeManufacturer.getId());
-            historyObject.getComparingMap().put("name", new ComparedObject(bikeManufacturer.getName(), bikeManafacturerRequest.getName()));
+            historyObject.getComparingMap().put("name", new ComparedObject(bikeManufacturer.getName(), bikeManufacturerRequest.getName()));
             historyService.saveHistory(Constant.HISTORY_UPDATE, bikeManufacturer, historyObject);
 
             bikeManufacturer.setModifiedDate(new Date());
-            bikeManufacturer.setModifiedUser(bikeManafacturerRequest.getUsername());
-            bikeManufacturer.setName(bikeManafacturerRequest.getName());
+            bikeManufacturer.setModifiedUser(bikeManufacturerRequest.getUsername());
+            bikeManufacturer.setName(bikeManufacturerRequest.getName());
             bikeManufacturerRepository.save(bikeManufacturer);
             return new Result(Constant.SUCCESS_CODE, "Update new bike manufacturer successfully");
 

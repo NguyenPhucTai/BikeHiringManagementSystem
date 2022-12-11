@@ -2,11 +2,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 /** Where to import slice reducers */
-import listBikeSlice from "./listBike/listBike.slice";
+import reduxSlice from "./redux/redux.slice";
 
 const store = configureStore({
     reducer: {
-        listBike: listBikeSlice.reducer,
+        redux: reduxSlice.reducer,
     },
 });
 

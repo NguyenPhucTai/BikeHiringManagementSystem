@@ -2,17 +2,19 @@ import React, { useState, useEffect, useRef, Fragment } from "react";
 import { Formik, Form } from "formik";
 import { SortSelect } from "../Form/SortSelect";
 import { SearchField } from "../Form/SearchField";
-import { SortType, SortBy } from "../Form/SelectItem";
+import { SortType } from "../Form/SelectItem";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useDispatch } from "react-redux";
 import { reduxAction } from "../../redux-store/redux/redux.slice";
 
 const initialValues = {
-    search: "",
+    searchKey: "",
+    sortBy: "id",
+    sortType: "ASC"
 };
 
-const SortBar = () => {
+const SortBarManagement = () => {
     const dispatch = useDispatch();
     return (
         <Fragment>
@@ -40,6 +42,7 @@ const SortBar = () => {
                         initialValues={initialValues}
                         onSubmit={(values) => {
                             dispatch(reduxAction.searchBike({ searchKey: values.search }));
+                            dispatch(reduxAction.setIsSubmitting({ isSubmiting: true }));
                         }}>
                         {({
                             isSubmiting,
@@ -75,4 +78,5 @@ const SortBar = () => {
     )
 }
 
-export default SortBar;
+export default SortBarManagement;
+
