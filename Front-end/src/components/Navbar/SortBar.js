@@ -39,7 +39,7 @@ const SortBar = () => {
                     <Formik
                         initialValues={initialValues}
                         onSubmit={(values) => {
-                            dispatch(reduxAction.searchBike({ searchKey: values.search }));
+                            dispatch(reduxAction.searchBike({ searchKey: values.searchKey }));
                         }}>
                         {({
                             isSubmiting,

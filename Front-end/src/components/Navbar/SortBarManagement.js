@@ -14,15 +14,15 @@ const initialValues = {
     sortType: "ASC"
 };
 
-const SortBarManagement = () => {
+const SortBarManagement = (props) => {
     const dispatch = useDispatch();
     return (
         <Fragment>
             <Row className="sort-bar mb-3">
                 <Col lg={3} xs={6}>
                     <SortSelect
-                        options={SortBy}
-                        placeholder={"Sort by"}
+                        options={props.SortBy}
+                        placeholder={"Sort by ID"}
                         onChange={(value) => {
                             dispatch(reduxAction.sortByBike(value.value))
                         }}
@@ -31,7 +31,7 @@ const SortBarManagement = () => {
                 <Col lg={3} xs={6}>
                     <SortSelect
                         options={SortType}
-                        placeholder={"Sort type"}
+                        placeholder={"A to Z"}
                         onChange={(value) => {
                             dispatch(reduxAction.sortTypeBike(value.value))
                         }}
@@ -41,8 +41,8 @@ const SortBarManagement = () => {
                     <Formik
                         initialValues={initialValues}
                         onSubmit={(values) => {
-                            dispatch(reduxAction.searchBike({ searchKey: values.search }));
-                            dispatch(reduxAction.setIsSubmitting({ isSubmiting: true }));
+                            dispatch(reduxAction.searchBike({ searchKey: values.searchKey }));
+                            dispatch(reduxAction.setIsSubmiting({ isSubmiting: true }));
                         }}>
                         {({
                             isSubmiting,
@@ -58,7 +58,7 @@ const SortBarManagement = () => {
                                 <Row>
                                     <Col lg={9} xs={12}>
                                         <SearchField
-                                            name={"search"}
+                                            name={"searchKey"}
                                             type={"text"}
                                             placeholder={"Search..."}
                                         />

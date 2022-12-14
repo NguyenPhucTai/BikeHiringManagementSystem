@@ -3,7 +3,7 @@ import { TableCRUD } from '../../components/Table/TableCRUD';
 import { AxiosInstance } from "../../api/AxiosClient";
 import Cookies from 'universal-cookie';
 import { CategoryManagement } from '../../api/EndPoint';
-import SortBar from "../../components/Navbar/SortBar";
+import SortBarManagement from "../../components/Navbar/SortBarManagement";
 import { Popup } from '../../components/Modal/Popup';
 import { TextField } from '../../components/Form/TextField';
 import { Formik, Form } from 'formik';
@@ -18,9 +18,13 @@ const initialValues = {
     price: 0,
 };
 
+const SortBy = [
+    { value: "id", label: "Sort by ID", key: "1" },
+    { value: "name", label: "Sort by name", key: "2" },
+    { value: "price", label: "Sort by price", key: "3" },
+];
 
 const handleGetDataPagination = async (setListData, setLoadingPage, reduxFilter) => {
-    console.log(reduxFilter)
     const body = {
         searchKey: reduxFilter.reduxSearchKey,
         page: 1,
@@ -161,8 +165,7 @@ function ManageBikeCategory() {
         reduxSortBy: useSelector((state) => state.redux.sortBy),
         reduxSortType: useSelector((state) => state.redux.sortType),
     }
-    const reduxIsSubmitting = useSelector((state) => state.redux.isSubmiting);
-
+    const reduxIsSubmiting = useSelector((state) => state.redux.isSubmiting);
 
     const tableTitleList = ['ID', 'NAME', 'PRICE']
     const [loadingPage, setLoadingPage] = useState(true);
@@ -184,11 +187,11 @@ function ManageBikeCategory() {
     }, [loadingPage])
 
     useEffect(() => {
-        if (reduxIsSubmitting === true) {
+        if (reduxIsSubmiting === true) {
             handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
-            dispatch(reduxAction.setIsSubmitting({ isSubmiting: false }));
+            dispatch(reduxAction.setIsSubmiting({ isSubmiting: false }));
         }
-    }, [reduxIsSubmitting])
+    }, [reduxIsSubmiting])
 
 
     let popupTitle;
@@ -341,9 +344,8 @@ function ManageBikeCategory() {
         <Fragment>
             <div className='container'>
                 {popupTitle}
+                <SortBarManagement SortBy={SortBy} />
                 <button className="btn btn-primary" onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button>
-
-                <SortBar />
                 <TableCRUD
                     tableTitleList={tableTitleList}
                     listData={listData}

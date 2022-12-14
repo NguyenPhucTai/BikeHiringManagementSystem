@@ -25,14 +25,14 @@ public class BikeCategorySpecification {
             if (!StringUtils.isEmpty(searchKey)) {
                 try {
                     Double parseDouble = Double.parseDouble(searchKey);
+                    Long parseLong = Long.parseLong(searchKey);
                     predicates.add(cb.or(
-                            cb.like(root.get("createdUser"), "%" + searchKey + "%"),
+                            cb.equal(root.get("id"), parseLong),
                             cb.like(root.get("name"), "%" + searchKey + "%"),
                             cb.equal(root.get("price"), parseDouble)
                     ));
                 } catch (Exception e) {
                     predicates.add(cb.or(
-                            cb.like(root.get("createdUser"), "%" + searchKey + "%"),
                             cb.like(root.get("name"), "%" + searchKey + "%")
                     ));
                 }

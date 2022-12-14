@@ -7,7 +7,7 @@ const initialState = {
     status: null,
     sortBy: "id",
     sortType: "ASC",
-    isSubmitting: false
+    isSubmiting: false
 };
 
 const reduxSlice = createSlice({
@@ -27,8 +27,8 @@ const reduxSlice = createSlice({
             state.color = action.payload.color;
             state.manufacturer = action.payload.manufacturer;
         },
-        setIsSubmitting(state, action) {
-            state.isSubmitting = action.payload.isSubmitting;
+        setIsSubmiting(state, action) {
+            state.isSubmiting = action.payload.isSubmiting;
         }
     }
 });

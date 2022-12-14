@@ -119,6 +119,7 @@ public class BikeCategoryService {
                     .totalElements(pageResult.getTotalElements())
                     .build();
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
