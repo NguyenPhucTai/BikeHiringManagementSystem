@@ -25,8 +25,8 @@ export const CategoryManagement = {
     create: "/admin/bike-category/create",
     update: "/admin/bike-category/update/",
     delete: "/admin/bike-category/delete/",
-    getById: "/admin/bike-category/get",
     getPagination: "/admin/bike-category/get",
+    getById: "/admin/bike-category/get?id="
 }
 
 export const Firebase_URL = "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F"

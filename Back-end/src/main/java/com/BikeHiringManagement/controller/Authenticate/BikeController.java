@@ -61,7 +61,6 @@ public class BikeController {
         }
     }
 
-
     @GetMapping("/get")
     public ResponseEntity<?> getBikeWithId(@RequestParam Long bikeId){
         try{
@@ -78,26 +77,6 @@ public class BikeController {
 
     }
 
-    /*
-    @GetMapping("/get")
-    public ResponseEntity<?> getBikeWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
-                                                     @RequestParam("page") Integer page,
-                                                     @RequestParam("limit") Integer limit,
-                                                     @RequestParam("sortBy") String sortBy,
-                                                     @RequestParam("sortType") String sortType,
-                                                     @RequestParam(value = "categoryId",required = false) Long categoryId) {
-        try {
-            PageDto result = bikeService.getBike(searchKey, page, limit, sortBy, sortType, categoryId);
-            if (result != null) {
-                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
-            }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
-        } catch (Exception e) {
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-     */
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteBike(@PathVariable Long id, HttpServletRequest request){
         try{

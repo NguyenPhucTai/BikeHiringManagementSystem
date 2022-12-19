@@ -1,9 +1,12 @@
 package com.BikeHiringManagement.controller.Authenticate;
 
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
+import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
+import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.service.entity.BikeCategoryService;
 import com.BikeHiringManagement.service.ResponseUtils;
 import com.BikeHiringManagement.utils.JwtUtils;
@@ -70,6 +73,21 @@ public class BikeCategoryController {
             return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
         }
         catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getBikeCategoryWithId(@RequestParam Long id){
+        try{
+            Result result = bikeCategoryService.getBikeCategoryById(id);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return  responseUtils.getResponseEntity((BikeCategory) result.getObject(), 1, "Get Successfully", HttpStatus.OK);
+        }catch(Exception e){
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
