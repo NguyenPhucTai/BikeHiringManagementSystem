@@ -13,7 +13,7 @@ export const AlertMessage = (props) => {
     if (show) {
         return (
             <Alert variant={props.status} onClose={() => setShow(false)}>
-                <Alert.Heading>Alert!</Alert.Heading>
+                {/* <Alert.Heading>Alert!</Alert.Heading> */}
                 <p>{props.message}</p>
             </Alert>
         )

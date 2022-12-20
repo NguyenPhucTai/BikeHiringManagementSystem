@@ -12,16 +12,19 @@
 @import './Components/card';
 @import './Components/pagenumber';
 @import './Components/modal';
+@import './Components/popup';
 
 //Swiper component
 @import "swiper/scss";
 @import "swiper/scss/pagination";
 @import "swiper/scss/navigation";
 
+
 //Pages
 @import './Pages/404';
 @import './Pages/list';
 @import './Pages/bikedetail';
+
 
 
 //Image gallery

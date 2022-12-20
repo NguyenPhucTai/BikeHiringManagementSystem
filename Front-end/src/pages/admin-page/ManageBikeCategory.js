@@ -11,6 +11,10 @@ import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { reduxAction } from "../../redux-store/redux/redux.slice";
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { GetFormattedDate } from "../../function/DateTimeFormat";
+
 
 const cookies = new Cookies();
 const initialValues = {
@@ -51,12 +55,13 @@ const handleGetDataPagination = async (setListData, setLoadingPage, reduxFilter)
     });
 };
 
-const handleGetDataById = async (dataID, setIsDelete, setDataID) => {
+const handleGetDataById = async (dataID, setLineItem) => {
     await AxiosInstance.get(CategoryManagement.getById + dataID, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
-
+            setLineItem(res.data.data);
+            console.log(res.data.data);
         }
     }).catch((error) => {
         if (error && error.response) {
@@ -191,6 +196,7 @@ function ManageBikeCategory() {
 
     // Popup useState
     const [dataID, setDataID] = useState(0);
+    const [lineItem, setLineItem] = useState({});
     const [showPopup, setShowPopup] = useState(false);
     const [titlePopup, setTitlePopup] = useState("");
     const [showCloseButton, setShowCloseButton] = useState(false);
@@ -219,16 +225,11 @@ function ManageBikeCategory() {
     }, [reduxIsSubmiting])
 
     // Trigger Get Data by ID API
-    console.log(">>>>>>>>> Data Id:")
-    console.log(dataID)
-    console.log(">>>>>>>>> isDelete:")
-    console.log(isDelete)
     useEffect(() => {
         if (isDelete === false && dataID !== 0) {
-            handleGetDataById(dataID, setIsDelete, setDataID);
+            handleGetDataById(dataID, setLineItem);
         }
     }, [isDelete, dataID])
-
 
     // Popup Interface
     let popupTitle;
@@ -361,10 +362,36 @@ function ManageBikeCategory() {
                 </ Fragment>
                 :
                 <Fragment>
-                    <div>{popupTitle}</div>
-                    <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setDataID(0) }}>Cancel</button>
+                    <div className='popup-view-container'>
+                        <div>{popupTitle}</div>
+                        <div className="popup-view-header">
+                            <div>{popupTitle}</div>
+                        </div>
+                        <div className="popup-view-body">
+                            <Row>
+                                <Col lg={6} xs={6}><label className="body-title">Category Id:</label></Col>
+                                <Col lg={6} xs={6}><label>{lineItem.id}</label></Col>
+                                <Col lg={6} xs={6}><label className="body-title">Category Name:</label></Col>
+                                <Col lg={6} xs={6}><label>{lineItem.name}</label></Col>
+                                <Col lg={6} xs={6}><label className="body-title">Price:</label></Col>
+                                <Col lg={6} xs={6}><label>{lineItem.price}</label></Col>
+                                <Col lg={6} xs={6}><label className="body-title">Create Date:</label></Col>
+                                <Col lg={6} xs={6}><label>{GetFormattedDate(lineItem.createdDate)}</label></Col>
+                                <Col lg={6} xs={6}><label className="body-title">Create User:</label></Col>
+                                <Col lg={6} xs={6}><label>{lineItem.createdUser}</label></Col>
+                                <Col lg={6} xs={6}><label className="body-title">Modified Date:</label></Col>
+                                <Col lg={6} xs={6}><label>{GetFormattedDate(lineItem.modifiedDate)}</label></Col>
+                                <Col lg={6} xs={6}><label className="body-title">Modified User:</label></Col>
+                                <Col lg={6} xs={6}><label>{lineItem.modifiedUser}</label></Col>
+                            </Row>
+                        </div>
+                        <div className="popup-view-footer">
+                            <div className="popup-button">
+                                <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setDataID(0) }}>Cancel</button>
+                            </div>
+                        </div>
                     </div>
+
                 </Fragment >
 
         } />
