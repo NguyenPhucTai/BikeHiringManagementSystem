@@ -5,10 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface BikeManufacturerRepository extends JpaRepository<BikeManufacturer, Long>, JpaSpecificationExecutor<BikeManufacturer> {
-
+    boolean existsById(Long id);
+    boolean existsByIdAndIsDeleted(Long id, Boolean check);
     boolean existsByNameAndIsDeleted(String name, Boolean check);
 
-    boolean existsByIdAndIsDeleted(Long id, Boolean check);
-    boolean existsById(Long id);
     BikeManufacturer findBikeManufacturerById(Long id);
+    BikeManufacturer findBikeManufacturerByName(String name);
 }

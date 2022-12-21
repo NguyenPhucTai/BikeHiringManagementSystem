@@ -106,15 +106,19 @@ public class BikeManufacturerService {
 
     public Result updateBikeManufacturer(BikeManafacturerRequest bikeManufacturerRequest){
         try{
-
             if(!checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "id", bikeManufacturerRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
-            if(checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "name", bikeManufacturerRequest.getName())){
-                return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has been existed!!!");
-            }
-            BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManufacturerRequest.getId());
 
+            Boolean isNameExisted = bikeManufacturerRepository.existsByNameAndIsDeleted(bikeManufacturerRequest.getName(), false);
+            if(isNameExisted){
+                BikeManufacturer bikeManufacturerCheckName = bikeManufacturerRepository.findBikeManufacturerByName(bikeManufacturerRequest.getName());
+                if(bikeManufacturerCheckName.getId() != bikeManufacturerRequest.getId()){
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
+                }
+            }
+
+            BikeManufacturer bikeManufacturer = bikeManufacturerRepository.findBikeManufacturerById(bikeManufacturerRequest.getId());
             HistoryObject historyObject = new HistoryObject();
             historyObject.setUsername(bikeManufacturerRequest.getUsername());
             historyObject.setEntityId(bikeManufacturer.getId());

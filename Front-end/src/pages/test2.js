@@ -77,7 +77,7 @@ const TestUploadImage = (props) => {
                     setIsSubmitting(true);
                 }}>
                 {({
-                    isSubmiting,
+                    isSubmitting,
                     handleChange,
                     handleBlur,
                     handleSubmit,

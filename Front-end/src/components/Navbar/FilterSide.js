@@ -15,7 +15,7 @@ export const FilterSide = ({
                         console.log(values)
                     }}>
                     {({
-                        isSubmiting,
+                        isSubmitting,
                         handleChange,
                         handleBlur,
                         handleSubmit,

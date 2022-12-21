@@ -106,15 +106,20 @@ public class BikeColorService {
     }
     public Result updateBikeColor(BikeColorRequest bikeColorRequest){
         try{
-
             if(!checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "id", bikeColorRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has not been existed!!!");
             }
-            if(checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "name", bikeColorRequest.getName())){
-                return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has been existed!!!");
-            }
-            BikeColor bikeColor = bikeColorRepository.findBikeColorById(bikeColorRequest.getId());
 
+            Boolean isNameExisted = bikeColorRepository.existsByNameAndIsDeleted(bikeColorRequest.getName(), false);
+            if(isNameExisted){
+                BikeColor bikeColorCheckName = bikeColorRepository.findBikeColorByName(bikeColorRequest.getName());
+                if(bikeColorCheckName.getId() != bikeColorRequest.getId()){
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has not been existed!!!");
+                }
+            }
+
+
+            BikeColor bikeColor = bikeColorRepository.findBikeColorById(bikeColorRequest.getId());
             HistoryObject historyObject = new HistoryObject();
             historyObject.setUsername(bikeColorRequest.getUsername());
             historyObject.setEntityId(bikeColor.getId());

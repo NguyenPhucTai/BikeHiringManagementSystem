@@ -69,7 +69,7 @@ function SignIn() {
                     handleSignIn(values, setAlert);
                 }}>
                 {({
-                    isSubmiting,
+                    isSubmitting,
                     handleChange,
                     handleBlur,
                     handleSubmit,

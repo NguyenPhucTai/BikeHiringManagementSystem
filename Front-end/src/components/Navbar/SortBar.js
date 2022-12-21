@@ -42,7 +42,7 @@ const SortBar = () => {
                             dispatch(reduxAction.searchBike({ searchKey: values.searchKey }));
                         }}>
                         {({
-                            isSubmiting,
+                            isSubmitting,
                             handleChange,
                             handleBlur,
                             handleSubmit,

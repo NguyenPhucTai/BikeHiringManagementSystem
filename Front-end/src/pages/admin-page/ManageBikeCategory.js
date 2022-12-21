@@ -17,10 +17,6 @@ import { GetFormattedDate } from "../../function/DateTimeFormat";
 
 
 const cookies = new Cookies();
-const initialValues = {
-    name: "",
-    price: 0,
-};
 
 const SortBy = [
     { value: "id", label: "Sort by ID", key: "1" },
@@ -61,7 +57,6 @@ const handleGetDataById = async (dataID, setLineItem) => {
     }).then((res) => {
         if (res.data.code === 1) {
             setLineItem(res.data.data);
-            console.log(res.data.data);
         }
     }).catch((error) => {
         if (error && error.response) {
@@ -71,7 +66,14 @@ const handleGetDataById = async (dataID, setLineItem) => {
 
 }
 
-const handleCreateData = async (values, reduxFilter, setAlert, setListData, setLoadingPage, setShowCloseButton) => {
+const handleCreateData = async (
+    values,
+    reduxFilter,
+    setAlert,
+    setListData,
+    setLoadingPage,
+    setShowCloseButton
+) => {
     const body = {
         name: values.name,
         price: values.price,
@@ -107,7 +109,15 @@ const handleCreateData = async (values, reduxFilter, setAlert, setListData, setL
 
 }
 
-const handleUpdateData = async (values, dataID, reduxFilter, setAlert, setListData, setLoadingPage, setShowCloseButton) => {
+const handleUpdateData = async (
+    values,
+    dataID,
+    reduxFilter,
+    setAlert,
+    setListData,
+    setLoadingPage,
+    setShowCloseButton
+) => {
     const body = {
         name: values.name,
         price: values.price,
@@ -143,7 +153,14 @@ const handleUpdateData = async (values, dataID, reduxFilter, setAlert, setListDa
 
 }
 
-const handleDeleteData = async (dataID, reduxFilter, setAlert, setListData, setLoadingPage, setShowCloseButton) => {
+const handleDeleteData = async (
+    dataID,
+    reduxFilter,
+    setAlert,
+    setListData,
+    setLoadingPage,
+    setShowCloseButton
+) => {
     await AxiosInstance.post(CategoryManagement.delete + dataID, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
@@ -162,7 +179,6 @@ const handleDeleteData = async (dataID, reduxFilter, setAlert, setListData, setL
             })
         }
         setShowCloseButton(true);
-
     }).catch((error) => {
         if (error && error.response) {
             console.log("Error: ", error);
@@ -181,6 +197,12 @@ function ManageBikeCategory() {
     // Table variables
     const tableTitleList = ['ID', 'NAME', 'PRICE']
 
+    // Formik variables
+    const initialValues = {
+        name: "",
+        price: 0,
+    };
+
     // Redux
     const dispatch = useDispatch();
     let reduxFilter = {
@@ -188,7 +210,7 @@ function ManageBikeCategory() {
         reduxSortBy: useSelector((state) => state.redux.sortBy),
         reduxSortType: useSelector((state) => state.redux.sortType),
     }
-    const reduxIsSubmiting = useSelector((state) => state.redux.isSubmiting);
+    const reduxIsSubmitting = useSelector((state) => state.redux.isSubmitting);
 
     // Table useState
     const [loadingPage, setLoadingPage] = useState(true);
@@ -201,6 +223,7 @@ function ManageBikeCategory() {
     const [titlePopup, setTitlePopup] = useState("");
     const [showCloseButton, setShowCloseButton] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
+    const [isUpdate, setIsUpdate] = useState(false);
     const [alert, setAlert] = useState({
         alertShow: false,
         alertStatus: "success",
@@ -218,11 +241,11 @@ function ManageBikeCategory() {
 
     // Page loading action
     useEffect(() => {
-        if (reduxIsSubmiting === true) {
+        if (reduxIsSubmitting === true) {
             handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
-            dispatch(reduxAction.setIsSubmiting({ isSubmiting: false }));
+            dispatch(reduxAction.setIsSubmitting({ isSubmitting: false }));
         }
-    }, [reduxIsSubmiting])
+    }, [reduxIsSubmitting])
 
     // Trigger Get Data by ID API
     useEffect(() => {
@@ -230,6 +253,14 @@ function ManageBikeCategory() {
             handleGetDataById(dataID, setLineItem);
         }
     }, [isDelete, dataID])
+
+
+    // Update initialValues
+    if (isUpdate === true && lineItem !== null) {
+        initialValues.name = lineItem.name;
+        initialValues.price = lineItem.price;
+    }
+
 
     // Popup Interface
     let popupTitle;
@@ -243,7 +274,12 @@ function ManageBikeCategory() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setShowCloseButton(false); setAlert({ alertShow: false }) }}>Close</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                                setShowCloseButton(false);
+                                setAlert({ alertShow: false })
+                            }}>Close</button>
                     </div>
                 </ Fragment>
                 :
@@ -256,10 +292,17 @@ function ManageBikeCategory() {
                     <Formik
                         initialValues={initialValues}
                         onSubmit={(values) => {
-                            handleCreateData(values, reduxFilter, setAlert, setListData, setLoadingPage, setShowCloseButton);
+                            handleCreateData(
+                                values,
+                                reduxFilter,
+                                setAlert,
+                                setListData,
+                                setLoadingPage,
+                                setShowCloseButton
+                            );
                         }}>
                         {({
-                            isSubmiting,
+                            isSubmitting,
                             handleChange,
                             handleBlur,
                             handleSubmit,
@@ -283,7 +326,11 @@ function ManageBikeCategory() {
                                 />
                                 <div className="popup-button">
                                     <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
-                                    <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setAlert({ alertShow: false }) }}>Cancel</button>
+                                    <button className="btn btn-secondary btn-cancel"
+                                        onClick={() => {
+                                            setShowPopup(false);
+                                            setAlert({ alertShow: false })
+                                        }}>Cancel</button>
                                 </div>
                             </Form>
                         )}
@@ -300,7 +347,14 @@ function ManageBikeCategory() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setShowCloseButton(false); setAlert({ alertShow: false }); setDataID(0) }}>Close</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                                setShowCloseButton(false);
+                                setAlert({ alertShow: false });
+                                setDataID(0);
+                                setIsUpdate(false)
+                            }}>Close</button>
                     </div>
                 </ Fragment>
                 :
@@ -311,12 +365,21 @@ function ManageBikeCategory() {
                         status={alert.alertStatus}
                     />
                     <Formik
+                        enableReinitialize
                         initialValues={initialValues}
                         onSubmit={(values) => {
-                            handleUpdateData(values, dataID, reduxFilter, setAlert, setListData, setLoadingPage, setShowCloseButton);
+                            handleUpdateData(
+                                values,
+                                dataID,
+                                reduxFilter,
+                                setAlert,
+                                setListData,
+                                setLoadingPage,
+                                setShowCloseButton
+                            );
                         }}>
                         {({
-                            isSubmiting,
+                            isSubmitting,
                             handleChange,
                             handleBlur,
                             handleSubmit,
@@ -340,7 +403,12 @@ function ManageBikeCategory() {
                                 />
                                 <div className="popup-button">
                                     <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
-                                    <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setAlert({ alertShow: false }); setDataID(0) }}>Cancel</button>
+                                    <button className="btn btn-secondary btn-cancel"
+                                        onClick={() => {
+                                            setShowPopup(false);
+                                            setAlert({ alertShow: false });
+                                            setDataID(0); setIsUpdate(false)
+                                        }}>Cancel</button>
                                 </div>
                             </Form>
                         )}
@@ -357,7 +425,13 @@ function ManageBikeCategory() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setShowCloseButton(false); setAlert({ alertShow: false }); setDataID(0) }}>Close</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                                setShowCloseButton(false);
+                                setAlert({ alertShow: false });
+                                setDataID(0)
+                            }}>Close</button>
                     </div>
                 </ Fragment>
                 :
@@ -387,7 +461,11 @@ function ManageBikeCategory() {
                         </div>
                         <div className="popup-view-footer">
                             <div className="popup-button">
-                                <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setDataID(0) }}>Cancel</button>
+                                <button className="btn btn-secondary btn-cancel"
+                                    onClick={() => {
+                                        setShowPopup(false);
+                                        setDataID(0)
+                                    }}>Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -405,7 +483,13 @@ function ManageBikeCategory() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setShowCloseButton(false); setAlert({ alertShow: false }); setDataID(0); setIsDelete(false) }}>Close</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                                setShowCloseButton(false);
+                                setAlert({ alertShow: false });
+                                setDataID(0); setIsDelete(false)
+                            }}>Close</button>
                     </div>
                 </ Fragment>
                 :
@@ -415,8 +499,21 @@ function ManageBikeCategory() {
                         <p>This process cannot be undone</p>
                     </div>
                     <div className="popup-button">
-                        <button className="btn btn-danger btn-action" onClick={() => handleDeleteData(dataID, reduxFilter, setAlert, setListData, setLoadingPage, setShowCloseButton)}>{titlePopup}</button>
-                        <button className="btn btn-secondary btn-cancel" onClick={() => { setShowPopup(false); setDataID(0); setIsDelete(false) }}>Cancel</button>
+                        <button className="btn btn-danger btn-action"
+                            onClick={() => handleDeleteData(
+                                dataID,
+                                reduxFilter,
+                                setAlert,
+                                setListData,
+                                setLoadingPage,
+                                setShowCloseButton
+                            )}>{titlePopup}</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                                setDataID(0);
+                                setIsDelete(false)
+                            }}>Cancel</button>
                     </div>
                 </Fragment >
         } />
@@ -435,6 +532,7 @@ function ManageBikeCategory() {
                     setTitlePopup={setTitlePopup}
                     setDataID={setDataID}
                     setIsDelete={setIsDelete}
+                    setIsUpdate={setIsUpdate}
                 />
                 {/* <Pagination
                     count={maxPage}

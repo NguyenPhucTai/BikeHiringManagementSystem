@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 
 export const TableCRUD = props => {
 
-    const { setShowPopup, setTitlePopup, tableTitleList, listData, setDataID, setIsDelete } = props;
+    const { setShowPopup, setTitlePopup, tableTitleList, listData, setDataID, setIsDelete, setIsUpdate } = props;
 
     return (
         <Fragment>
@@ -31,7 +31,7 @@ export const TableCRUD = props => {
                                 }
                                 <td key={'buttonRow'}>
                                     <button className="btn btn-success" onClick={() => { setShowPopup(true); setTitlePopup("View"); setDataID(element.id); }}>View</button>
-                                    <button className="btn btn-primary" onClick={() => { setShowPopup(true); setTitlePopup("Update"); setDataID(element.id); }}>Update</button>
+                                    <button className="btn btn-primary" onClick={() => { setShowPopup(true); setTitlePopup("Update"); setDataID(element.id); setIsUpdate(true) }}>Update</button>
                                     <button className="btn btn-danger" onClick={() => { setShowPopup(true); setTitlePopup("Delete"); setDataID(element.id); setIsDelete(true) }}>Delete</button>
                                 </td>
                             </tr>

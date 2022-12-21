@@ -42,10 +42,10 @@ const SortBarManagement = (props) => {
                         initialValues={initialValues}
                         onSubmit={(values) => {
                             dispatch(reduxAction.searchBike({ searchKey: values.searchKey }));
-                            dispatch(reduxAction.setIsSubmiting({ isSubmiting: true }));
+                            dispatch(reduxAction.setIsSubmitting({ isSubmitting: true }));
                         }}>
                         {({
-                            isSubmiting,
+                            isSubmitting,
                             handleChange,
                             handleBlur,
                             handleSubmit,

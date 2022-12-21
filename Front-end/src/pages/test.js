@@ -81,7 +81,7 @@ const handleGetCategory = async (setListCategory) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(BikeManagement.getCategory, body,{
+    await AxiosInstance.post(BikeManagement.getCategory, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listCategory = res.data.data.content.map((data) => {
@@ -108,7 +108,7 @@ const handleGetColor = async (setListColor) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(BikeManagement.getColor, body,{
+    await AxiosInstance.post(BikeManagement.getColor, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listColor = res.data.data.content.map((data) => {
@@ -135,7 +135,7 @@ const handleGetManufacturer = async (setListManufacturer) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(BikeManagement.getManufacturer, body,{
+    await AxiosInstance.post(BikeManagement.getManufacturer, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listManufacturer = res.data.data.content.map((data) => {
@@ -167,7 +167,7 @@ const initialValues = {
 function Test() {
     // Upload bike
     const [isClicking, setIsClicking] = useState(false);
-    const [isSubmiting, setIsSubmitting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [imageUpload, setImageUpload] = useState([]);
     const [fileUpload, setFileUpload] = useState([]);
     const [bikeData, setBikeData] = useState({
@@ -226,10 +226,10 @@ function Test() {
 
     /** Handle submitting */
     useEffect(() => {
-        if (isSubmiting && imageUpload.length === fileUpload.length) {
+        if (isSubmitting && imageUpload.length === fileUpload.length) {
             handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
         }
-    }, [isSubmiting, fileUpload])
+    }, [isSubmitting, fileUpload])
     /** Handle submitting */
 
     const handleFileUpload = (event) => {
@@ -298,7 +298,7 @@ function Test() {
                     setLoading(true);
                 }}>
                 {({
-                    isSubmiting,
+                    isSubmitting,
                     handleChange,
                     handleBlur,
                     handleSubmit,

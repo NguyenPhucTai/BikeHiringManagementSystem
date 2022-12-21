@@ -76,12 +76,16 @@ public class BikeCategoryService {
             if(!checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "id", bikeCategoryRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
             }
-            if(checkEntityExistService.isEntityExisted(Constant.BIKE_CATEGORY, "name", bikeCategoryRequest.getName())){
-                return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
+
+            Boolean isNameExisted = bikeCategoryRepository.existsByNameAndIsDeleted(bikeCategoryRequest.getName(), false);
+            if(isNameExisted){
+                BikeCategory bikeCategoryCheckName = bikeCategoryRepository.findBikeCategoryByName(bikeCategoryRequest.getName());
+                if(bikeCategoryCheckName.getId() != bikeCategoryRequest.getId()){
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
+                }
             }
 
             BikeCategory bikeCategory = bikeCategoryRepository.findBikeCategoriesById(bikeCategoryRequest.getId());
-
             HistoryObject historyObject = new HistoryObject();
             historyObject.setUsername(bikeCategoryRequest.getUsername());
             historyObject.setEntityId(bikeCategory.getId());
