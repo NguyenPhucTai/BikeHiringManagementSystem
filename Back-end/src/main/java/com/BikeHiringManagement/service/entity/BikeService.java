@@ -67,6 +67,7 @@ public class BikeService {
             Bike newBike = modelMapper.map(bikeRequest, Bike.class);
             newBike.setCreatedDate(new Date());
             newBike.setCreatedUser(username);
+            newBike.setStatus("AVAILABLE");
             Bike savedBike = bikeRepository.save(newBike);
 
             List<BikeImage> saveList = new ArrayList<>();
@@ -218,13 +219,12 @@ public class BikeService {
                 bikeImage.setBikeId(bike.getId());
                 bikeImage.setName(item.getFileName());
                 bikeImage.setPath(item.getFilePath());
-                bikeImage.setModifiedDate(new Date());
-                bikeImage.setModifiedUser(bikeRequest.getUsername());
+                bikeImage.setCreatedDate(new Date());
+                bikeImage.setCreatedUser(bikeRequest.getUsername());
                 saveList.add(bikeImage);
             }
             bikeImageRepository.saveAll(saveList);
             bikeRepository.save(bike);
-
 
             //History Bike
             HistoryObject historyBikeObject = new HistoryObject();
