@@ -1,20 +1,26 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { TableCRUD } from '../../components/Table/TableCRUD';
-import { AxiosInstance } from "../../api/AxiosClient";
+
+// Library
 import Cookies from 'universal-cookie';
+import { useSelector, useDispatch } from "react-redux";
+import { reduxAction } from "../../redux-store/redux/redux.slice";
+import { Formik, Form } from 'formik';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Pagination from '@mui/material/Pagination';
+
+// Source
+// API
+import { AxiosInstance } from "../../api/AxiosClient";
 import { CategoryManagement } from '../../api/EndPoint';
+
+//Component
+import { TableCRUD } from '../../components/Table/TableCRUD';
 import SortBarManagement from "../../components/Navbar/SortBarManagement";
 import { Popup } from '../../components/Modal/Popup';
 import { TextField } from '../../components/Form/TextField';
-import { Formik, Form } from 'formik';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { reduxAction } from "../../redux-store/redux/redux.slice";
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { GetFormattedDate } from "../../function/DateTimeFormat";
-
 
 const cookies = new Cookies();
 
@@ -230,6 +236,10 @@ function ManageBikeCategory() {
         alertMessage: "",
     })
 
+    // Pagination
+    const [activePage, setActivePage] = useState(1);
+    const [maxPage, setMaxPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     // useEffect
     // Page loading default
@@ -261,6 +271,10 @@ function ManageBikeCategory() {
         initialValues.price = lineItem.price;
     }
 
+    //Pagination
+    const handleChangePage = (event, newPage) => {
+        setActivePage(newPage);
+    };
 
     // Popup Interface
     let popupTitle;
@@ -534,7 +548,7 @@ function ManageBikeCategory() {
                     setIsDelete={setIsDelete}
                     setIsUpdate={setIsUpdate}
                 />
-                {/* <Pagination
+                <Pagination
                     count={maxPage}
                     shape="rounded"
                     size="large"
@@ -542,7 +556,10 @@ function ManageBikeCategory() {
                     showFirstButton
                     showLastButton
                     page={activePage}
-                    onChange={handleChangePage} /> */}
+                    onChange={handleChangePage}
+                    rowsPerPage={[1, 2, 3, 4, 5]}
+                />
+
             </div>
         </Fragment>
     )

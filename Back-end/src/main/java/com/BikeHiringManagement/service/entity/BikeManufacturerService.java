@@ -114,7 +114,7 @@ public class BikeManufacturerService {
             if(isNameExisted){
                 BikeManufacturer bikeManufacturerCheckName = bikeManufacturerRepository.findBikeManufacturerByName(bikeManufacturerRequest.getName());
                 if(bikeManufacturerCheckName.getId() != bikeManufacturerRequest.getId()){
-                    return new Result(Constant.LOGIC_ERROR_CODE, "The bike category has not been existed!!!");
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
                 }
             }
 

@@ -125,7 +125,6 @@ public class BikeCategoryService {
         }
     }
 
-
     public Result getBikeCategoryById(Long id) {
         try{
             Result result = new Result();

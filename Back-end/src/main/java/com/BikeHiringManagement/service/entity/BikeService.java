@@ -170,7 +170,6 @@ public class BikeService {
         }
     }
 
-
     public Result deleteBike(Long id, String username){
         try{
             Bike bike = bikeRepository.findBikeById(id);
@@ -201,31 +200,6 @@ public class BikeService {
             }
             Bike bike = bikeRepository.findBikeById(bikeRequest.getId());
 
-            bike.setModifiedDate(new Date());
-            bike.setModifiedUser(bikeRequest.getUsername());
-            bike.setName(bikeRequest.getName());
-            bike.setBikeManualId(bikeRequest.getBikeManualId());
-            bike.setBikeNo(bikeRequest.getBikeNo());
-            bike.setBikeCategoryId(bikeRequest.getBikeCategoryId());
-            bike.setBikeColorId(bikeRequest.getBikeColorId());
-            bike.setBikeManufacturerId(bikeRequest.getBikeManufacturerId());
-            bike.setStatus(bikeRequest.getStatus());
-
-            bikeImageRepository.updateIsDelete(bike.getId());
-
-            List<BikeImage> saveList = new ArrayList<>();
-            for(AttachmentRequest item : bikeRequest.getFiles()){
-                BikeImage bikeImage = new BikeImage();
-                bikeImage.setBikeId(bike.getId());
-                bikeImage.setName(item.getFileName());
-                bikeImage.setPath(item.getFilePath());
-                bikeImage.setCreatedDate(new Date());
-                bikeImage.setCreatedUser(bikeRequest.getUsername());
-                saveList.add(bikeImage);
-            }
-            bikeImageRepository.saveAll(saveList);
-            bikeRepository.save(bike);
-
             //History Bike
             HistoryObject historyBikeObject = new HistoryObject();
             historyBikeObject.setUsername(bikeRequest.getUsername());
@@ -239,18 +213,42 @@ public class BikeService {
             historyBikeObject.getComparingMap().put("status", new ComparedObject(bike.getStatus(), bikeRequest.getStatus()));
             historyService.saveHistory(Constant.HISTORY_UPDATE, bike, historyBikeObject);
 
-            //History Bike Image
-//            for(AttachmentRequest item : bikeRequest.getFiles()){
-//                HistoryObject historyBikeImageObject = new HistoryObject();
-//                historyBikeImageObject.setUsername(bikeRequest.getUsername());
-//                historyBikeImageObject.setEntityId(bike.getId());
-//                historyBikeImageObject.getComparingMap().put("name", new ComparedObject(bike.getName(), bikeRequest.getName()));
-//            }
+            // Save bike
+            bike.setModifiedDate(new Date());
+            bike.setModifiedUser(bikeRequest.getUsername());
+            bike.setName(bikeRequest.getName());
+            bike.setBikeManualId(bikeRequest.getBikeManualId());
+            bike.setBikeNo(bikeRequest.getBikeNo());
+            bike.setBikeCategoryId(bikeRequest.getBikeCategoryId());
+            bike.setBikeColorId(bikeRequest.getBikeColorId());
+            bike.setBikeManufacturerId(bikeRequest.getBikeManufacturerId());
+            bike.setStatus(bikeRequest.getStatus());
+            Bike savedBike = bikeRepository.save(bike);
 
+            // Save image
+            bikeImageRepository.updateIsDelete(bike.getId());
+            List<BikeImage> saveList = new ArrayList<>();
+            for(AttachmentRequest item : bikeRequest.getFiles()){
+                BikeImage bikeImage = new BikeImage();
+                bikeImage.setBikeId(bike.getId());
+                bikeImage.setName(item.getFileName());
+                bikeImage.setPath(item.getFilePath());
+                bikeImage.setCreatedDate(new Date());
+                bikeImage.setCreatedUser(bikeRequest.getUsername());
+                saveList.add(bikeImage);
+            }
+            bikeImageRepository.saveAll(saveList);
 
+            //History Image
+            List<BikeImage> savedBikeImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(savedBike.getId(), false);
+            for(BikeImage image : savedBikeImage){
+                HistoryObject historyBikeObjectImage = new HistoryObject();
+                historyBikeObjectImage.setUsername(bikeRequest.getUsername());
+                historyBikeObjectImage.setEntityId(image.getId());
+                historyService.saveHistory(Constant.HISTORY_CREATE, image, historyBikeObjectImage);
+            }
 
             return new Result(Constant.SUCCESS_CODE, "Update new bike successfully");
-
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
