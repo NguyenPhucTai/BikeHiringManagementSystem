@@ -1,14 +1,12 @@
-package com.BikeHiringManagement.service;
+package com.BikeHiringManagement.service.entity;
 
 import com.BikeHiringManagement.entity.History;
-import com.BikeHiringManagement.model.ComparedObject;
-import com.BikeHiringManagement.model.HistoryObject;
+import com.BikeHiringManagement.model.temp.ComparedObject;
+import com.BikeHiringManagement.model.temp.HistoryObject;
 import com.BikeHiringManagement.repository.HistoryRepository;
-import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.Map.*;
 

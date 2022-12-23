@@ -2,7 +2,7 @@ package com.BikeHiringManagement.service.entity;
 
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.Role;
-import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

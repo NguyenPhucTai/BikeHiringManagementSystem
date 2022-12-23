@@ -10,9 +10,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BikeImageRepository extends JpaRepository<BikeImage, Long>, JpaSpecificationExecutor<BikeImage> {
-    List<BikeImage> findAllByBikeIdAndIsDeletedOrderByNameAsc(Long id, boolean check);
     boolean existsByNameAndIsDeleted(String name, Boolean check);
     boolean existsByIdAndIsDeleted(Long id, Boolean check);
+
+    List<BikeImage> findAllByBikeIdAndIsDeletedOrderByNameAsc(Long id, boolean check);
 
     @Modifying
     @Transactional

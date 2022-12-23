@@ -1,6 +1,6 @@
 package com.BikeHiringManagement.utils;
 
-import com.BikeHiringManagement.service.UserDetailObject;
+import com.BikeHiringManagement.service.system.UserDetailObject;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

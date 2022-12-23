@@ -1,4 +1,4 @@
-package com.BikeHiringManagement.model;
+package com.BikeHiringManagement.model.temp;
 
 import lombok.Data;
 

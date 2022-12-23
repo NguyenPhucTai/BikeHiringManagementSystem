@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.BikeHiringManagement.service.UserDetailServiceManager;
+import com.BikeHiringManagement.service.system.UserDetailServiceManager;
 
 public class AuthTokenFilter extends OncePerRequestFilter{
 

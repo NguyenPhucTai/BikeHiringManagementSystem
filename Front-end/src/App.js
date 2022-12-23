@@ -15,6 +15,7 @@ import Test from "./pages/test";
 import TestUploadImage from './pages/test2';
 import ManageBikeCategory from "./pages/admin-page/ManageBikeCategory";
 import TestPopupPage from "./pages/TestPopupPage";
+import ManageBikeColor from "./pages/admin-page/ManageBikeColor";
 
 /** Access user page */
 function GlobalRoute({ children }) {
@@ -54,7 +55,8 @@ function App() {
 				<Route path='*' element={<Navigate to='/404' />} />
 				<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
 				<Route path='/manage/category' exact element={<ManageBikeCategory />} />
-				<Route path='/testpopup' exact element={<TestPopupPage />} />
+				<Route path='/manage/color' exact element={<ManageBikeColor />} />
+				{/* <Route path='/testpopup' exact element={<TestPopupPage />} /> */}
 			</GlobalRoute>
 		</Fragment>
 	)

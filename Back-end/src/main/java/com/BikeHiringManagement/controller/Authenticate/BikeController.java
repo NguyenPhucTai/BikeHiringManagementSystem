@@ -3,13 +3,12 @@ package com.BikeHiringManagement.controller.Authenticate;
 
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
-import com.BikeHiringManagement.model.Result;
-import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
+import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.model.request.BikeCreateRequest;
 import com.BikeHiringManagement.model.request.PaginationBikeRequest;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.service.entity.BikeService;
-import com.BikeHiringManagement.service.ResponseUtils;
+import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,23 +31,8 @@ public class BikeController {
     @Autowired
     JwtUtils jwtUtils;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createBike (@RequestBody BikeCreateRequest bikeRequest,
-                                         HttpServletRequest request) {
-
-        try {
-            String jwt = jwtUtils.getJwtFromRequest(request);
-            String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = bikeService.createBike(bikeRequest, username);
-            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
-        }catch (Exception e) {
-            e.printStackTrace();
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @PostMapping("/get")
-    public ResponseEntity<?> getBikeWithSpec(@RequestBody PaginationBikeRequest reqBody){
+    public ResponseEntity<?> getBikePagination(@RequestBody PaginationBikeRequest reqBody){
         try{
             PageDto result = bikeService.getBikePagination(reqBody);
             if (result != null) {
@@ -62,7 +46,7 @@ public class BikeController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> getBikeWithId(@RequestParam Long bikeId){
+    public ResponseEntity<?> getBikeById(@RequestParam Long bikeId){
         try{
             Result result = bikeService.getBikeById(bikeId);
             if(result.getCode() == Constant.LOGIC_ERROR_CODE){
@@ -75,6 +59,21 @@ public class BikeController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createBike (@RequestBody BikeCreateRequest bikeRequest,
+                                         HttpServletRequest request) {
+
+        try {
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = bikeService.createBike(bikeRequest, username);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/delete/{id}")

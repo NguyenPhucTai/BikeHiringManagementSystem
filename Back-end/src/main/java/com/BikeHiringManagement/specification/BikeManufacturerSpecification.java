@@ -22,12 +22,15 @@ public class BikeManufacturerSpecification {
             List<Predicate> predicates = new ArrayList<>();
             if (!StringUtils.isEmpty(searchKey)) {
                 try {
-                    Double parseDouble = Double.parseDouble(searchKey);
-                    predicates.add(cb.or(cb.like(root.get("createdUser"), "%" + searchKey + "%"),
-                            cb.like(root.get("name"), "%" + searchKey + "%")));
+                    Long parseLong = Long.parseLong(searchKey);
+                    predicates.add(cb.or(
+                            cb.equal(root.get("id"), parseLong),
+                            cb.like(root.get("name"), "%" + searchKey + "%")
+                    ));
                 } catch (Exception e) {
-                    predicates.add(cb.or(cb.like(root.get("createdUser"), "%" + searchKey + "%"),
-                            cb.like(root.get("name"), "%" + searchKey + "%")));
+                    predicates.add(cb.or(
+                            cb.like(root.get("name"), "%" + searchKey + "%")
+                    ));
                 }
             }
             predicates.add(cb.isFalse(root.get("isDeleted")));

@@ -1,5 +1,6 @@
-package com.BikeHiringManagement.service;
+package com.BikeHiringManagement.service.system;
 
+import com.BikeHiringManagement.service.system.UserDetailObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

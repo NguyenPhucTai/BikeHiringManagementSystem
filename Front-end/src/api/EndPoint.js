@@ -29,4 +29,12 @@ export const CategoryManagement = {
     getById: "/admin/bike-category/get?id="
 }
 
+export const ColorManagement = {
+    create: "/admin/bike-color/create",
+    update: "/admin/bike-color/update/",
+    delete: "/admin/bike-color/delete/",
+    getPagination: "/admin/bike-color/get",
+    getById: "/admin/bike-color/get?id="
+}
+
 export const Firebase_URL = "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F"

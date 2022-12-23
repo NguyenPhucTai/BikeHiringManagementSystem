@@ -2,10 +2,9 @@ package com.BikeHiringManagement.specification;
 
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.*;
-import com.BikeHiringManagement.model.Result;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.repository.BikeCategoryRepository;
-import com.BikeHiringManagement.service.CheckEntityExistService;
+import com.BikeHiringManagement.service.system.CheckEntityExistService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -33,25 +32,6 @@ public class BikeSpecification {
 
     @Autowired
     CheckEntityExistService checkEntityExistService;
-
-    public Specification<Bike> filterBike(String searchKey){
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (!StringUtils.isEmpty(searchKey)) {
-                try {
-                    Double parseDouble = Double.parseDouble(searchKey);
-                    predicates.add(cb.or(cb.like(root.get("createdUser"), "%" + searchKey + "%"),
-                            cb.like(root.get("name"), "%" + searchKey + "%"),
-                            cb.like(root.get("bike_no"), "%" + searchKey + "%")));
-                } catch (Exception e) {
-                    predicates.add(cb.or(cb.like(root.get("createdUser"), "%" + searchKey + "%"),
-                            cb.like(root.get("name"), "%" + searchKey + "%")));
-                }
-            }
-            return cb.and(predicates.stream().toArray(Predicate[]::new));
-        };
-    }
-
 
     public Map<String, Object> getListBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId){
         try{

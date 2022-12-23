@@ -1,13 +1,11 @@
 package com.BikeHiringManagement.controller.Authenticate;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
-import com.BikeHiringManagement.entity.BikeColor;
-import com.BikeHiringManagement.model.Result;
+import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.model.request.BikeColorRequest;
-import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
-import com.BikeHiringManagement.service.ResponseUtils;
+import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.service.entity.BikeColorService;
 import com.BikeHiringManagement.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,23 +28,8 @@ public class BikeColorController {
     @Autowired
     BikeColorService bikeColorService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createBikeColor(@RequestBody ObjectNameRequest reqBody,
-                                             HttpServletRequest request) {
-        try{
-            String jwt = jwtUtils.getJwtFromRequest(request);
-            String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            reqBody.setUsername(username);
-            Result result = bikeColorService.createBikeColor(reqBody);
-            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
-        }catch(Exception e){
-            e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @PostMapping("/get")
-    public ResponseEntity<?> getBikeColorWithSpec(@RequestBody PaginationRequest reqBody){
+    public ResponseEntity<?> getBikeColorPagination(@RequestBody PaginationRequest reqBody){
         try{
             PageDto result = bikeColorService.getBikeColor(reqBody);
             if (result != null) {
@@ -60,9 +43,9 @@ public class BikeColorController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> getBikeColorWithId(@RequestParam Long bikeColorId) {
+    public ResponseEntity<?> getBikeColorById(@RequestParam  Long id) {
         try {
-            Result result = bikeColorService.getBikeColorById(bikeColorId);
+            Result result = bikeColorService.getBikeColorById(id);
             if(result.getCode() == Constant.LOGIC_ERROR_CODE){
                 return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
             }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
@@ -71,6 +54,21 @@ public class BikeColorController {
             return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
         }catch(Exception e){
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createBikeColor(@RequestBody ObjectNameRequest reqBody,
+                                             HttpServletRequest request) {
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            reqBody.setUsername(username);
+            Result result = bikeColorService.createBikeColor(reqBody);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -106,23 +104,4 @@ public class BikeColorController {
         }
     }
 
-
-    /*
-    @GetMapping("/get")
-    public ResponseEntity<?> getBikeColorWithSpec(@RequestParam(value = "searchKey",required = false) String searchKey,
-                                                     @RequestParam("page") Integer page,
-                                                     @RequestParam("limit") Integer limit,
-                                                     @RequestParam("sortBy") String sortBy,
-                                                     @RequestParam("sortType") String sortType) {
-        try {
-            PageDto result = bikeColorService.getBikeColor(searchKey, page, limit, sortBy, sortType);
-            if (result != null) {
-                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
-            }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
-        } catch (Exception e) {
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-     */
 }

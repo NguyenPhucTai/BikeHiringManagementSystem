@@ -1,8 +1,8 @@
 package com.BikeHiringManagement.controller.Authenticate;
 
 
-import com.BikeHiringManagement.model.Result;
-import com.BikeHiringManagement.service.ResponseUtils;
+import com.BikeHiringManagement.model.temp.Result;
+import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.service.entity.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.BikeHiringManagement.service;
+package com.BikeHiringManagement.service.system;
 
 import com.BikeHiringManagement.entity.Role;
 import com.BikeHiringManagement.entity.User;

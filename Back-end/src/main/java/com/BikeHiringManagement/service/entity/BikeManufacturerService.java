@@ -1,19 +1,16 @@
 package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
-import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeManufacturer;
-import com.BikeHiringManagement.model.ComparedObject;
-import com.BikeHiringManagement.model.HistoryObject;
-import com.BikeHiringManagement.model.Result;
-import com.BikeHiringManagement.model.request.BikeCategoryCreateRequest;
+import com.BikeHiringManagement.model.temp.ComparedObject;
+import com.BikeHiringManagement.model.temp.HistoryObject;
+import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeManufacturerRepository;
-import com.BikeHiringManagement.service.CheckEntityExistService;
-import com.BikeHiringManagement.service.HistoryService;
-import com.BikeHiringManagement.service.ResponseUtils;
+import com.BikeHiringManagement.service.system.CheckEntityExistService;
+import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeManufacturerSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,29 +40,6 @@ public class BikeManufacturerService {
 
     @Autowired
     HistoryService historyService;
-    public Result createBikeManufacturer(ObjectNameRequest bikeManufacturerRequest){
-        try{
-            if(checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "name", bikeManufacturerRequest.getName())){
-                return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has been existed!!!");
-            }else{
-                BikeManufacturer newBikeManufacturer = modelMapper.map(bikeManufacturerRequest, BikeManufacturer.class);
-                newBikeManufacturer.setCreatedDate(new Date());
-                newBikeManufacturer.setCreatedUser(bikeManufacturerRequest.getUsername());
-                BikeManufacturer savedBikeManufacturer =  bikeManufacturerRepository.save(newBikeManufacturer);
-
-                HistoryObject historyObject = new HistoryObject();
-                historyObject.setUsername(bikeManufacturerRequest.getUsername());
-                historyObject.setEntityId(savedBikeManufacturer.getId());
-                historyService.saveHistory(Constant.HISTORY_CREATE, savedBikeManufacturer, historyObject);
-
-                return new Result(Constant.SUCCESS_CODE, "Create new bike manufacturer successfully");
-            }
-
-        }catch (Exception e) {
-            e.printStackTrace();
-            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
-        }
-    }
 
     public PageDto getBikeManufacturer(PaginationRequest filterObjectRequest) {
         try {
@@ -101,6 +75,30 @@ public class BikeManufacturerService {
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
+        }
+    }
+
+    public Result createBikeManufacturer(ObjectNameRequest bikeManufacturerRequest){
+        try{
+            if(checkEntityExistService.isEntityExisted(Constant.BIKE_MANUFACTURER, "name", bikeManufacturerRequest.getName())){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has been existed!!!");
+            }else{
+                BikeManufacturer newBikeManufacturer = modelMapper.map(bikeManufacturerRequest, BikeManufacturer.class);
+                newBikeManufacturer.setCreatedDate(new Date());
+                newBikeManufacturer.setCreatedUser(bikeManufacturerRequest.getUsername());
+                BikeManufacturer savedBikeManufacturer =  bikeManufacturerRepository.save(newBikeManufacturer);
+
+                HistoryObject historyObject = new HistoryObject();
+                historyObject.setUsername(bikeManufacturerRequest.getUsername());
+                historyObject.setEntityId(savedBikeManufacturer.getId());
+                historyService.saveHistory(Constant.HISTORY_CREATE, savedBikeManufacturer, historyObject);
+
+                return new Result(Constant.SUCCESS_CODE, "Create new bike manufacturer successfully");
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
 

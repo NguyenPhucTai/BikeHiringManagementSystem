@@ -1,4 +1,4 @@
-package com.BikeHiringManagement.service;
+package com.BikeHiringManagement.service.system;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;

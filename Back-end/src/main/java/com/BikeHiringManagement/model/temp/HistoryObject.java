@@ -1,10 +1,9 @@
-package com.BikeHiringManagement.model;
+package com.BikeHiringManagement.model.temp;
 
+import com.BikeHiringManagement.model.temp.ComparedObject;
 import lombok.Data;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 @Data
 public class HistoryObject {
