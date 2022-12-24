@@ -43,9 +43,9 @@ public class BikeManufacturerController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> getBikeManufacturerById(@RequestParam Long bikeManafacturerId) {
+    public ResponseEntity<?> getBikeManufacturerById(@RequestParam Long id) {
         try {
-            Result result = bikeManufacturerService.getBikeManufacturerById(bikeManafacturerId);
+            Result result = bikeManufacturerService.getBikeManufacturerById(id);
             if(result.getCode() == Constant.LOGIC_ERROR_CODE){
                 return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
             }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){

@@ -1,15 +1,17 @@
+// Public API
 export const Authen = {
     signUp: "/authen/signup",
     signIn: "/authen/signin",
 }
 
-export const Role = {
-    create: "/admin/role/create/",
-}
-
 export const PublicAPI = {
     getBikePagination: "/public/bike/get",
     getBikeDetail: "/public/bike/get?bikeId="
+}
+
+// Private API
+export const Role = {
+    create: "/admin/role/create/",
 }
 
 export const BikeManagement = {
@@ -37,4 +39,13 @@ export const ColorManagement = {
     getById: "/admin/bike-color/get?id="
 }
 
+export const ManufacturerManagement = {
+    create: "/admin/bike-manufacturer/create",
+    update: "/admin/bike-manufacturer/update/",
+    delete: "/admin/bike-manufacturer/delete/",
+    getPagination: "/admin/bike-manufacturer/get",
+    getById: "/admin/bike-manufacturer/get?id="
+}
+
+// Fire Base
 export const Firebase_URL = "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F"

@@ -12,7 +12,7 @@ import Col from 'react-bootstrap/Col';
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { CategoryManagement } from '../../api/EndPoint';
+import { ManufacturerManagement } from '../../api/EndPoint';
 
 //Component
 import { TableCRUD } from '../../components/Table/TableCRUD';
@@ -27,8 +27,7 @@ const cookies = new Cookies();
 
 const SortBy = [
     { value: "id", label: "Sort by ID", key: "1" },
-    { value: "name", label: "Sort by name", key: "2" },
-    { value: "price", label: "Sort by price", key: "3" },
+    { value: "name", label: "Sort by name", key: "2" }
 ];
 
 const showAlert = async (setAlert, message, isSuccess) => {
@@ -61,14 +60,13 @@ const handleGetDataPagination = async (
         sortBy: reduxFilter.reduxSortBy,
         sortType: reduxFilter.reduxSortType
     };
-    await AxiosInstance.post(CategoryManagement.getPagination, body, {
+    await AxiosInstance.post(ManufacturerManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
             return {
                 id: data.id,
-                name: data.name,
-                price: data.price
+                name: data.name
             }
         })
         setListData(listData)
@@ -82,7 +80,7 @@ const handleGetDataPagination = async (
 };
 
 const handleGetDataById = async (dataID, setLineItem) => {
-    await AxiosInstance.get(CategoryManagement.getById + dataID, {
+    await AxiosInstance.get(ManufacturerManagement.getById + dataID, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -107,10 +105,9 @@ const handleCreateData = async (
     setTotalPages
 ) => {
     const body = {
-        name: values.name,
-        price: values.price,
+        name: values.name
     };
-    await AxiosInstance.post(CategoryManagement.create, body, {
+    await AxiosInstance.post(ManufacturerManagement.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -141,10 +138,9 @@ const handleUpdateData = async (
     setTotalPages
 ) => {
     const body = {
-        name: values.name,
-        price: values.price,
+        name: values.name
     };
-    await AxiosInstance.post(CategoryManagement.update + dataID, body, {
+    await AxiosInstance.post(ManufacturerManagement.update + dataID, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -173,7 +169,7 @@ const handleDeleteData = async (
     setShowCloseButton,
     setTotalPages
 ) => {
-    await AxiosInstance.post(CategoryManagement.delete + dataID, {}, {
+    await AxiosInstance.post(ManufacturerManagement.delete + dataID, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -192,15 +188,13 @@ const handleDeleteData = async (
 
 }
 
-function ManageBikeCategory() {
-
+function ManageBikeManufacturer() {
     // Table variables
-    const tableTitleList = ['ID', 'NAME', 'PRICE']
+    const tableTitleList = ['ID', 'NAME']
 
     // Formik variables
     const initialValues = {
-        name: "",
-        price: 0,
+        name: ""
     };
 
     // Redux - Filter form
@@ -263,7 +257,6 @@ function ManageBikeCategory() {
         handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
     }, [reduxPagination.reduxPage])
 
-
     // Table loading pagination - change row per page -> call above useEffect
     useEffect(() => {
         if (reduxPagination.reduxPage === 1) {
@@ -272,7 +265,6 @@ function ManageBikeCategory() {
             dispatch(reduxPaginationAction.updatePage(1));
         }
     }, [reduxPagination.reduxRowsPerPage])
-
 
     // Trigger Get Data by ID API
     useEffect(() => {
@@ -285,7 +277,6 @@ function ManageBikeCategory() {
     // Update initialValues
     if (isUpdate === true && lineItem !== null) {
         initialValues.name = lineItem.name;
-        initialValues.price = lineItem.price;
     }
 
     // Popup Interface
@@ -345,13 +336,7 @@ function ManageBikeCategory() {
                                     label={"Name"}
                                     name={"name"}
                                     type={"text"}
-                                    placeholder={"Enter the category name"}
-                                />
-                                <TextField
-                                    label={"Price"}
-                                    name={"price"}
-                                    type={"number"}
-                                    placeholder={"Enter the category price"}
+                                    placeholder={"Enter the manufacturer name"}
                                 />
                                 <div className="popup-button">
                                     <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
@@ -424,13 +409,7 @@ function ManageBikeCategory() {
                                     label={"Name"}
                                     name={"name"}
                                     type={"text"}
-                                    placeholder={"Enter the category name"}
-                                />
-                                <TextField
-                                    label={"Price"}
-                                    name={"price"}
-                                    type={"number"}
-                                    placeholder={"Enter the category price"}
+                                    placeholder={"Enter the manufacturer name"}
                                 />
                                 <div className="popup-button">
                                     <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
@@ -474,12 +453,10 @@ function ManageBikeCategory() {
                         </div>
                         <div className="popup-view-body">
                             <Row>
-                                <Col lg={6} xs={6}><label className="body-title">Category Id:</label></Col>
+                                <Col lg={6} xs={6}><label className="body-title">Manufacturer Id:</label></Col>
                                 <Col lg={6} xs={6}><label>{lineItem.id}</label></Col>
-                                <Col lg={6} xs={6}><label className="body-title">Category Name:</label></Col>
+                                <Col lg={6} xs={6}><label className="body-title">Manufacturer Name:</label></Col>
                                 <Col lg={6} xs={6}><label>{lineItem.name}</label></Col>
-                                <Col lg={6} xs={6}><label className="body-title">Price:</label></Col>
-                                <Col lg={6} xs={6}><label>{lineItem.price}</label></Col>
                                 <Col lg={6} xs={6}><label className="body-title">Create Date:</label></Col>
                                 <Col lg={6} xs={6}><label>{GetFormattedDate(lineItem.createdDate)}</label></Col>
                                 <Col lg={6} xs={6}><label className="body-title">Create User:</label></Col>
@@ -553,7 +530,6 @@ function ManageBikeCategory() {
         } />
     }
 
-
     // Table - Pagination
     let tablePagination;
     if (listData.length > 0) {
@@ -584,7 +560,7 @@ function ManageBikeCategory() {
                 <SortBarManagement SortBy={SortBy} />
                 <div className='table-header'>
                     <Row>
-                        <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike Category List</label></Col>
+                        <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike Manufacturer List</label></Col>
                         <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button></Col>
                     </Row>
                 </div>
@@ -593,5 +569,4 @@ function ManageBikeCategory() {
         </Fragment>
     )
 }
-
-export default ManageBikeCategory;
+export default ManageBikeManufacturer;
