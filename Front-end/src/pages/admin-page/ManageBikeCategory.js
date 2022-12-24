@@ -4,10 +4,10 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
 import { useSelector, useDispatch } from "react-redux";
 import { reduxAction } from "../../redux-store/redux/redux.slice";
+import { reduxPaginationAction } from '../../redux-store/redux/reduxPagination.slice';
 import { Formik, Form } from 'formik';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Pagination from '@mui/material/Pagination';
 
 // Source
 // API
@@ -21,6 +21,7 @@ import { Popup } from '../../components/Modal/Popup';
 import { TextField } from '../../components/Form/TextField';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { GetFormattedDate } from "../../function/DateTimeFormat";
+import { PaginationCustom } from '../../components/Table/Pagination';
 
 const cookies = new Cookies();
 
@@ -30,11 +31,17 @@ const SortBy = [
     { value: "price", label: "Sort by price", key: "3" },
 ];
 
-const handleGetDataPagination = async (setListData, setLoadingPage, reduxFilter) => {
+const handleGetDataPagination = async (
+    setListData,
+    setLoadingPage,
+    setTotalPages,
+    reduxFilter,
+    reduxPagination
+) => {
     const body = {
         searchKey: reduxFilter.reduxSearchKey,
-        page: 1,
-        limit: 5,
+        page: reduxPagination.reduxPage,
+        limit: reduxPagination.reduxRowsPerPage,
         sortBy: reduxFilter.reduxSortBy,
         sortType: reduxFilter.reduxSortType
     };
@@ -50,6 +57,7 @@ const handleGetDataPagination = async (setListData, setLoadingPage, reduxFilter)
         })
         setListData(listData)
         setLoadingPage(false)
+        setTotalPages(res.data.data.totalPages)
     }).catch((error) => {
         if (error && error.response) {
             console.log("Error: ", error);
@@ -75,10 +83,12 @@ const handleGetDataById = async (dataID, setLineItem) => {
 const handleCreateData = async (
     values,
     reduxFilter,
+    reduxPagination,
     setAlert,
     setListData,
     setLoadingPage,
-    setShowCloseButton
+    setShowCloseButton,
+    setTotalPages
 ) => {
     const body = {
         name: values.name,
@@ -94,7 +104,7 @@ const handleCreateData = async (
                 alertMessage: res.data.message,
             })
             setShowCloseButton(true);
-            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
         } else {
             setAlert({
                 alertShow: true,
@@ -119,10 +129,12 @@ const handleUpdateData = async (
     values,
     dataID,
     reduxFilter,
+    reduxPagination,
     setAlert,
     setListData,
     setLoadingPage,
-    setShowCloseButton
+    setShowCloseButton,
+    setTotalPages
 ) => {
     const body = {
         name: values.name,
@@ -137,7 +149,7 @@ const handleUpdateData = async (
                 alertStatus: "success",
                 alertMessage: res.data.message,
             })
-            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
             setShowCloseButton(true);
         } else {
             setAlert({
@@ -162,10 +174,12 @@ const handleUpdateData = async (
 const handleDeleteData = async (
     dataID,
     reduxFilter,
+    reduxPagination,
     setAlert,
     setListData,
     setLoadingPage,
-    setShowCloseButton
+    setShowCloseButton,
+    setTotalPages
 ) => {
     await AxiosInstance.post(CategoryManagement.delete + dataID, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
@@ -176,7 +190,7 @@ const handleDeleteData = async (
                 alertStatus: "success",
                 alertMessage: res.data.message,
             })
-            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
         } else {
             setAlert({
                 alertShow: true,
@@ -218,6 +232,13 @@ function ManageBikeCategory() {
     }
     const reduxIsSubmitting = useSelector((state) => state.redux.isSubmitting);
 
+    // Pagination
+    const [totalPages, setTotalPages] = useState(1);
+    let reduxPagination = {
+        reduxPage: useSelector((state) => state.reduxPagination.page),
+        reduxRowsPerPage: useSelector((state) => state.reduxPagination.rowsPerPage)
+    }
+
     // Table useState
     const [loadingPage, setLoadingPage] = useState(true);
     const [listData, setListData] = useState([]);
@@ -236,26 +257,40 @@ function ManageBikeCategory() {
         alertMessage: "",
     })
 
-    // Pagination
-    const [activePage, setActivePage] = useState(1);
-    const [maxPage, setMaxPage] = useState(10);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-
     // useEffect
-    // Page loading default
+    // Table loading default
     useEffect(() => {
         if (loadingPage === true) {
-            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
         }
     }, [loadingPage])
 
-    // Page loading action
+    // Table loading filter
     useEffect(() => {
         if (reduxIsSubmitting === true) {
-            handleGetDataPagination(setListData, setLoadingPage, reduxFilter);
+            if (reduxPagination.reduxPage === 1) {
+                handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+            } else {
+                dispatch(reduxPaginationAction.updatePage(1));
+            }
             dispatch(reduxAction.setIsSubmitting({ isSubmitting: false }));
         }
     }, [reduxIsSubmitting])
+
+    // Table loading pagination - change page
+    useEffect(() => {
+        handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+    }, [reduxPagination.reduxPage])
+
+    // Table loading pagination - change row per page -> call above useEffect
+    useEffect(() => {
+        if (reduxPagination.reduxPage === 1) {
+            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+        } else {
+            dispatch(reduxPaginationAction.updatePage(1));
+        }
+    }, [reduxPagination.reduxRowsPerPage])
+
 
     // Trigger Get Data by ID API
     useEffect(() => {
@@ -264,17 +299,12 @@ function ManageBikeCategory() {
         }
     }, [isDelete, dataID])
 
-
     // Update initialValues
     if (isUpdate === true && lineItem !== null) {
         initialValues.name = lineItem.name;
         initialValues.price = lineItem.price;
     }
 
-    //Pagination
-    const handleChangePage = (event, newPage) => {
-        setActivePage(newPage);
-    };
 
     // Popup Interface
     let popupTitle;
@@ -292,7 +322,8 @@ function ManageBikeCategory() {
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
-                                setAlert({ alertShow: false })
+                                setAlert({ alertShow: false });
+                                dispatch(reduxPaginationAction.updatePage(1));
                             }}>Close</button>
                     </div>
                 </ Fragment>
@@ -309,10 +340,12 @@ function ManageBikeCategory() {
                             handleCreateData(
                                 values,
                                 reduxFilter,
+                                reduxPagination,
                                 setAlert,
                                 setListData,
                                 setLoadingPage,
-                                setShowCloseButton
+                                setShowCloseButton,
+                                setTotalPages
                             );
                         }}>
                         {({
@@ -386,10 +419,12 @@ function ManageBikeCategory() {
                                 values,
                                 dataID,
                                 reduxFilter,
+                                reduxPagination,
                                 setAlert,
                                 setListData,
                                 setLoadingPage,
-                                setShowCloseButton
+                                setShowCloseButton,
+                                setTotalPages
                             );
                         }}>
                         {({
@@ -517,10 +552,12 @@ function ManageBikeCategory() {
                             onClick={() => handleDeleteData(
                                 dataID,
                                 reduxFilter,
+                                reduxPagination,
                                 setAlert,
                                 setListData,
                                 setLoadingPage,
-                                setShowCloseButton
+                                setShowCloseButton,
+                                setTotalPages
                             )}>{titlePopup}</button>
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
@@ -533,33 +570,37 @@ function ManageBikeCategory() {
         } />
     }
 
+
+    // Table - Pagination
+    let tablePaggiantion;
+    if (listData.length > 0) {
+        tablePaggiantion = <div className='table-pagination'>
+            <TableCRUD
+                tableTitleList={tableTitleList}
+                listData={listData}
+                setShowPopup={setShowPopup}
+                setTitlePopup={setTitlePopup}
+                setDataID={setDataID}
+                setIsDelete={setIsDelete}
+                setIsUpdate={setIsUpdate}
+            />
+            <PaginationCustom
+                totalPages={totalPages}
+            />
+        </div>
+    } else {
+        tablePaggiantion = <div className='text-center'>
+            <label style={{ fontSize: '36px' }}>No data found</label>
+        </div>
+    }
+
     return (
         <Fragment>
             <div className='container'>
                 {popupTitle}
                 <SortBarManagement SortBy={SortBy} />
                 <button className="btn btn-primary" onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button>
-                <TableCRUD
-                    tableTitleList={tableTitleList}
-                    listData={listData}
-                    setShowPopup={setShowPopup}
-                    setTitlePopup={setTitlePopup}
-                    setDataID={setDataID}
-                    setIsDelete={setIsDelete}
-                    setIsUpdate={setIsUpdate}
-                />
-                <Pagination
-                    count={maxPage}
-                    shape="rounded"
-                    size="large"
-                    defaultPage={1}
-                    showFirstButton
-                    showLastButton
-                    page={activePage}
-                    onChange={handleChangePage}
-                    rowsPerPage={[1, 2, 3, 4, 5]}
-                />
-
+                {tablePaggiantion}
             </div>
         </Fragment>
     )

@@ -6,7 +6,7 @@ const initialState = {
     manufacturer: [],
     status: null,
     sortBy: "id",
-    sortType: "ASC",
+    sortType: "DESC",
     isSubmitting: false
 };
 
