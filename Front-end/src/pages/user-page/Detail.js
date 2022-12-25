@@ -9,10 +9,11 @@ import ImageGallery from "react-image-gallery";
 import Badge from 'react-bootstrap/Badge';
 import Cookies from 'universal-cookie';
 import { green } from "@mui/material/colors";
+import { PageLoad } from "../../components/Base/PageLoad";
 
 const cookies = new Cookies();
 
-const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingPage, Firebase_URL) => {
+const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingData, Firebase_URL) => {
     await AxiosInstance.get(PublicAPI.getBikeDetail + id, {
         headers: {}
     }).then((res) => {
@@ -36,7 +37,7 @@ const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingPage,
         });
         setListImage(listLinkImage);
         setBikeDetail(bikeDetail);
-        setLoadingPage(false);
+        setLoadingData(false);
     }).catch((error) => {
         if (error && error.response) {
             console.log("Error: ", error);
@@ -46,64 +47,69 @@ const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingPage,
 
 const Detail = props => {
     let { id } = useParams()
-    const [loadingPage, setLoadingPage] = useState(true);
+    const [loadingData, setLoadingData] = useState(true);
     const [listImage, setListImage] = useState([]);
     const [bikeDetail, setBikeDetail] = useState({});
 
     useEffect(() => {
-        if (loadingPage) {
-            handleBikeDetail(id, setBikeDetail, setListImage, setLoadingPage, Firebase_URL);
+        if (loadingData) {
+            handleBikeDetail(id, setBikeDetail, setListImage, setLoadingData, Firebase_URL);
         }
-    }, [loadingPage])
+    }, [loadingData])
 
     return (
-        <Fragment>
-            <div className="container">
-                {loadingPage ?
-                    <div className="circular_progress circular_progress_detail">
-                        <CircularProgress />
-                    </div> :
-                    <Row>
-                        <Col lg={6} xs={12}>
-                            <ImageGallery
-                                showPlayButton={false}
-                                thumbnailPosition={"right"}
-                                items={listImage}
-                            />
-                        </Col>
-                        <Col lg={6} xs={12} className="public">
-                            <div className="detail-header">
-                                <h2 className="bikeName">{bikeDetail.name}</h2>
-                                <Badge>{bikeDetail.bikeCategoryName}</Badge>
-                            </div>
-                            <div className="detail-body">
-                                <Row>
-                                    <Col lg={3} xs={6}><label className="body-title">Bike No:</label></Col>
-                                    <Col lg={9} xs={6}><label>{bikeDetail.bikeNo}</label></Col>
-                                    <Col lg={3} xs={6}><label className="body-title">Bike Color:</label></Col>
-                                    <Col lg={9} xs={6}><label>{bikeDetail.bikeColor}</label></Col>
-                                    <Col lg={3} xs={6}><label className="body-title">Bike Manufacturer:</label></Col>
-                                    <Col lg={9} xs={6}><label>{bikeDetail.bikeManufacturerName}</label></Col>
-                                    <Col lg={3} xs={6}><label className="body-title">Status:</label></Col>
-                                    <Col lg={9} xs={6}>{bikeDetail.status === "AVAILABLE" ?
-                                        <label style={{ color: 'green' }}>{bikeDetail.status}</label> :
-                                        <label style={{ color: 'red' }}>{bikeDetail.status}</label>}
-                                    </Col>
-                                </Row>
-                            </div>
-                            <div className="detail-footer">
-                                <h3 className="bikePrice">{bikeDetail.price}</h3>
-                            </div>
-                            {/* <label className="bikeName">{bikeDetail.name}</label>
+        !loadingData ?
+            <Fragment>
+                <div className="container">
+                    {loadingData ?
+                        <div className="circular_progress circular_progress_detail">
+                            <CircularProgress />
+                        </div> :
+                        <Row>
+                            <Col lg={6} xs={12}>
+                                <ImageGallery
+                                    showPlayButton={false}
+                                    thumbnailPosition={"right"}
+                                    items={listImage}
+                                />
+                            </Col>
+                            <Col lg={6} xs={12} className="public">
+                                <div className="detail-header">
+                                    <h2 className="bikeName">{bikeDetail.name}</h2>
+                                    <Badge>{bikeDetail.bikeCategoryName}</Badge>
+                                </div>
+                                <div className="detail-body">
+                                    <Row>
+                                        <Col lg={3} xs={6}><label className="body-title">Bike No:</label></Col>
+                                        <Col lg={9} xs={6}><label>{bikeDetail.bikeNo}</label></Col>
+                                        <Col lg={3} xs={6}><label className="body-title">Bike Color:</label></Col>
+                                        <Col lg={9} xs={6}><label>{bikeDetail.bikeColor}</label></Col>
+                                        <Col lg={3} xs={6}><label className="body-title">Bike Manufacturer:</label></Col>
+                                        <Col lg={9} xs={6}><label>{bikeDetail.bikeManufacturerName}</label></Col>
+                                        <Col lg={3} xs={6}><label className="body-title">Status:</label></Col>
+                                        <Col lg={9} xs={6}>{bikeDetail.status === "AVAILABLE" ?
+                                            <label style={{ color: 'green' }}>{bikeDetail.status}</label> :
+                                            <label style={{ color: 'red' }}>{bikeDetail.status}</label>}
+                                        </Col>
+                                    </Row>
+                                </div>
+                                <div className="detail-footer">
+                                    <h3 className="bikePrice">{bikeDetail.price}</h3>
+                                </div>
+                                {/* <label className="bikeName">{bikeDetail.name}</label>
                             <div className="bikeTag">
                                 <Badge>{bikeDetail.bikeCategory}</Badge>
                             </div>
                             <p className="bikePrice">Price: <span>{bikeDetail.price}</span></p> */}
-                        </Col>
-                    </Row>
-                }
-            </div>
-        </Fragment>
+                            </Col>
+                        </Row>
+                    }
+                </div>
+            </Fragment>
+            :
+            <Fragment>
+                <PageLoad />
+            </Fragment>
     )
 }
 

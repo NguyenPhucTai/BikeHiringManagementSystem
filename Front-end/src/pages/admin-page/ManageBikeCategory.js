@@ -22,6 +22,7 @@ import { TextField } from '../../components/Form/TextField';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { GetFormattedDate } from "../../function/DateTimeFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
+import { PageLoad } from '../../components/Base/PageLoad';
 
 const cookies = new Cookies();
 
@@ -31,7 +32,7 @@ const SortBy = [
     { value: "price", label: "Sort by price", key: "3" },
 ];
 
-const showAlert = async (setAlert, message, isSuccess) => {
+const showAlert = (setAlert, message, isSuccess) => {
     if (isSuccess) {
         setAlert({
             alertShow: true,
@@ -49,7 +50,7 @@ const showAlert = async (setAlert, message, isSuccess) => {
 
 const handleGetDataPagination = async (
     setListData,
-    setLoadingPage,
+    setLoadingData,
     setTotalPages,
     reduxFilter,
     reduxPagination
@@ -72,7 +73,7 @@ const handleGetDataPagination = async (
             }
         })
         setListData(listData)
-        setLoadingPage(false)
+        setLoadingData(false)
         setTotalPages(res.data.data.totalPages)
     }).catch((error) => {
         if (error && error.response) {
@@ -102,7 +103,7 @@ const handleCreateData = async (
     reduxPagination,
     setAlert,
     setListData,
-    setLoadingPage,
+    setLoadingData,
     setShowCloseButton,
     setTotalPages
 ) => {
@@ -115,7 +116,7 @@ const handleCreateData = async (
     }).then((res) => {
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true);
-            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
             setShowCloseButton(true);
         } else {
             showAlert(setAlert, res.data.message, false);
@@ -136,7 +137,7 @@ const handleUpdateData = async (
     reduxPagination,
     setAlert,
     setListData,
-    setLoadingPage,
+    setLoadingData,
     setShowCloseButton,
     setTotalPages
 ) => {
@@ -149,7 +150,7 @@ const handleUpdateData = async (
     }).then((res) => {
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true);
-            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
             setShowCloseButton(true);
         } else {
             showAlert(setAlert, res.data.message, false);
@@ -169,7 +170,7 @@ const handleDeleteData = async (
     reduxPagination,
     setAlert,
     setListData,
-    setLoadingPage,
+    setLoadingData,
     setShowCloseButton,
     setTotalPages
 ) => {
@@ -178,7 +179,7 @@ const handleDeleteData = async (
     }).then((res) => {
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true);
-            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
         } else {
             showAlert(setAlert, res.data.message, false);
         }
@@ -220,7 +221,7 @@ function ManageBikeCategory() {
     }
 
     // Table useState
-    const [loadingPage, setLoadingPage] = useState(true);
+    const [loadingData, setLoadingData] = useState(true);
     const [listData, setListData] = useState([]);
 
     // Popup useState
@@ -237,20 +238,19 @@ function ManageBikeCategory() {
         alertMessage: "",
     })
 
-
     // useEffect
     // Table loading - page load
     useEffect(() => {
-        if (loadingPage === true) {
-            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+        if (loadingData === true) {
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
         }
-    }, [loadingPage])
+    }, [loadingData])
 
     // Table loading filter submit
     useEffect(() => {
         if (reduxIsSubmitting === true) {
             if (reduxPagination.reduxPage === 1) {
-                handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+                handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
             } else {
                 dispatch(reduxPaginationAction.updatePage(1));
             }
@@ -260,19 +260,18 @@ function ManageBikeCategory() {
 
     // Table loading pagination - change page
     useEffect(() => {
-        handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+        handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
     }, [reduxPagination.reduxPage])
 
 
     // Table loading pagination - change row per page -> call above useEffect
     useEffect(() => {
         if (reduxPagination.reduxPage === 1) {
-            handleGetDataPagination(setListData, setLoadingPage, setTotalPages, reduxFilter, reduxPagination);
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
         } else {
             dispatch(reduxPaginationAction.updatePage(1));
         }
     }, [reduxPagination.reduxRowsPerPage])
-
 
     // Trigger Get Data by ID API
     useEffect(() => {
@@ -287,6 +286,8 @@ function ManageBikeCategory() {
         initialValues.name = lineItem.name;
         initialValues.price = lineItem.price;
     }
+
+
 
     // Popup Interface
     let popupTitle;
@@ -325,7 +326,7 @@ function ManageBikeCategory() {
                                 reduxPagination,
                                 setAlert,
                                 setListData,
-                                setLoadingPage,
+                                setLoadingData,
                                 setShowCloseButton,
                                 setTotalPages
                             );
@@ -404,7 +405,7 @@ function ManageBikeCategory() {
                                 reduxPagination,
                                 setAlert,
                                 setListData,
-                                setLoadingPage,
+                                setLoadingData,
                                 setShowCloseButton,
                                 setTotalPages
                             );
@@ -538,7 +539,7 @@ function ManageBikeCategory() {
                                 reduxPagination,
                                 setAlert,
                                 setListData,
-                                setLoadingPage,
+                                setLoadingData,
                                 setShowCloseButton,
                                 setTotalPages
                             )}>{titlePopup}</button>
@@ -578,19 +579,24 @@ function ManageBikeCategory() {
     }
 
     return (
-        <Fragment>
-            <div className='container'>
-                {popupTitle}
-                <SortBarManagement SortBy={SortBy} />
-                <div className='table-header'>
-                    <Row>
-                        <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike Category List</label></Col>
-                        <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button></Col>
-                    </Row>
+        !loadingData ?
+            <Fragment>
+                <div className='container'>
+                    {popupTitle}
+                    <SortBarManagement SortBy={SortBy} />
+                    <div className='table-header'>
+                        <Row>
+                            <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike Category List</label></Col>
+                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button></Col>
+                        </Row>
+                    </div>
+                    {tablePagination}
                 </div>
-                {tablePagination}
-            </div>
-        </Fragment>
+            </Fragment>
+            :
+            <Fragment>
+                <PageLoad />
+            </Fragment>
     )
 }
 

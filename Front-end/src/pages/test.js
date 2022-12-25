@@ -6,7 +6,7 @@ import { SelectField } from "../components/Form/SelectField";
 import { BikeCategories } from "../components/Form/SelectItem";
 import { DropzoneArea } from "material-ui-dropzone";
 import { BikeSchema } from "../validation";
-import { BikeManagement } from "../api/EndPoint";
+import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from "../api/EndPoint";
 import { storage } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { AlertMessage } from "../components/Modal/AlertMessage";
@@ -81,7 +81,7 @@ const handleGetCategory = async (setListCategory) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(BikeManagement.getCategory, body, {
+    await AxiosInstance.post(CategoryManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listCategory = res.data.data.content.map((data) => {
@@ -108,7 +108,7 @@ const handleGetColor = async (setListColor) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(BikeManagement.getColor, body, {
+    await AxiosInstance.post(ColorManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listColor = res.data.data.content.map((data) => {
@@ -135,7 +135,7 @@ const handleGetManufacturer = async (setListManufacturer) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(BikeManagement.getManufacturer, body, {
+    await AxiosInstance.post(ManufacturerManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listManufacturer = res.data.data.content.map((data) => {
@@ -178,7 +178,7 @@ function Test() {
     const [listCategory, setListCategory] = useState([]);
     const [listColor, setListColor] = useState([]);
     const [listManufacturer, setListManufacturer] = useState([]);
-    const [loadingPage, setLoadingPage] = useState(true);
+    const [loadingData, setLoadingData] = useState(true);
     // Alert message
     const [alert, setAlert] = useState({
         alertShow: false,
@@ -263,13 +263,13 @@ function Test() {
     /** Handle loading bar  */
 
     useEffect(() => {
-        if (loadingPage) {
+        if (loadingData) {
             handleGetCategory(setListCategory);
             handleGetColor(setListColor);
             handleGetManufacturer(setListManufacturer)
-            setLoadingPage(false)
+            setLoadingData(false)
         }
-    }, [loadingPage])
+    }, [loadingData])
 
     return (
         <div className="container">

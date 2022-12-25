@@ -16,10 +16,9 @@ export const Role = {
 
 export const BikeManagement = {
     create: "/admin/bike/create",
+    update: "/admin/bike/update/",
+    delete: "/admin/bike/delete/",
     getBikePagination: "/admin/bike/get",
-    getCategory: "/admin/bike-category/get",
-    getColor: "/admin/bike-color/get",
-    getManufacturer: "/admin/bike-manufacturer/get",
     getById: "/admin/bike/get?bikeId="
 };
 
@@ -46,6 +45,7 @@ export const ManufacturerManagement = {
     getPagination: "/admin/bike-manufacturer/get",
     getById: "/admin/bike-manufacturer/get?id="
 }
+
 
 // Fire Base
 export const Firebase_URL = "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F"

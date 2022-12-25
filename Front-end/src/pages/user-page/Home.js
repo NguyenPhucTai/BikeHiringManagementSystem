@@ -5,10 +5,11 @@ import { ListSwiper } from "../../components/Swiper/Swiper";
 import { PublicAPI } from "../../api/EndPoint";
 import CircularProgress from '@mui/material/CircularProgress';
 import Cookies from 'universal-cookie';
+import { PageLoad } from '../../components/Base/PageLoad';
 
 const cookies = new Cookies();
 
-const handleGetListBike = async (categoryId, setListManual, setListAutomatic, setLoadingPage) => {
+const handleGetListBike = async (categoryId, setListManual, setListAutomatic, setLoadingData) => {
     const body = {
         searchKey: null,
         categoryId: categoryId,
@@ -36,7 +37,7 @@ const handleGetListBike = async (categoryId, setListManual, setListAutomatic, se
             } else {
                 setListManual(listBike)
             }
-            setLoadingPage(false)
+            setLoadingData(false)
         })
         .catch((error) => {
             if (error && error.response) {
@@ -48,35 +49,40 @@ const handleGetListBike = async (categoryId, setListManual, setListAutomatic, se
 function Home() {
     const [listManual, setListManual] = useState([]);
     const [listAutomatic, setListAutomatic] = useState([]);
-    const [loadingPage, setLoadingPage] = useState(true);
+    const [loadingData, setLoadingData] = useState(true);
 
     useEffect(() => {
-        if (loadingPage) {
-            handleGetListBike(1, setListManual, setListAutomatic, setLoadingPage);
-            handleGetListBike(2, setListManual, setListAutomatic, setLoadingPage);
+        if (loadingData) {
+            handleGetListBike(1, setListManual, setListAutomatic, setLoadingData);
+            handleGetListBike(2, setListManual, setListAutomatic, setLoadingData);
         }
-    }, [loadingPage])
+    }, [loadingData])
 
     return (
-        <Fragment>
-            <Banner />
-            <div className="container">
-                <h2 className="text-center">Manual Transmission Motorcycle</h2>
-                {loadingPage ?
-                    <div className="circular_progress">
-                        <CircularProgress />
-                    </div> :
-                    <ListSwiper listBike={listManual} />
-                }
-                <h2 className="text-center">Automatic Transmission Motorcycle</h2>
-                {loadingPage ?
-                    <div className="circular_progress">
-                        <CircularProgress />
-                    </div> :
-                    <ListSwiper listBike={listAutomatic} />
-                }
-            </div>
-        </Fragment>
+        !loadingData ?
+            <Fragment>
+                <Banner />
+                <div className="container">
+                    <h2 className="text-center">Manual Transmission Motorcycle</h2>
+                    {loadingData ?
+                        <div className="circular_progress">
+                            <CircularProgress />
+                        </div> :
+                        <ListSwiper listBike={listManual} />
+                    }
+                    <h2 className="text-center">Automatic Transmission Motorcycle</h2>
+                    {loadingData ?
+                        <div className="circular_progress">
+                            <CircularProgress />
+                        </div> :
+                        <ListSwiper listBike={listAutomatic} />
+                    }
+                </div>
+            </Fragment>
+            :
+            <Fragment>
+                <PageLoad />
+            </Fragment>
     )
 }
 

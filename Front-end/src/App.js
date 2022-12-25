@@ -16,6 +16,9 @@ import TestUploadImage from './pages/test2';
 import ManageBikeCategory from "./pages/admin-page/ManageBikeCategory";
 import ManageBikeColor from "./pages/admin-page/ManageBikeColor";
 import ManageBikeManufacturer from "./pages/admin-page/ManageBikeManufacturer";
+import ManageBikeList from "./pages/admin-page/ManageBikeList";
+import ManageBikeCreate from "./pages/admin-page/ManageBikeCreate";
+import ManageBikeDetail from "./pages/admin-page/ManageBikeDetail";
 
 /** Access user page */
 function GlobalRoute({ children }) {
@@ -57,6 +60,9 @@ function App() {
 				<Route path='/manage/category' exact element={<ManageBikeCategory />} />
 				<Route path='/manage/color' exact element={<ManageBikeColor />} />
 				<Route path='/manage/manufacturer' exact element={<ManageBikeManufacturer />} />
+				<Route path='/manage/bike' exact element={<ManageBikeList />} />
+				<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
+				<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
 				{/* <Route path='/testpopup' exact element={<TestPopupPage />} /> */}
 			</GlobalRoute>
 		</Fragment>
