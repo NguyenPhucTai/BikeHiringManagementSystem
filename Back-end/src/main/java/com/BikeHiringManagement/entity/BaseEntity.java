@@ -16,7 +16,7 @@ public class BaseEntity implements Serializable{
     @Column(name = "created_user", nullable = false)
     private String createdUser;
 
-    @Column(name = "created_date", nullable = false)
+    @Column(name = "created_date")
     private Date createdDate;
 
     @Column(name = "modified_user")
