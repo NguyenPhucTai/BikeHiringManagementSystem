@@ -10,6 +10,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { useNavigate } from 'react-router-dom';
 
 // Firebase
 import { storage } from "../../firebase/firebase";
@@ -22,6 +23,7 @@ import { SelectField } from "../../components/Form/SelectField";
 import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from "../../api/EndPoint";
 import { GenerateRandomString } from "../../function/RandomString";
 import { PageLoad } from '../../components/Base/PageLoad';
+import { Popup } from '../../components/Modal/Popup';
 
 const cookies = new Cookies();
 
@@ -136,7 +138,7 @@ const handleGetManufacturerList = async (setListManufacturer) => {
         });
 };
 
-const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading) => {
+const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup) => {
 
     const body = {
         name: bikeData.bikeName,
@@ -147,13 +149,12 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
         bikeManufacturerId: bikeData.bikeManufacturer,
         files: fileUpload,
     };
-
     await AxiosInstance.post(BikeManagement.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     })
         .then((res) => {
             setIsSubmitting(false)
-            console.log(res)
+            setShowPopup(true)
             if (res.data.code === 1) {
                 showAlert(setAlert, "Create success", true)
                 setFileUpload([]);
@@ -178,8 +179,21 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
         });
 };
 
-
 function ManageBikeCreate() {
+
+    // Render page
+    const navigate = useNavigate();
+
+    // initialValues
+    const initialValues = {
+        bikeName: "",
+        bikeManualId: "",
+        bikeNo: "",
+        bikeCategory: 0,
+        bikeColor: 0,
+        bikeManufacturer: 0,
+        files: [{}],
+    };
 
     // INITIALIZE USE STATE
     // VARIABLE
@@ -214,13 +228,17 @@ function ManageBikeCreate() {
     const [loading, setLoading] = useState(false);
     const timer = useRef();
 
+    // VARIABLE
+    // POPUP
+    const [showPopup, setShowPopup] = useState(false);
+
 
     // IMAGE HANDLING
     // USE EFFECT
     // UPLOAD IMAGE TO FIREBASE
     useEffect(() => {
         if (isClicking && imageUpload.length === 0) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
+            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
         }
         else if (isClicking) {
             var index = 0;
@@ -253,7 +271,7 @@ function ManageBikeCreate() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting && imageUpload.length === fileUpload.length) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
+            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
         }
     }, [isSubmitting, fileUpload])
 
@@ -301,149 +319,163 @@ function ManageBikeCreate() {
         }
     }, [loadingData])
 
-
     return (
         !loadingData ?
-            <div className="container">
-                <h1 className="text-center">CREATE NEW BIKE</h1>
-
-                <AlertMessage
-                    isShow={alert.alertShow}
-                    message={alert.alertMessage}
-                    status={alert.alertStatus}
-                />
-                {loading && (
-                    <Box sx={{ width: '100%' }}>
-                        <LinearProgress />
-                    </Box>
-                )}
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={BikeSchema}
-                    onSubmit={(values) => {
-                        setAlert({
-                            alertShow: false,
-                            alertStatus: "success",
-                        })
-                        setBikeData(values)
-                        setIsClicking(true);
-                        setLoading(true);
-                    }}>
-                    {({
-                        isSubmitting,
-                        handleChange,
-                        handleBlur,
-                        handleSubmit,
-                        values,
-                        errors,
-                        touched,
-                        setFieldValue,
-                    }) => (
-                        <Form className="d-flex flex-column">
-                            <Row>
-                                <Col xs={12} sm={6}>
-                                    <TextField
-                                        label={"Bike Manual Id"}
-                                        name={"bikeManualId"}
-                                        type={"text"}
-                                        placeholder={"Enter the bike manual id"}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <TextField
-                                        label={"Bike Name"}
-                                        name={"bikeName"}
-                                        type={"text"}
-                                        placeholder={"Enter the bike name"}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <TextField
-                                        label={"Bike No"}
-                                        name={"bikeNo"}
-                                        type={"text"}
-                                        placeholder={"Enter your bike number"}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <SelectField
-                                        label={"Bike Category"}
-                                        name={"bikeCategory"}
-                                        options={listCategory}
-                                        placeholder={"Choose bike category"}
-                                        onChange={(selectOption) => {
-                                            setFieldValue("bikeCategory", selectOption.value);
-                                        }}
-                                        onBlur={() => {
-                                            handleBlur({ target: { name: "bikeCategory" } });
-                                        }}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <SelectField
-                                        label={"Bike Manufacturer"}
-                                        name={"bikeManufacturer"}
-                                        options={listManufacturer}
-                                        placeholder={"Choose bike manufacturer"}
-                                        onChange={(selectOption) => {
-                                            setFieldValue("bikeManufacturer", selectOption.value);
-                                        }}
-                                        onBlur={() => {
-                                            handleBlur({ target: { name: "bikeManufacturer" } });
-                                        }}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <SelectField
-                                        label={"Bike Color"}
-                                        name={"bikeColor"}
-                                        options={listColor}
-                                        placeholder={"Choose bike color"}
-                                        onChange={(selectOption) => {
-                                            setFieldValue("bikeColor", selectOption.value);
-                                        }}
-                                        onBlur={() => {
-                                            handleBlur({ target: { name: "bikeColor" } });
-                                        }}
-                                    />
-                                </Col>
-                            </Row>
-                            <DropzoneArea
-                                acceptedFiles={[
-                                    ".png,.jpg,.jpeg",
-                                ]}
-                                showPreviews={true}
-                                maxFileSize={10000000}
-                                fullWidth={true}
-                                dropzoneText='Drop files to attach or browse'
-                                filesLimit={4}
-                                showFileNamesInPreview={true}
-                                showPreviewsInDropzone={false}
-                                showAlerts={false}
-                                name='file'
-                                id='bikeImage'
-                                onDelete={(file) => {
-                                    handleFileRemove(file);
-                                }}
-                                onDrop={(dropFiles) => {
-                                    let event = {
-                                        target: {
-                                            name: "files",
-                                            value: dropFiles,
-                                        },
-                                    };
-                                    handleChange(event);
-                                    handleFileUpload(event);
-                                }}
+            <Fragment>
+                <Popup showPopup={showPopup} setShowPopup={setShowPopup}
+                    child={
+                        <Fragment>
+                            <AlertMessage
+                                isShow={alert.alertShow}
+                                message={alert.alertMessage}
+                                status={alert.alertStatus}
                             />
-                            <button type="submit" className="btn btn-dark btn-md mt-3">
-                                Submit
-                            </button>
-                        </Form>
-                    )}
-                </Formik>
+                            <div className="popup-button">
+                                <button className="btn btn-secondary btn-cancel"
+                                    onClick={() => {
+                                        setShowPopup(false);
+                                        navigate('/manage/bike');
 
-            </div>
+                                    }}>Close</button>
+                            </div>
+                        </Fragment >
+                    }
+                />
+                <div className="container">
+                    <h1 className="text-center">CREATE NEW BIKE</h1>
+                    {loading && (
+                        <Box sx={{ width: '100%' }}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    <Formik
+                        initialValues={initialValues}
+                        validationSchema={BikeSchema}
+                        onSubmit={(values) => {
+                            setAlert({
+                                alertShow: false,
+                                alertStatus: "success",
+                            })
+                            setBikeData(values)
+                            setIsClicking(true);
+                            setLoading(true);
+                        }}>
+                        {({
+                            isSubmitting,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            setFieldValue,
+                        }) => (
+                            <Form className="d-flex flex-column">
+                                <Row>
+                                    <Col xs={12} sm={6}>
+                                        <TextField
+                                            label={"Bike Manual Id"}
+                                            name={"bikeManualId"}
+                                            type={"text"}
+                                            placeholder={"Enter the bike manual id"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <TextField
+                                            label={"Bike Name"}
+                                            name={"bikeName"}
+                                            type={"text"}
+                                            placeholder={"Enter the bike name"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <TextField
+                                            label={"Bike No"}
+                                            name={"bikeNo"}
+                                            type={"text"}
+                                            placeholder={"Enter your bike number"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <SelectField
+                                            label={"Bike Category"}
+                                            name={"bikeCategory"}
+                                            options={listCategory}
+                                            placeholder={"Choose bike category"}
+                                            onChange={(selectOption) => {
+                                                setFieldValue("bikeCategory", selectOption.value);
+                                            }}
+                                            onBlur={() => {
+                                                handleBlur({ target: { name: "bikeCategory" } });
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <SelectField
+                                            label={"Bike Manufacturer"}
+                                            name={"bikeManufacturer"}
+                                            options={listManufacturer}
+                                            placeholder={"Choose bike manufacturer"}
+                                            onChange={(selectOption) => {
+                                                setFieldValue("bikeManufacturer", selectOption.value);
+                                            }}
+                                            onBlur={() => {
+                                                handleBlur({ target: { name: "bikeManufacturer" } });
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <SelectField
+                                            label={"Bike Color"}
+                                            name={"bikeColor"}
+                                            options={listColor}
+                                            placeholder={"Choose bike color"}
+                                            onChange={(selectOption) => {
+                                                setFieldValue("bikeColor", selectOption.value);
+                                            }}
+                                            onBlur={() => {
+                                                handleBlur({ target: { name: "bikeColor" } });
+                                            }}
+                                        />
+                                    </Col>
+                                </Row>
+                                <DropzoneArea
+                                    acceptedFiles={[
+                                        ".png,.jpg,.jpeg",
+                                    ]}
+                                    showPreviews={true}
+                                    maxFileSize={10000000}
+                                    fullWidth={true}
+                                    dropzoneText='Drop files to attach or browse'
+                                    filesLimit={4}
+                                    showFileNamesInPreview={true}
+                                    showPreviewsInDropzone={false}
+                                    showAlerts={false}
+                                    name='file'
+                                    id='bikeImage'
+                                    onDelete={(file) => {
+                                        handleFileRemove(file);
+                                    }}
+                                    onDrop={(dropFiles) => {
+                                        let event = {
+                                            target: {
+                                                name: "files",
+                                                value: dropFiles,
+                                            },
+                                        };
+                                        handleChange(event);
+                                        handleFileUpload(event);
+                                    }}
+                                />
+                                <button type="submit" className="btn btn-dark btn-md mt-3">
+                                    Submit
+                                </button>
+                            </Form>
+                        )}
+                    </Formik>
+
+                </div>
+            </Fragment>
             :
             <Fragment>
                 <PageLoad />
