@@ -95,7 +95,7 @@ const TestUploadImage = (props) => {
                             maxFileSize={10000000}
                             fullWidth={true}
                             dropzoneText='Drop files to attach or browse'
-                            filesLimit={10}
+                            filesLimit={4}
                             showFileNamesInPreview={true}
                             showPreviewsInDropzone={false}
                             showAlerts={false}

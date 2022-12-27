@@ -10,6 +10,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Badge from 'react-bootstrap/Badge';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 // Firebase
 import { storage } from "../../firebase/firebase";
@@ -179,7 +181,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
 };
 
 
-function ManageBikeCreate() {
+function ManageBikeUpdate() {
 
     // INITIALIZE USE STATE
     // VARIABLE
@@ -408,6 +410,22 @@ function ManageBikeCreate() {
                                     />
                                 </Col>
                             </Row>
+                            <div className="image-section">
+                                <label className='form-label'>Bike Images</label>
+                                <Row>
+                                    <Col className="column" xs={12} sm={6} md={4} lg={3}>
+                                        <div className="card-item">
+                                            <div className="text-right" style={{ textAlign: "right" }}>
+                                                <button type="button" style={{ border: '0' }}><HighlightOffIcon /></button>
+                                            </div>
+                                            <div className="card-body">
+                                                <img src="https://image.thanhnien.vn/1200x630/Uploaded/2022/hgnatm/z-ba-hung-2021/thang-7-2021/xe-may-so/xe-may-so_thanhnien-3_tdnb.jpg" />
+                                            </div>
+                                        </div>
+                                    </Col>
+
+                                </Row>
+                            </div>
                             <DropzoneArea
                                 acceptedFiles={[
                                     ".png,.jpg,.jpeg",
@@ -451,4 +469,4 @@ function ManageBikeCreate() {
     )
 }
 
-export default ManageBikeCreate;
+export default ManageBikeUpdate;

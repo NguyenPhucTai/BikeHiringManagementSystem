@@ -19,6 +19,7 @@ import ManageBikeManufacturer from "./pages/admin-page/ManageBikeManufacturer";
 import ManageBikeList from "./pages/admin-page/ManageBikeList";
 import ManageBikeCreate from "./pages/admin-page/ManageBikeCreate";
 import ManageBikeDetail from "./pages/admin-page/ManageBikeDetail";
+import ManageBikeUpdate from "./pages/admin-page/ManageBikeUpdate";
 
 /** Access user page */
 function GlobalRoute({ children }) {
@@ -62,6 +63,7 @@ function App() {
 				<Route path='/manage/manufacturer' exact element={<ManageBikeManufacturer />} />
 				<Route path='/manage/bike' exact element={<ManageBikeList />} />
 				<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
+				<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
 				<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
 				{/* <Route path='/testpopup' exact element={<TestPopupPage />} /> */}
 			</GlobalRoute>

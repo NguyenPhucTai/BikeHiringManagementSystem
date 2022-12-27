@@ -7,6 +7,7 @@ import com.BikeHiringManagement.entity.OrderDetail;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.model.temp.HistoryObject;
 import com.BikeHiringManagement.model.temp.Result;
+import com.BikeHiringManagement.repository.BikeRepository;
 import com.BikeHiringManagement.repository.OrderDetailRepository;
 import com.BikeHiringManagement.repository.OrderRepository;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
@@ -30,6 +31,9 @@ public class OrderService {
     OrderDetailRepository orderDetailRepository;
 
     @Autowired
+    BikeRepository bikeRepository;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @Autowired
@@ -42,16 +46,26 @@ public class OrderService {
     public Result createCart(String username, Long bikeId){
         try{
             long orderId = -1;
+            // IF Cart exist -> Just Add Bike ID to Order Detail
             if(orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)){
+
+                // Check if Bike ID is existed
+                if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeId)){
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID is not existed!!!");
+                }
                 Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
                 orderId = currentCart.getId();
+
+                // Check if Bike has been included in order
+                if (orderDetailRepository.existsByOrderIdAndBikeIdAndIsDeleted(orderId, bikeId, false)){
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The Bike Id: " + bikeId + " has been added to this cart!");
+                }
             }else{
                 Order order = new Order();
                 order.setCreatedUser(username);
                 Order createdOrder = orderRepository.save(order);
                 orderId = createdOrder.getId();
             }
-
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(orderId);
             orderDetail.setBikeId(bikeId);
