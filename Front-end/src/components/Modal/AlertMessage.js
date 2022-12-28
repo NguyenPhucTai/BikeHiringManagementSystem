@@ -1,21 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import Alert from 'react-bootstrap/Alert';
+import React from 'react';
+import { Alert } from '@mui/material';
 
 export const AlertMessage = (props) => {
-    const [show, setShow] = useState(false);
-    useEffect(() => {
-        if (props.isShow) {
-            setShow(true);
-        } else {
-            setShow(false);
-        }
-    }, [props.isShow])
-    if (show) {
-        return (
-            <Alert variant={props.status} onClose={() => setShow(false)}>
-                {/* <Alert.Heading>Alert!</Alert.Heading> */}
-                <p>{props.message}</p>
-            </Alert>
-        )
-    }
+    const { status, message, isShow } = props;
+    return (
+        <div className='alert-message' style={{ marginBottom: "16px" }}>
+            {isShow &&
+                <Alert variant="filled" severity={status}>
+                    {message}
+                </Alert>}
+        </div>
+
+    )
 }

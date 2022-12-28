@@ -10,8 +10,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Badge from 'react-bootstrap/Badge';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { useParams } from "react-router-dom";
 
 // Firebase
 import { storage } from "../../firebase/firebase";
@@ -27,15 +27,7 @@ import { PageLoad } from '../../components/Base/PageLoad';
 
 const cookies = new Cookies();
 
-const initialValues = {
-    bikeName: "",
-    bikeManualId: "",
-    bikeNo: "",
-    bikeCategory: 0,
-    bikeColor: 0,
-    bikeManufacturer: 0,
-    files: [{}],
-};
+
 
 // FUNCTION
 // INTERNAL PAGE
@@ -49,7 +41,7 @@ const showAlert = (setAlert, message, isSuccess) => {
     } else {
         setAlert({
             alertShow: true,
-            alertStatus: "danger",
+            alertStatus: "error",
             alertMessage: message
         })
     }
@@ -57,6 +49,21 @@ const showAlert = (setAlert, message, isSuccess) => {
 
 // FUNCTION
 // CALL API
+const handleGetBikeById = async (id, setData) => {
+
+    await AxiosInstance.get(BikeManagement.getById + id, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            setData(res.data.data);
+        }
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
+};
+
 const handleGetCategoryList = async (setListCategory) => {
     const body = {
         searchKey: null,
@@ -149,39 +156,43 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
         bikeManufacturerId: bikeData.bikeManufacturer,
         files: fileUpload,
     };
+    console.log(body);
 
-    await AxiosInstance.post(BikeManagement.create, body, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-    })
-        .then((res) => {
-            setIsSubmitting(false)
-            console.log(res)
-            if (res.data.code === 1) {
-                showAlert(setAlert, "Create success", true)
-                setFileUpload([]);
-                setLoading(false);
-            } else {
-                showAlert(setAlert, res.data.message, false)
-                fileUpload.forEach((data) => {
-                    const imageRef = ref(storage, `bike-image/${data.fileName}`);
-                    deleteObject(imageRef).then(() => {
-                        // File deleted successfully
-                    }).catch((error) => {
-                        // Uh-oh, an error occurred!
-                    });
-                })
-                setFileUpload([]);
-                setLoading(false);
-            }
-        })
-        .catch((error) => {
-            showAlert(setAlert, error, false)
-            setLoading(false);
-        });
+    // await AxiosInstance.post(BikeManagement.create, body, {
+    //     headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+    // })
+    //     .then((res) => {
+    //         setIsSubmitting(false)
+    //         console.log(res)
+    //         if (res.data.code === 1) {
+    //             showAlert(setAlert, "Create success", true)
+    //             setFileUpload([]);
+    //             setLoading(false);
+    //         } else {
+    //             showAlert(setAlert, res.data.message, false)
+    //             fileUpload.forEach((data) => {
+    //                 const imageRef = ref(storage, `bike-image/${data.fileName}`);
+    //                 deleteObject(imageRef).then(() => {
+    //                     // File deleted successfully
+    //                 }).catch((error) => {
+    //                     // Uh-oh, an error occurred!
+    //                 });
+    //             })
+    //             setFileUpload([]);
+    //             setLoading(false);
+    //         }
+    //     })
+    //     .catch((error) => {
+    //         showAlert(setAlert, error, false)
+    //         setLoading(false);
+    //     });
 };
 
 
 function ManageBikeUpdate() {
+
+    // GET ID FROM URL
+    let { id } = useParams()
 
     // INITIALIZE USE STATE
     // VARIABLE
@@ -189,7 +200,7 @@ function ManageBikeUpdate() {
     const [loadingData, setLoadingData] = useState(true);
 
     // VARIABLE
-    // CREATE BIKE
+    // UPDATE BIKE
     const [isClicking, setIsClicking] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [imageUpload, setImageUpload] = useState([]);
@@ -202,6 +213,7 @@ function ManageBikeUpdate() {
     const [listCategory, setListCategory] = useState([]);
     const [listColor, setListColor] = useState([]);
     const [listManufacturer, setListManufacturer] = useState([]);
+    const [data, setData] = useState({});
 
     // VARIABLE
     // ALERT MESSAGE
@@ -216,6 +228,16 @@ function ManageBikeUpdate() {
     const [loading, setLoading] = useState(false);
     const timer = useRef();
 
+    // Formik variables
+    const initialValues = {
+        bikeName: "",
+        bikeManualId: "",
+        bikeNo: "",
+        bikeCategory: 0,
+        bikeColor: 0,
+        bikeManufacturer: 0,
+        files: [{}],
+    };
 
     // IMAGE HANDLING
     // USE EFFECT
@@ -285,30 +307,42 @@ function ManageBikeUpdate() {
         });
     };
 
-
-    // LOADING BAR
     // USE EFFECT
+    // LOADING BAR - UPLOAD IMAGE
     useEffect(() => {
         return () => {
             clearTimeout(timer.current);
         };
     }, []);
 
+
+    // USE EFFECT
+    // PAGE LOADING
     useEffect(() => {
         if (loadingData) {
             handleGetCategoryList(setListCategory);
             handleGetColorList(setListColor);
             handleGetManufacturerList(setListManufacturer)
+            handleGetBikeById(id, setData);
             setLoadingData(false)
         }
     }, [loadingData])
 
 
+    // Update initialValues
+    if (data !== null) {
+        initialValues.bikeManualId = data.bikeManualId;
+        initialValues.bikeName = data.name;
+        initialValues.bikeNo = data.bikeNo;
+        initialValues.bikeCategory = data.bikeCategoryId;
+        initialValues.bikeManufacturer = data.bikeManufacturerId;
+        initialValues.bikeColor = data.bikeColorId;
+    }
+
     return (
         !loadingData ?
             <div className="container">
-                <h1 className="text-center">CREATE NEW BIKE</h1>
-
+                <h1 className="text-center">UPDATE BIKE</h1>
                 <AlertMessage
                     isShow={alert.alertShow}
                     message={alert.alertMessage}
@@ -320,6 +354,7 @@ function ManageBikeUpdate() {
                     </Box>
                 )}
                 <Formik
+                    enableReinitialize
                     initialValues={initialValues}
                     validationSchema={BikeSchema}
                     onSubmit={(values) => {
@@ -372,6 +407,7 @@ function ManageBikeUpdate() {
                                         label={"Bike Category"}
                                         name={"bikeCategory"}
                                         options={listCategory}
+                                        value={{ label: data.bikeCategoryName, value: data.bikeCategoryId }}
                                         placeholder={"Choose bike category"}
                                         onChange={(selectOption) => {
                                             setFieldValue("bikeCategory", selectOption.value);
@@ -386,6 +422,7 @@ function ManageBikeUpdate() {
                                         label={"Bike Manufacturer"}
                                         name={"bikeManufacturer"}
                                         options={listManufacturer}
+                                        value={{ label: data.bikeManufacturerName, value: data.bikeManufacturerId }}
                                         placeholder={"Choose bike manufacturer"}
                                         onChange={(selectOption) => {
                                             setFieldValue("bikeManufacturer", selectOption.value);
@@ -400,6 +437,7 @@ function ManageBikeUpdate() {
                                         label={"Bike Color"}
                                         name={"bikeColor"}
                                         options={listColor}
+                                        value={{ label: data.bikeColor, value: data.bikeColorId }}
                                         placeholder={"Choose bike color"}
                                         onChange={(selectOption) => {
                                             setFieldValue("bikeColor", selectOption.value);

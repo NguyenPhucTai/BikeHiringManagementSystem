@@ -31,7 +31,7 @@ const handleSignIn = async (values, setAlert) => {
             } else {
                 setAlert({
                     alertShow: true,
-                    alertStatus: "danger",
+                    alertStatus: "error",
                     alertMessage: res.data.message,
                 })
             }
@@ -39,7 +39,7 @@ const handleSignIn = async (values, setAlert) => {
         .catch((error) => {
             setAlert({
                 alertShow: true,
-                alertStatus: "danger",
+                alertStatus: "error",
                 alertMessage: error,
             })
         })

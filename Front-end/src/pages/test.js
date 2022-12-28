@@ -48,7 +48,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
             } else {
                 setAlert({
                     alertShow: true,
-                    alertStatus: "danger",
+                    alertStatus: "error",
                     alertMessage: res.data.message,
                 })
                 fileUpload.forEach((data) => {
@@ -66,7 +66,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
         .catch((error) => {
             setAlert({
                 alertShow: true,
-                alertStatus: "danger",
+                alertStatus: "error",
                 alertMessage: error,
             })
             setLoading(false);

@@ -43,7 +43,7 @@ const showAlert = (setAlert, message, isSuccess) => {
     } else {
         setAlert({
             alertShow: true,
-            alertStatus: "danger",
+            alertStatus: "error",
             alertMessage: message
         })
     }

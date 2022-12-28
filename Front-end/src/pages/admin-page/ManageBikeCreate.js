@@ -49,7 +49,7 @@ const showAlert = (setAlert, message, isSuccess) => {
     } else {
         setAlert({
             alertShow: true,
-            alertStatus: "danger",
+            alertStatus: "error",
             alertMessage: message
         })
     }
@@ -439,6 +439,8 @@ function ManageBikeCreate() {
                                         />
                                     </Col>
                                 </Row>
+                                <label className='form-label'>Bike Images (Max 4)</label>
+                                <label className='form-label' style={{ color: "red", fontStyle: "italic" }}>*Note: First image will be avatar of the bike</label>
                                 <DropzoneArea
                                     acceptedFiles={[
                                         ".png,.jpg,.jpeg",
@@ -475,7 +477,7 @@ function ManageBikeCreate() {
                     </Formik>
 
                 </div>
-            </Fragment>
+            </Fragment >
             :
             <Fragment>
                 <PageLoad />
