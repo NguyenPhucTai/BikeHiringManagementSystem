@@ -330,7 +330,7 @@ function ManageBikeUpdate() {
 
 
     // Update initialValues
-    if (data !== null) {
+    if (Object.keys(data).length !== 0) {
         initialValues.bikeManualId = data.bikeManualId;
         initialValues.bikeName = data.name;
         initialValues.bikeNo = data.bikeNo;

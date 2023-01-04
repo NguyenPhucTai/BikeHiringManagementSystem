@@ -210,7 +210,11 @@ public class BikeSpecification {
                     rootColor.get("name"),
                     rootManufacturer.get("id"),
                     rootManufacturer.get("name"),
-                    root.get("status")
+                    root.get("status"),
+                    root.get("createdUser"),
+                    root.get("createdDate"),
+                    root.get("modifiedUser"),
+                    root.get("modifiedDate")
             ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
 
             BikeResponse result = entityManager.createQuery(query) != null ? entityManager.createQuery(query).

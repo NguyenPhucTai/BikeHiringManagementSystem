@@ -277,7 +277,7 @@ function ManageBikeColor() {
 
 
     // Update initialValues
-    if (isUpdate === true && lineItem !== null) {
+    if (isUpdate === true && Object.keys(lineItem).length !== 0) {
         initialValues.name = lineItem.name;
     }
 
@@ -464,9 +464,9 @@ function ManageBikeColor() {
                                 <Col lg={6} xs={6}><label className="body-title">Create User:</label></Col>
                                 <Col lg={6} xs={6}><label>{lineItem.createdUser}</label></Col>
                                 <Col lg={6} xs={6}><label className="body-title">Modified Date:</label></Col>
-                                <Col lg={6} xs={6}><label>{GetFormattedDate(lineItem.modifiedDate)}</label></Col>
+                                <Col lg={6} xs={6}><label>{lineItem.modifiedDate === null ? "N/A" : GetFormattedDate(lineItem.modifiedDate)}</label></Col>
                                 <Col lg={6} xs={6}><label className="body-title">Modified User:</label></Col>
-                                <Col lg={6} xs={6}><label>{lineItem.modifiedUser}</label></Col>
+                                <Col lg={6} xs={6}><label>{lineItem.modifiedUser === null ? "N/A" : lineItem.modifiedUser}</label></Col>
                             </Row>
                         </div>
                         <div className="popup-view-footer">
