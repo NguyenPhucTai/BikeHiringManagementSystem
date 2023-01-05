@@ -101,6 +101,12 @@ public class BikeService {
         try{
             Result result = new Result();
             Map<String, Object> mapBike = bikeSpecification.getBikeById(bikeId);
+            if(mapBike.size() == 0) {
+                result.setMessage("No Bike found");
+                result.setCode(Constant.LOGIC_ERROR_CODE);
+                return  result;
+            }
+
             BikeResponse bikeResponse = (BikeResponse) mapBike.get("data");
 
             List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(bikeResponse.getId(),false);
@@ -165,19 +171,39 @@ public class BikeService {
 
     public Result deleteBike(Long id, String username){
         try{
+            // Check bike exist
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", id)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike id " + id + " has not been existed!!!");
+            }
             Bike bike = bikeRepository.findBikeById(id);
             if(bike.getIsDeleted() == true){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike has not been existed!!!");
             }
+
+            // REMOVE BIKE
             bike.setModifiedDate(new Date());
             bike.setModifiedUser(username);
             bike.setIsDeleted(true);
             bikeRepository.save(bike);
 
+            // HISTORY FOR BIKE
             HistoryObject historyObject = new HistoryObject();
             historyObject.setUsername(username);
             historyObject.setEntityId(bike.getId());
             historyService.saveHistory(Constant.HISTORY_DELETE, bike, historyObject);
+
+            // HISTORY FOR IMAGES
+            List<BikeImage> removedBikeImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(bike.getId(), false);
+            for(BikeImage image : removedBikeImage){
+                HistoryObject historyBikeObjectImage = new HistoryObject();
+                historyBikeObjectImage.setUsername(username);
+                historyBikeObjectImage.setEntityId(image.getId());
+                historyService.saveHistory(Constant.HISTORY_DELETE, image, historyBikeObjectImage);
+            }
+
+            // REMOVE BIKE IMAGES
+            bikeImageRepository.updateIsDelete(bike.getId());
+
             return new Result(Constant.SUCCESS_CODE, "Delete bike successfully");
         }catch (Exception e) {
             e.printStackTrace();
@@ -187,7 +213,6 @@ public class BikeService {
 
     public Result updateBike(BikeCreateRequest bikeRequest){
         try{
-
             if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike has not been existed!!!");
             }

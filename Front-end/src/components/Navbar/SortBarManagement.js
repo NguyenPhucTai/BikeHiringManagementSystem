@@ -31,7 +31,7 @@ const SortBarManagement = (props) => {
                 <Col lg={3} xs={6}>
                     <SortSelect
                         options={SortType}
-                        placeholder={"A to Z"}
+                        placeholder={"Z to A"}
                         onChange={(value) => {
                             dispatch(reduxAction.sortTypeBike(value.value))
                         }}

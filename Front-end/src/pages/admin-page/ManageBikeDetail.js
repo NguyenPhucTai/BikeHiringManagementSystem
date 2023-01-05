@@ -21,6 +21,7 @@ import { Firebase_URL, BikeManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
+import { GetFormattedDate } from "../../function/DateTimeFormat";
 
 const cookies = new Cookies();
 
@@ -42,15 +43,24 @@ const showAlert = (setAlert, message, isSuccess) => {
     }
 }
 
+const handleNavigateToListPage = (isDeleted, navigate) => {
+    if (isDeleted) {
+        navigate("/manage/bike");
+    }
+}
+
 // FUNCTION
 // CALL API
-const handleGetBikeById = async (id, setData) => {
-
+const handleGetBikeById = async (id, setData, navigate) => {
     await AxiosInstance.get(BikeManagement.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
-            setData(res.data.data);
+            if (res.data.data !== null) {
+                setData(res.data.data);
+            } else {
+                navigate("/404");
+            }
         }
     }).catch((error) => {
         if (error && error.response) {
@@ -58,6 +68,31 @@ const handleGetBikeById = async (id, setData) => {
         }
     });
 };
+
+const handleDeleteBikeById = async (
+    id,
+    setAlert,
+    setShowCloseButton,
+    setIsDeleted
+) => {
+    await AxiosInstance.post(BikeManagement.delete + id, {}, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            showAlert(setAlert, res.data.message, true);
+            setIsDeleted(true)
+        } else {
+            showAlert(setAlert, res.data.message, false);
+        }
+        setShowCloseButton(true);
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+        showAlert(setAlert, error, false);
+    });
+
+}
 
 
 function ManageBikeDetail() {
@@ -76,6 +111,7 @@ function ManageBikeDetail() {
     // VARIABLE
     // GET DETAIL
     const [data, setData] = useState({});
+    const [isDeleted, setIsDeleted] = useState(false);
 
     // VARIABLE
     // LOADING BAR
@@ -93,10 +129,12 @@ function ManageBikeDetail() {
 
     // Formik variables
     const initialValues = {
+        id: 0,
         bikeName: "",
         bikeManualId: "",
         bikeNo: "",
         bikeCategory: "",
+        price: 0,
         bikeColor: "",
         bikeManufacturer: "",
         hiredNumber: 0,
@@ -111,25 +149,28 @@ function ManageBikeDetail() {
     // PAGE LOADING
     useEffect(() => {
         if (loadingData) {
-            handleGetBikeById(id, setData);
+            handleGetBikeById(id, setData, navigate);
             setLoadingData(false)
         }
     }, [loadingData])
 
     // Update initialValues
     if (Object.keys(data).length !== 0) {
+        console.log()
+        initialValues.id = data.id;
         initialValues.bikeManualId = data.bikeManualId;
         initialValues.bikeName = data.name;
         initialValues.bikeNo = data.bikeNo;
         initialValues.bikeCategory = data.bikeCategoryName;
+        initialValues.price = data.price;
         initialValues.bikeManufacturer = data.bikeManufacturerName;
         initialValues.bikeColor = data.bikeColor;
         initialValues.hiredNumber = data.hiredNumber;
         initialValues.status = data.status;
         initialValues.createdUser = data.createdUser;
-        initialValues.createdDate = data.createdDate;
+        initialValues.createdDate = GetFormattedDate(data.createdDate);
         initialValues.modifiedUser = data.modifiedUser ? data.modifiedUser : "N/A";
-        initialValues.modifiedDate = data.modifiedDate ? data.modifiedDate : "N/A";
+        initialValues.modifiedDate = data.modifiedDate ? GetFormattedDate(data.modifiedDate) : "N/A";
     }
 
     // POPUP INTERFACE
@@ -148,17 +189,19 @@ function ManageBikeDetail() {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
                                 setAlert({ alertShow: false });
+                                handleNavigateToListPage(isDeleted, navigate);
                             }}>Close</button>
                     </div>
                 </ Fragment>
                 :
                 <Fragment>
                     <div className='popup-message text-center mb-3'>
-                        <label>Do you really want to delete this record?</label>
+                        <label>Do you really want to delete this bike?</label>
                         <p>This process cannot be undone</p>
                     </div>
                     <div className="popup-button">
-                        <button className="btn btn-danger btn-action">DELETE</button>
+                        <button className="btn btn-danger btn-action"
+                            onClick={() => handleDeleteBikeById(id, setAlert, setShowCloseButton, setIsDeleted)}>DELETE</button>
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
                                 setShowPopup(false);
@@ -199,9 +242,18 @@ function ManageBikeDetail() {
                             <Row>
                                 <Col xs={12} sm={6}>
                                     <TextField
+                                        label={"Bike Id"}
+                                        name={"id"}
+                                        type={"text"}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col xs={12} sm={6}>
+                                    <TextField
                                         label={"Bike Manual Id"}
                                         name={"bikeManualId"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -209,6 +261,7 @@ function ManageBikeDetail() {
                                         label={"Bike Name"}
                                         name={"bikeName"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -216,6 +269,7 @@ function ManageBikeDetail() {
                                         label={"Bike No"}
                                         name={"bikeNo"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -223,6 +277,15 @@ function ManageBikeDetail() {
                                         label={"Bike Category"}
                                         name={"bikeCategory"}
                                         type={"text"}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col xs={12} sm={6}>
+                                    <TextField
+                                        label={"Price"}
+                                        name={"price"}
+                                        type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -230,6 +293,7 @@ function ManageBikeDetail() {
                                         label={"Bike Manufacturer"}
                                         name={"bikeManufacturer"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -237,6 +301,7 @@ function ManageBikeDetail() {
                                         label={"Bike Color"}
                                         name={"bikeColor"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -244,6 +309,7 @@ function ManageBikeDetail() {
                                         label={"Hired Number"}
                                         name={"hiredNumber"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -251,6 +317,7 @@ function ManageBikeDetail() {
                                         label={"Status"}
                                         name={"status"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -258,6 +325,7 @@ function ManageBikeDetail() {
                                         label={"Create User"}
                                         name={"createdUser"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -265,6 +333,7 @@ function ManageBikeDetail() {
                                         label={"Create Date"}
                                         name={"createdDate"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -272,6 +341,7 @@ function ManageBikeDetail() {
                                         label={"Modified User"}
                                         name={"modifiedUser"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
@@ -279,6 +349,7 @@ function ManageBikeDetail() {
                                         label={"Modified Date"}
                                         name={"modifiedDate"}
                                         type={"text"}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <label className='form-label'>Bike Images</label>

@@ -73,6 +73,9 @@ public class BikeSpecification {
             predicates.add(cb.equal(root.get("bikeManufacturerId"), rootManufacturer.get("id")));
 
             predicates.add(cb.isFalse(root.get("isDeleted")));
+            predicates.add(cb.isFalse(rootCate.get("isDeleted")));
+            predicates.add(cb.isFalse(rootColor.get("isDeleted")));
+            predicates.add(cb.isFalse(rootManufacturer.get("isDeleted")));
 
             if(isCategoryExist){
                 predicates.add(cb.equal(rootCate.get("id"), categoryId));
@@ -96,6 +99,9 @@ public class BikeSpecification {
             predicatesCount.add(cb.equal(rootCount.get("bikeManufacturerId"), rootManufacturerCount.get("id")));
 
             predicatesCount.add(cb.isFalse(rootCount.get("isDeleted")));
+            predicatesCount.add(cb.isFalse(rootCateCount.get("isDeleted")));
+            predicatesCount.add(cb.isFalse(rootColorCount.get("isDeleted")));
+            predicatesCount.add(cb.isFalse(rootManufacturerCount.get("isDeleted")));
 
             if(isCategoryExist){
                 predicatesCount.add(cb.equal(rootCateCount.get("id"), categoryId));
@@ -193,6 +199,11 @@ public class BikeSpecification {
             predicates.add(cb.equal(root.get("bikeColorId"), rootColor.get("id")));
             predicates.add(cb.equal(root.get("bikeManufacturerId"), rootManufacturer.get("id")));
 
+            predicates.add(cb.isFalse(root.get("isDeleted")));
+            predicates.add(cb.isFalse(rootCate.get("isDeleted")));
+            predicates.add(cb.isFalse(rootColor.get("isDeleted")));
+            predicates.add(cb.isFalse(rootManufacturer.get("isDeleted")));
+
             if(bikeId != null){
                 predicates.add(cb.equal(root.get("id"), bikeId));
             }
@@ -217,11 +228,13 @@ public class BikeSpecification {
                     root.get("modifiedDate")
             ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
 
-            BikeResponse result = entityManager.createQuery(query) != null ? entityManager.createQuery(query).
-                    getSingleResult() : new BikeResponse();
-
-            mapFinal.put("data", result);
-            return mapFinal;
+            List<BikeResponse> result = entityManager.createQuery(query) != null ? entityManager.createQuery(query).getResultList() : new ArrayList<>();
+            if(result.size() == 0) {
+                return new HashMap<>();
+            }else{
+                mapFinal.put("data", result.get(0));
+                return mapFinal;
+            }
         }catch (Exception e) {
             e.printStackTrace();
             return new HashMap<>();
