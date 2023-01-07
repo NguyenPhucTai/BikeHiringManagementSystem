@@ -10,7 +10,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 
@@ -29,8 +28,6 @@ import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 
 const cookies = new Cookies();
-
-
 
 // FUNCTION
 // INTERNAL PAGE
@@ -148,6 +145,25 @@ const handleGetManufacturerList = async (setListManufacturer) => {
         });
 };
 
+const handleDeleteImage = async (imageId, setAlert, setShowCloseButton, setIsImageDelete) => {
+    await AxiosInstance.post(BikeManagement.deteteImage + imageId, {}, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        setIsImageDelete(true);
+        setShowCloseButton(true);
+        if (res.data.code === 1) {
+            showAlert(setAlert, res.data.message, true);
+        } else {
+            showAlert(setAlert, res.data.message, false);
+        }
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+        showAlert(setAlert, error, false);
+    });
+};
+
 const handleSubmit = async (
     formData,
     fileUpload,
@@ -173,6 +189,7 @@ const handleSubmit = async (
     })
         .then((res) => {
             setIsSubmitting(false)
+            setShowPopup(true)
             if (res.data.code === 1) {
                 showAlert(setAlert, res.data.message, true)
                 setFileUpload([]);
@@ -239,6 +256,9 @@ function ManageBikeUpdate() {
     // VARIABLE
     // POPUP
     const [showPopup, setShowPopup] = useState(false);
+    const [showCloseButton, setShowCloseButton] = useState(false);
+    const [isImageDelete, setIsImageDelete] = useState(false);
+    const [imageID, setImageID] = useState(0);
 
     // Formik variables
     const initialValues = {
@@ -256,12 +276,19 @@ function ManageBikeUpdate() {
     // USE EFFECT
     // UPLOAD IMAGE TO FIREBASE
     useEffect(() => {
+        // CASE 1: NO IMAGE
         if (isClicking && imageUpload.length === 0) {
             handleSubmit(formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
         }
+
+        // CASE 2: EXCEED LIMIT IMAGE NUMBER
         else if (isClicking && data.imageList.length + imageUpload.length > 4) {
-            console.log(">>>>>>>>>>>>>> ERROR:");
+            setShowPopup(true);
+            showAlert(setAlert, "Exceeded maximum image number (Max: 4 - Current: " + data.imageList.length + " - New: " + imageUpload.length + ")", false);
+            setLoading(false);
         }
+
+        // CASE 3: NO EXCEED LIMIT IMAGE NUMBER
         else if (isClicking) {
             var index = 0;
             imageUpload.forEach((data) => {
@@ -331,7 +358,6 @@ function ManageBikeUpdate() {
         };
     }, []);
 
-
     // USE EFFECT
     // PAGE LOADING
     useEffect(() => {
@@ -344,6 +370,14 @@ function ManageBikeUpdate() {
         }
     }, [loadingData])
 
+    // USE EFFECT
+    // SHOW CONFIRMATION DELETE IMAGE POPUP
+    useEffect(() => {
+        if (isImageDelete === true && imageID !== 0) {
+            setShowPopup(true);
+        }
+    }, [isImageDelete, imageID])
+
 
     // Update initialValues
     if (Object.keys(data).length !== 0) {
@@ -355,41 +389,85 @@ function ManageBikeUpdate() {
         initialValues.bikeColor = data.bikeColorId;
     }
 
-    return (
-        !loadingData ?
-            <Fragment>
-                <Popup showPopup={showPopup} setShowPopup={setShowPopup}
-                    child={
-                        <Fragment>
-                            <AlertMessage
-                                isShow={alert.alertShow}
-                                message={alert.alertMessage}
-                                status={alert.alertStatus}
-                            />
-                            <div className="popup-button">
-                                {alert.alertStatus === "success" ?
-                                    <button className="btn btn-secondary btn-cancel"
-                                        onClick={() => {
-                                            setShowPopup(false);
-                                            navigate('/manage/bike');
-
-                                        }}>Close</button>
-                                    :
-                                    <button className="btn btn-secondary btn-cancel"
-                                        onClick={() => {
-                                            setShowPopup(false);
-                                        }}>Close</button>}
-                            </div>
-                        </Fragment >
-                    }
-                />
-                <div className="container">
-                    <h1 className="text-center">UPDATE BIKE</h1>
+    let popup;
+    if (isImageDelete === true) {
+        popup = <Popup showPopup={showPopup} setShowPopup={setShowPopup}
+            child={
+                showCloseButton ?
+                    < Fragment >
+                        <AlertMessage
+                            isShow={alert.alertShow}
+                            message={alert.alertMessage}
+                            status={alert.alertStatus}
+                        />
+                        <div className="popup-button">
+                            <button className="btn btn-secondary btn-cancel"
+                                onClick={() => {
+                                    setShowPopup(false);
+                                    setShowCloseButton(false);
+                                    setAlert({ alertShow: false });
+                                    setImageID(0);
+                                    setIsImageDelete(false);
+                                }}>Close</button>
+                        </div>
+                    </ Fragment>
+                    :
+                    <Fragment>
+                        <div className='popup-message text-center mb-3'>
+                            <label>Do you really want to delete this image?</label>
+                            <p>This process cannot be undone</p>
+                        </div>
+                        <div className="popup-button">
+                            <button className="btn btn-danger btn-action"
+                                onClick={() => handleDeleteImage(
+                                    imageID,
+                                    setAlert,
+                                    setShowCloseButton,
+                                    setIsImageDelete)
+                                }>DELETE</button>
+                            <button className="btn btn-secondary btn-cancel"
+                                onClick={() => {
+                                    setShowPopup(false);
+                                    setImageID(0);
+                                    setIsImageDelete(false);
+                                }}>Cancel</button>
+                        </div>
+                    </Fragment >
+            }
+        />
+    } else {
+        popup = <Popup showPopup={showPopup} setShowPopup={setShowPopup}
+            child={
+                <Fragment>
                     <AlertMessage
                         isShow={alert.alertShow}
                         message={alert.alertMessage}
                         status={alert.alertStatus}
                     />
+                    <div className="popup-button">
+                        {alert.alertStatus === "success" ?
+                            <button className="btn btn-secondary btn-cancel"
+                                onClick={() => {
+                                    setShowPopup(false);
+                                    navigate('/manage/bike/' + data.id);
+                                }}>Close</button>
+                            :
+                            <button className="btn btn-secondary btn-cancel"
+                                onClick={() => {
+                                    setShowPopup(false);
+                                }}>Close</button>}
+                    </div>
+                </Fragment >
+            }
+        />
+    }
+
+    return (
+        !loadingData ?
+            <Fragment>
+                {popup}
+                <div className="container">
+                    <h1 className="text-center">UPDATE BIKE</h1>
                     {loading && (
                         <Box sx={{ width: '100%' }}>
                             <LinearProgress />
@@ -430,7 +508,7 @@ function ManageBikeUpdate() {
                             setFieldValue,
                         }) => (
                             <Form className="d-flex flex-column">
-                                <Row>
+                                <Row className="mb-3">
                                     <Col xs={12} sm={6}>
                                         <TextField
                                             label={"Bike Manual Id"}
@@ -507,6 +585,8 @@ function ManageBikeUpdate() {
                                                 <Col key={index} xs={12} sm={6} md={4} lg={3}>
                                                     <div className="card-item">
                                                         <img src={Firebase_URL + value.filePath} alt={value.fileName} />
+                                                        <button type="button" className="btn btn-danger"
+                                                            onClick={() => { setIsImageDelete(true); setImageID(value.id); }}>REMOVE</button>
                                                     </div>
                                                 </Col>
                                             )
@@ -515,44 +595,46 @@ function ManageBikeUpdate() {
                                         <div></div>
                                     }
                                 </Row>
-                                <label className='form-label'>Bike Images (Max 4)</label>
-                                <label className='form-label' style={{ color: "red", fontStyle: "italic" }}>*Note: First image will be avatar of the bike</label>
-                                <DropzoneArea
-                                    acceptedFiles={[
-                                        ".png,.jpg,.jpeg",
-                                    ]}
-                                    showPreviews={true}
-                                    maxFileSize={10000000}
-                                    fullWidth={true}
-                                    dropzoneText='Drop files to attach or browse'
-                                    filesLimit={4}
-                                    showFileNamesInPreview={true}
-                                    showPreviewsInDropzone={false}
-                                    showAlerts={false}
-                                    name='file'
-                                    id='bikeImage'
-                                    onDelete={(file) => {
-                                        handleFileRemove(file);
-                                    }}
-                                    onDrop={(dropFiles) => {
-                                        let event = {
-                                            target: {
-                                                name: "files",
-                                                value: dropFiles,
-                                            },
-                                        };
-                                        handleChange(event);
-                                        handleFileUpload(event);
-                                    }}
-                                />
-                                <button type="submit" className="btn btn-dark btn-md mt-3">
-                                    Submit
-                                </button>
+                                <Row className="mb-3">
+                                    <label className='form-label'>Bike Images (Max 4)</label>
+                                    <label className='form-label' style={{ color: "red", fontStyle: "italic" }}>*Note: First image will be avatar of the bike</label>
+                                    <DropzoneArea
+                                        acceptedFiles={[
+                                            ".png,.jpg,.jpeg",
+                                        ]}
+                                        showPreviews={true}
+                                        maxFileSize={10000000}
+                                        fullWidth={true}
+                                        dropzoneText='Drop files to attach or browse'
+                                        filesLimit={4}
+                                        showFileNamesInPreview={true}
+                                        showPreviewsInDropzone={false}
+                                        showAlerts={false}
+                                        name='file'
+                                        id='bikeImage'
+                                        onDelete={(file) => {
+                                            handleFileRemove(file);
+                                        }}
+                                        onDrop={(dropFiles) => {
+                                            let event = {
+                                                target: {
+                                                    name: "files",
+                                                    value: dropFiles,
+                                                },
+                                            };
+                                            handleChange(event);
+                                            handleFileUpload(event);
+                                        }}
+                                    />
+                                    <button type="submit" className="btn btn-dark btn-md mt-3">
+                                        Submit
+                                    </button>
+                                </Row>
                             </Form>
                         )}
                     </Formik>
                 </div>
-            </Fragment>
+            </Fragment >
             :
             <Fragment>
                 <PageLoad />

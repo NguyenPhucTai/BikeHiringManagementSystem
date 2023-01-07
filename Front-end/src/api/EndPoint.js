@@ -18,6 +18,7 @@ export const BikeManagement = {
     create: "/admin/bike/create",
     update: "/admin/bike/update/",
     delete: "/admin/bike/delete/",
+    deteteImage: "/admin/bike/image/delete/",
     getBikePagination: "/admin/bike/get",
     getById: "/admin/bike/get?bikeId="
 };

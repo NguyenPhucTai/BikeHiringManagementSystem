@@ -3,6 +3,7 @@ package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.Bike;
+import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeImage;
 import com.BikeHiringManagement.model.temp.ComparedObject;
 import com.BikeHiringManagement.model.temp.HistoryObject;
@@ -74,6 +75,7 @@ public class BikeService {
                     List<AttachmentResponse> listImageResponse = new ArrayList<>();
                     for(BikeImage bikeImage : listImage){
                         AttachmentResponse attachmentResponse = new AttachmentResponse();
+                        attachmentResponse.setId(bikeImage.getId());
                         attachmentResponse.setFilePath(bikeImage.getPath());
                         attachmentResponse.setFileName(bikeImage.getName());
                         listImageResponse.add(attachmentResponse);
@@ -114,6 +116,7 @@ public class BikeService {
             if(!listImage.isEmpty()){
                 for(BikeImage bikeImage : listImage){
                     AttachmentResponse attachmentResponse = new AttachmentResponse();
+                    attachmentResponse.setId(bikeImage.getId());
                     attachmentResponse.setFilePath(bikeImage.getPath());
                     attachmentResponse.setFileName(bikeImage.getName());
                     listImageResponse.add(attachmentResponse);
@@ -268,6 +271,32 @@ public class BikeService {
             }
 
             return new Result(Constant.SUCCESS_CODE, "Update new bike successfully");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
+
+    public Result deleteBikeImageById(Long imageId, String username){
+        try{
+            if(!checkEntityExistService.isEntityExisted(Constant.BIKE_IMAGE, "id", imageId)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike image " + imageId +" has not been existed!!!");
+            }
+
+            BikeImage bikeImage = bikeImageRepository.findBikeImageById(imageId);
+            if(bikeImage.getIsDeleted() == true){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike image " + imageId +" has not been existed!!!");
+            }
+            bikeImage.setModifiedDate(new Date());
+            bikeImage.setModifiedUser(username);
+            bikeImage.setIsDeleted(true);
+            bikeImageRepository.save(bikeImage);
+
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(username);
+            historyObject.setEntityId(imageId);
+            historyService.saveHistory(Constant.HISTORY_DELETE, bikeImage, historyObject);
+            return new Result(Constant.SUCCESS_CODE, "Delete bike image successfully");
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
