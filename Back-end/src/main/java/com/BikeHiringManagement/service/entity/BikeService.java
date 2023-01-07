@@ -8,7 +8,7 @@ import com.BikeHiringManagement.model.temp.ComparedObject;
 import com.BikeHiringManagement.model.temp.HistoryObject;
 import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.model.request.AttachmentRequest;
-import com.BikeHiringManagement.model.request.BikeCreateRequest;
+import com.BikeHiringManagement.model.request.BikeRequest;
 import com.BikeHiringManagement.model.request.PaginationBikeRequest;
 import com.BikeHiringManagement.model.response.AttachmentResponse;
 import com.BikeHiringManagement.model.response.BikeResponse;
@@ -132,7 +132,7 @@ public class BikeService {
         }
     }
 
-    public Result createBike(BikeCreateRequest bikeRequest, String username){
+    public Result createBike(BikeRequest bikeRequest, String username){
         try{
             if(bikeRepository.existsByBikeNoAndName(bikeRequest.getBikeNo(), bikeRequest.getName())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike number has been existed!!!");
@@ -142,6 +142,7 @@ public class BikeService {
             newBike.setCreatedDate(new Date());
             newBike.setCreatedUser(username);
             newBike.setStatus("AVAILABLE");
+            newBike.setHiredNumber(0);
             Bike savedBike = bikeRepository.save(newBike);
 
             List<BikeImage> saveList = new ArrayList<>();
@@ -211,7 +212,7 @@ public class BikeService {
         }
     }
 
-    public Result updateBike(BikeCreateRequest bikeRequest){
+    public Result updateBike(BikeRequest bikeRequest){
         try{
             if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeRequest.getId())){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike has not been existed!!!");
@@ -229,6 +230,7 @@ public class BikeService {
             historyBikeObject.getComparingMap().put("bikeColorId", new ComparedObject(bike.getBikeColorId(), bikeRequest.getBikeColorId()));
             historyBikeObject.getComparingMap().put("bikeManufacturerId", new ComparedObject(bike.getBikeManufacturerId(), bikeRequest.getBikeManufacturerId()));
             historyBikeObject.getComparingMap().put("status", new ComparedObject(bike.getStatus(), bikeRequest.getStatus()));
+            historyBikeObject.getComparingMap().put("hiredNumber", new ComparedObject(bike.getHiredNumber(), bikeRequest.getHiredNumber()));
             historyService.saveHistory(Constant.HISTORY_UPDATE, bike, historyBikeObject);
 
             // Save bike
@@ -241,10 +243,10 @@ public class BikeService {
             bike.setBikeColorId(bikeRequest.getBikeColorId());
             bike.setBikeManufacturerId(bikeRequest.getBikeManufacturerId());
             bike.setStatus(bikeRequest.getStatus());
-            Bike savedBike = bikeRepository.save(bike);
+            bike.setHiredNumber(bikeRequest.getHiredNumber());
+            bikeRepository.save(bike);
 
-            // Save image
-            bikeImageRepository.updateIsDelete(bike.getId());
+            // Save new image
             List<BikeImage> saveList = new ArrayList<>();
             for(AttachmentRequest item : bikeRequest.getFiles()){
                 BikeImage bikeImage = new BikeImage();
@@ -255,11 +257,10 @@ public class BikeService {
                 bikeImage.setCreatedUser(bikeRequest.getUsername());
                 saveList.add(bikeImage);
             }
-            bikeImageRepository.saveAll(saveList);
+            List<BikeImage> savedList =  bikeImageRepository.saveAll(saveList);
 
             //History Image
-            List<BikeImage> savedBikeImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(savedBike.getId(), false);
-            for(BikeImage image : savedBikeImage){
+            for(BikeImage image : savedList){
                 HistoryObject historyBikeObjectImage = new HistoryObject();
                 historyBikeObjectImage.setUsername(bikeRequest.getUsername());
                 historyBikeObjectImage.setEntityId(image.getId());

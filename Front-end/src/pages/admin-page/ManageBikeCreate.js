@@ -138,15 +138,15 @@ const handleGetManufacturerList = async (setListManufacturer) => {
         });
 };
 
-const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup) => {
+const handleSubmit = async (formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup) => {
 
     const body = {
-        name: bikeData.bikeName,
-        bikeManualId: bikeData.bikeManualId,
-        bikeNo: bikeData.bikeNo,
-        bikeCategoryId: bikeData.bikeCategory,
-        bikeColorId: bikeData.bikeColor,
-        bikeManufacturerId: bikeData.bikeManufacturer,
+        name: formData.bikeName,
+        bikeManualId: formData.bikeManualId,
+        bikeNo: formData.bikeNo,
+        bikeCategoryId: formData.bikeCategory,
+        bikeColorId: formData.bikeColor,
+        bikeManufacturerId: formData.bikeManufacturer,
         files: fileUpload,
     };
     await AxiosInstance.post(BikeManagement.create, body, {
@@ -156,7 +156,7 @@ const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, set
             setIsSubmitting(false)
             setShowPopup(true)
             if (res.data.code === 1) {
-                showAlert(setAlert, "Create success", true)
+                showAlert(setAlert, res.data.message, true)
                 setFileUpload([]);
                 setLoading(false);
             } else {
@@ -206,11 +206,7 @@ function ManageBikeCreate() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [imageUpload, setImageUpload] = useState([]);
     const [fileUpload, setFileUpload] = useState([]);
-    const [bikeData, setBikeData] = useState({
-        bikeName: "",
-        bikeNo: "",
-        bikeCategory: 0,
-    });
+    const [formData, setFormData] = useState({});
     const [listCategory, setListCategory] = useState([]);
     const [listColor, setListColor] = useState([]);
     const [listManufacturer, setListManufacturer] = useState([]);
@@ -238,7 +234,7 @@ function ManageBikeCreate() {
     // UPLOAD IMAGE TO FIREBASE
     useEffect(() => {
         if (isClicking && imageUpload.length === 0) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
+            handleSubmit(formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
         }
         else if (isClicking) {
             var index = 0;
@@ -271,7 +267,7 @@ function ManageBikeCreate() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting && imageUpload.length === fileUpload.length) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
+            handleSubmit(formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
         }
     }, [isSubmitting, fileUpload])
 
@@ -319,6 +315,9 @@ function ManageBikeCreate() {
         }
     }, [loadingData])
 
+
+
+
     return (
         !loadingData ?
             <Fragment>
@@ -331,12 +330,18 @@ function ManageBikeCreate() {
                                 status={alert.alertStatus}
                             />
                             <div className="popup-button">
-                                <button className="btn btn-secondary btn-cancel"
-                                    onClick={() => {
-                                        setShowPopup(false);
-                                        navigate('/manage/bike');
+                                {alert.alertStatus === "success" ?
+                                    <button className="btn btn-secondary btn-cancel"
+                                        onClick={() => {
+                                            setShowPopup(false);
+                                            navigate('/manage/bike');
 
-                                    }}>Close</button>
+                                        }}>Close</button>
+                                    :
+                                    <button className="btn btn-secondary btn-cancel"
+                                        onClick={() => {
+                                            setShowPopup(false);
+                                        }}>Close</button>}
                             </div>
                         </Fragment >
                     }
@@ -356,7 +361,7 @@ function ManageBikeCreate() {
                                 alertShow: false,
                                 alertStatus: "success",
                             })
-                            setBikeData(values)
+                            setFormData(values)
                             setIsClicking(true);
                             setLoading(true);
                         }}>

@@ -12,10 +12,12 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useParams } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 // Firebase
 import { storage } from "../../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { Firebase_URL } from "../../api/EndPoint";
 
 // Component
 import { AlertMessage } from "../../components/Modal/AlertMessage";
@@ -24,6 +26,7 @@ import { SelectField } from "../../components/Form/SelectField";
 import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from "../../api/EndPoint";
 import { GenerateRandomString } from "../../function/RandomString";
 import { PageLoad } from '../../components/Base/PageLoad';
+import { Popup } from '../../components/Modal/Popup';
 
 const cookies = new Cookies();
 
@@ -145,47 +148,53 @@ const handleGetManufacturerList = async (setListManufacturer) => {
         });
 };
 
-const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading) => {
-
+const handleSubmit = async (
+    formData,
+    fileUpload,
+    setAlert,
+    setIsSubmitting,
+    setFileUpload,
+    setLoading,
+    setShowPopup
+) => {
     const body = {
-        name: bikeData.bikeName,
-        bikeManualId: bikeData.bikeManualId,
-        bikeNo: bikeData.bikeNo,
-        bikeCategoryId: bikeData.bikeCategory,
-        bikeColorId: bikeData.bikeColor,
-        bikeManufacturerId: bikeData.bikeManufacturer,
+        name: formData.bikeName,
+        bikeManualId: formData.bikeManualId,
+        bikeNo: formData.bikeNo,
+        bikeCategoryId: formData.bikeCategory,
+        bikeColorId: formData.bikeColor,
+        bikeManufacturerId: formData.bikeManufacturer,
+        status: formData.status,
+        hiredNumber: formData.hiredNumber,
         files: fileUpload,
     };
-    console.log(body);
-
-    // await AxiosInstance.post(BikeManagement.create, body, {
-    //     headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
-    // })
-    //     .then((res) => {
-    //         setIsSubmitting(false)
-    //         console.log(res)
-    //         if (res.data.code === 1) {
-    //             showAlert(setAlert, "Create success", true)
-    //             setFileUpload([]);
-    //             setLoading(false);
-    //         } else {
-    //             showAlert(setAlert, res.data.message, false)
-    //             fileUpload.forEach((data) => {
-    //                 const imageRef = ref(storage, `bike-image/${data.fileName}`);
-    //                 deleteObject(imageRef).then(() => {
-    //                     // File deleted successfully
-    //                 }).catch((error) => {
-    //                     // Uh-oh, an error occurred!
-    //                 });
-    //             })
-    //             setFileUpload([]);
-    //             setLoading(false);
-    //         }
-    //     })
-    //     .catch((error) => {
-    //         showAlert(setAlert, error, false)
-    //         setLoading(false);
-    //     });
+    await AxiosInstance.post(BikeManagement.update + formData.id, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+    })
+        .then((res) => {
+            setIsSubmitting(false)
+            if (res.data.code === 1) {
+                showAlert(setAlert, res.data.message, true)
+                setFileUpload([]);
+                setLoading(false);
+            } else {
+                showAlert(setAlert, res.data.message, false)
+                fileUpload.forEach((data) => {
+                    const imageRef = ref(storage, `bike-image/${data.fileName}`);
+                    deleteObject(imageRef).then(() => {
+                        // File deleted successfully
+                    }).catch((error) => {
+                        // Uh-oh, an error occurred!
+                    });
+                })
+                setFileUpload([]);
+                setLoading(false);
+            }
+        })
+        .catch((error) => {
+            showAlert(setAlert, error, false)
+            setLoading(false);
+        });
 };
 
 
@@ -193,6 +202,9 @@ function ManageBikeUpdate() {
 
     // GET ID FROM URL
     let { id } = useParams()
+
+    // Render page
+    const navigate = useNavigate();
 
     // INITIALIZE USE STATE
     // VARIABLE
@@ -205,11 +217,7 @@ function ManageBikeUpdate() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [imageUpload, setImageUpload] = useState([]);
     const [fileUpload, setFileUpload] = useState([]);
-    const [bikeData, setBikeData] = useState({
-        bikeName: "",
-        bikeNo: "",
-        bikeCategory: 0,
-    });
+    const [formData, setFormData] = useState({});
     const [listCategory, setListCategory] = useState([]);
     const [listColor, setListColor] = useState([]);
     const [listManufacturer, setListManufacturer] = useState([]);
@@ -228,6 +236,10 @@ function ManageBikeUpdate() {
     const [loading, setLoading] = useState(false);
     const timer = useRef();
 
+    // VARIABLE
+    // POPUP
+    const [showPopup, setShowPopup] = useState(false);
+
     // Formik variables
     const initialValues = {
         bikeName: "",
@@ -239,12 +251,16 @@ function ManageBikeUpdate() {
         files: [{}],
     };
 
+
     // IMAGE HANDLING
     // USE EFFECT
     // UPLOAD IMAGE TO FIREBASE
     useEffect(() => {
         if (isClicking && imageUpload.length === 0) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
+            handleSubmit(formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
+        }
+        else if (isClicking && data.imageList.length + imageUpload.length > 4) {
+            console.log(">>>>>>>>>>>>>> ERROR:");
         }
         else if (isClicking) {
             var index = 0;
@@ -277,7 +293,7 @@ function ManageBikeUpdate() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting && imageUpload.length === fileUpload.length) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
+            handleSubmit(formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading, setShowPopup);
         }
     }, [isSubmitting, fileUpload])
 
@@ -341,165 +357,202 @@ function ManageBikeUpdate() {
 
     return (
         !loadingData ?
-            <div className="container">
-                <h1 className="text-center">UPDATE BIKE</h1>
-                <AlertMessage
-                    isShow={alert.alertShow}
-                    message={alert.alertMessage}
-                    status={alert.alertStatus}
-                />
-                {loading && (
-                    <Box sx={{ width: '100%' }}>
-                        <LinearProgress />
-                    </Box>
-                )}
-                <Formik
-                    enableReinitialize
-                    initialValues={initialValues}
-                    validationSchema={BikeSchema}
-                    onSubmit={(values) => {
-                        setAlert({
-                            alertShow: false,
-                            alertStatus: "success",
-                        })
-                        setBikeData(values)
-                        setIsClicking(true);
-                        setLoading(true);
-                    }}>
-                    {({
-                        isSubmitting,
-                        handleChange,
-                        handleBlur,
-                        handleSubmit,
-                        values,
-                        errors,
-                        touched,
-                        setFieldValue,
-                    }) => (
-                        <Form className="d-flex flex-column">
-                            <Row>
-                                <Col xs={12} sm={6}>
-                                    <TextField
-                                        label={"Bike Manual Id"}
-                                        name={"bikeManualId"}
-                                        type={"text"}
-                                        placeholder={"Enter the bike manual id"}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <TextField
-                                        label={"Bike Name"}
-                                        name={"bikeName"}
-                                        type={"text"}
-                                        placeholder={"Enter the bike name"}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <TextField
-                                        label={"Bike No"}
-                                        name={"bikeNo"}
-                                        type={"text"}
-                                        placeholder={"Enter your bike number"}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <SelectField
-                                        label={"Bike Category"}
-                                        name={"bikeCategory"}
-                                        options={listCategory}
-                                        value={{ label: data.bikeCategoryName, value: data.bikeCategoryId }}
-                                        placeholder={"Choose bike category"}
-                                        onChange={(selectOption) => {
-                                            setFieldValue("bikeCategory", selectOption.value);
-                                        }}
-                                        onBlur={() => {
-                                            handleBlur({ target: { name: "bikeCategory" } });
-                                        }}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <SelectField
-                                        label={"Bike Manufacturer"}
-                                        name={"bikeManufacturer"}
-                                        options={listManufacturer}
-                                        value={{ label: data.bikeManufacturerName, value: data.bikeManufacturerId }}
-                                        placeholder={"Choose bike manufacturer"}
-                                        onChange={(selectOption) => {
-                                            setFieldValue("bikeManufacturer", selectOption.value);
-                                        }}
-                                        onBlur={() => {
-                                            handleBlur({ target: { name: "bikeManufacturer" } });
-                                        }}
-                                    />
-                                </Col>
-                                <Col xs={12} sm={6}>
-                                    <SelectField
-                                        label={"Bike Color"}
-                                        name={"bikeColor"}
-                                        options={listColor}
-                                        value={{ label: data.bikeColor, value: data.bikeColorId }}
-                                        placeholder={"Choose bike color"}
-                                        onChange={(selectOption) => {
-                                            setFieldValue("bikeColor", selectOption.value);
-                                        }}
-                                        onBlur={() => {
-                                            handleBlur({ target: { name: "bikeColor" } });
-                                        }}
-                                    />
-                                </Col>
-                            </Row>
-                            <div className="image-section">
-                                <label className='form-label'>Bike Images</label>
-                                <Row>
-                                    <Col className="column" xs={12} sm={6} md={4} lg={3}>
-                                        <div className="card-item">
-                                            <div className="text-right" style={{ textAlign: "right" }}>
-                                                <button type="button" style={{ border: '0' }}><HighlightOffIcon /></button>
-                                            </div>
-                                            <div className="card-body">
-                                                <img src="https://image.thanhnien.vn/1200x630/Uploaded/2022/hgnatm/z-ba-hung-2021/thang-7-2021/xe-may-so/xe-may-so_thanhnien-3_tdnb.jpg" />
-                                            </div>
-                                        </div>
-                                    </Col>
-
-                                </Row>
-                            </div>
-                            <DropzoneArea
-                                acceptedFiles={[
-                                    ".png,.jpg,.jpeg",
-                                ]}
-                                showPreviews={true}
-                                maxFileSize={10000000}
-                                fullWidth={true}
-                                dropzoneText='Drop files to attach or browse'
-                                filesLimit={4}
-                                showFileNamesInPreview={true}
-                                showPreviewsInDropzone={false}
-                                showAlerts={false}
-                                name='file'
-                                id='bikeImage'
-                                onDelete={(file) => {
-                                    handleFileRemove(file);
-                                }}
-                                onDrop={(dropFiles) => {
-                                    let event = {
-                                        target: {
-                                            name: "files",
-                                            value: dropFiles,
-                                        },
-                                    };
-                                    handleChange(event);
-                                    handleFileUpload(event);
-                                }}
+            <Fragment>
+                <Popup showPopup={showPopup} setShowPopup={setShowPopup}
+                    child={
+                        <Fragment>
+                            <AlertMessage
+                                isShow={alert.alertShow}
+                                message={alert.alertMessage}
+                                status={alert.alertStatus}
                             />
-                            <button type="submit" className="btn btn-dark btn-md mt-3">
-                                Submit
-                            </button>
-                        </Form>
-                    )}
-                </Formik>
+                            <div className="popup-button">
+                                {alert.alertStatus === "success" ?
+                                    <button className="btn btn-secondary btn-cancel"
+                                        onClick={() => {
+                                            setShowPopup(false);
+                                            navigate('/manage/bike');
 
-            </div>
+                                        }}>Close</button>
+                                    :
+                                    <button className="btn btn-secondary btn-cancel"
+                                        onClick={() => {
+                                            setShowPopup(false);
+                                        }}>Close</button>}
+                            </div>
+                        </Fragment >
+                    }
+                />
+                <div className="container">
+                    <h1 className="text-center">UPDATE BIKE</h1>
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
+                    {loading && (
+                        <Box sx={{ width: '100%' }}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    <Formik
+                        enableReinitialize
+                        initialValues={initialValues}
+                        validationSchema={BikeSchema}
+                        onSubmit={(values) => {
+                            setAlert({
+                                alertShow: false,
+                                alertStatus: "success",
+                            })
+                            setFormData({
+                                id: data.id,
+                                status: data.status,
+                                hiredNumber: data.hiredNumber,
+                                bikeName: values.bikeName,
+                                bikeManualId: values.bikeManualId,
+                                bikeNo: values.bikeNo,
+                                bikeCategory: values.bikeCategory,
+                                bikeColor: values.bikeColor,
+                                bikeManufacturer: values.bikeManufacturer,
+                                files: [{}]
+                            })
+                            setIsClicking(true);
+                            setLoading(true);
+                        }}>
+                        {({
+                            isSubmitting,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            setFieldValue,
+                        }) => (
+                            <Form className="d-flex flex-column">
+                                <Row>
+                                    <Col xs={12} sm={6}>
+                                        <TextField
+                                            label={"Bike Manual Id"}
+                                            name={"bikeManualId"}
+                                            type={"text"}
+                                            placeholder={"Enter the bike manual id"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <TextField
+                                            label={"Bike Name"}
+                                            name={"bikeName"}
+                                            type={"text"}
+                                            placeholder={"Enter the bike name"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <TextField
+                                            label={"Bike No"}
+                                            name={"bikeNo"}
+                                            type={"text"}
+                                            placeholder={"Enter your bike number"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <SelectField
+                                            label={"Bike Category"}
+                                            name={"bikeCategory"}
+                                            options={listCategory}
+                                            value={{ label: data.bikeCategoryName, value: data.bikeCategoryId }}
+                                            placeholder={"Choose bike category"}
+                                            onChange={(selectOption) => {
+                                                setFieldValue("bikeCategory", selectOption.value);
+                                            }}
+                                            onBlur={() => {
+                                                handleBlur({ target: { name: "bikeCategory" } });
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <SelectField
+                                            label={"Bike Manufacturer"}
+                                            name={"bikeManufacturer"}
+                                            options={listManufacturer}
+                                            value={{ label: data.bikeManufacturerName, value: data.bikeManufacturerId }}
+                                            placeholder={"Choose bike manufacturer"}
+                                            onChange={(selectOption) => {
+                                                setFieldValue("bikeManufacturer", selectOption.value);
+                                            }}
+                                            onBlur={() => {
+                                                handleBlur({ target: { name: "bikeManufacturer" } });
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <SelectField
+                                            label={"Bike Color"}
+                                            name={"bikeColor"}
+                                            options={listColor}
+                                            value={{ label: data.bikeColor, value: data.bikeColorId }}
+                                            placeholder={"Choose bike color"}
+                                            onChange={(selectOption) => {
+                                                setFieldValue("bikeColor", selectOption.value);
+                                            }}
+                                            onBlur={() => {
+                                                handleBlur({ target: { name: "bikeColor" } });
+                                            }}
+                                        />
+                                    </Col>
+                                    <label className='form-label'>Bike Images</label>
+                                    {Object.keys(data).length !== 0 ?
+                                        data.imageList.map((value, index) => {
+                                            return (
+                                                <Col key={index} xs={12} sm={6} md={4} lg={3}>
+                                                    <div className="card-item">
+                                                        <img src={Firebase_URL + value.filePath} alt={value.fileName} />
+                                                    </div>
+                                                </Col>
+                                            )
+                                        })
+                                        :
+                                        <div></div>
+                                    }
+                                </Row>
+                                <label className='form-label'>Bike Images (Max 4)</label>
+                                <label className='form-label' style={{ color: "red", fontStyle: "italic" }}>*Note: First image will be avatar of the bike</label>
+                                <DropzoneArea
+                                    acceptedFiles={[
+                                        ".png,.jpg,.jpeg",
+                                    ]}
+                                    showPreviews={true}
+                                    maxFileSize={10000000}
+                                    fullWidth={true}
+                                    dropzoneText='Drop files to attach or browse'
+                                    filesLimit={4}
+                                    showFileNamesInPreview={true}
+                                    showPreviewsInDropzone={false}
+                                    showAlerts={false}
+                                    name='file'
+                                    id='bikeImage'
+                                    onDelete={(file) => {
+                                        handleFileRemove(file);
+                                    }}
+                                    onDrop={(dropFiles) => {
+                                        let event = {
+                                            target: {
+                                                name: "files",
+                                                value: dropFiles,
+                                            },
+                                        };
+                                        handleChange(event);
+                                        handleFileUpload(event);
+                                    }}
+                                />
+                                <button type="submit" className="btn btn-dark btn-md mt-3">
+                                    Submit
+                                </button>
+                            </Form>
+                        )}
+                    </Formik>
+                </div>
+            </Fragment>
             :
             <Fragment>
                 <PageLoad />

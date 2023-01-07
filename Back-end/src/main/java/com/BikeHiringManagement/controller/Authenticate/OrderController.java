@@ -1,6 +1,6 @@
 package com.BikeHiringManagement.controller.Authenticate;
 
-import com.BikeHiringManagement.model.request.BikeCreateRequest;
+import com.BikeHiringManagement.model.request.BikeRequest;
 import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.service.entity.OrderService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
@@ -27,7 +27,7 @@ public class OrderController {
     OrderService orderService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createCart (@RequestBody BikeCreateRequest bikeRequest,
+    public ResponseEntity<?> createCart (@RequestBody BikeRequest bikeRequest,
                                          HttpServletRequest request) {
 
         try {

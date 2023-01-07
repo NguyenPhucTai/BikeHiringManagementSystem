@@ -5,16 +5,16 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BikeCreateRequest {
-
+public class BikeRequest {
     private Long id;
+    private String username;
     private String name;
     private String bikeNo;
     private String bikeManualId;
     private Long bikeCategoryId;
     private Long bikeColorId;
     private Long bikeManufacturerId;
-    private List<AttachmentRequest> files;
     private String status;
-    private String username;
+    private Integer hiredNumber;
+    private List<AttachmentRequest> files;
 }

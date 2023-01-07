@@ -4,7 +4,7 @@ package com.BikeHiringManagement.controller.Authenticate;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.temp.Result;
-import com.BikeHiringManagement.model.request.BikeCreateRequest;
+import com.BikeHiringManagement.model.request.BikeRequest;
 import com.BikeHiringManagement.model.request.PaginationBikeRequest;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.service.entity.BikeService;
@@ -62,7 +62,7 @@ public class BikeController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createBike (@RequestBody BikeCreateRequest bikeRequest,
+    public ResponseEntity<?> createBike (@RequestBody BikeRequest bikeRequest,
                                          HttpServletRequest request) {
 
         try {
@@ -91,7 +91,7 @@ public class BikeController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<?> updateBike(@RequestBody BikeCreateRequest reqBody,
+    public ResponseEntity<?> updateBike(@RequestBody BikeRequest reqBody,
                                                 @PathVariable Long id,
                                                 HttpServletRequest request){
         try{

@@ -354,9 +354,9 @@ function ManageBikeDetail() {
                                 </Col>
                                 <label className='form-label'>Bike Images</label>
                                 {Object.keys(data).length !== 0 ?
-                                    data.imageList.map((value) => {
+                                    data.imageList.map((value, index) => {
                                         return (
-                                            <Col xs={12} sm={6} md={4} lg={3}>
+                                            <Col key={index} xs={12} sm={6} md={4} lg={3}>
                                                 <div className="card-item">
                                                     <img src={Firebase_URL + value.filePath} alt={value.fileName} />
                                                 </div>

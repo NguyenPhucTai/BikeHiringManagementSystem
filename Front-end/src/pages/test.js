@@ -19,15 +19,15 @@ import Col from 'react-bootstrap/Col';
 
 const cookies = new Cookies();
 
-const handleSubmit = async (bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading) => {
+const handleSubmit = async (formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading) => {
 
     const body = {
-        name: bikeData.bikeName,
-        bikeManualId: bikeData.bikeManualId,
-        bikeNo: bikeData.bikeNo,
-        bikeCategoryId: bikeData.bikeCategory,
-        bikeColorId: bikeData.bikeColor,
-        bikeManufacturerId: bikeData.bikeManufacturer,
+        name: formData.bikeName,
+        bikeManualId: formData.bikeManualId,
+        bikeNo: formData.bikeNo,
+        bikeCategoryId: formData.bikeCategory,
+        bikeColorId: formData.bikeColor,
+        bikeManufacturerId: formData.bikeManufacturer,
         files: fileUpload,
     };
 
@@ -170,7 +170,7 @@ function Test() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [imageUpload, setImageUpload] = useState([]);
     const [fileUpload, setFileUpload] = useState([]);
-    const [bikeData, setBikeData] = useState({
+    const [formData, setFormData] = useState({
         bikeName: "",
         bikeNo: "",
         bikeCategory: 0,
@@ -194,7 +194,7 @@ function Test() {
 
         // let upFiles = [];
         if (isClicking && imageUpload.length === 0) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
+            handleSubmit(formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
         }
         else if (isClicking) {
             var index = 0;
@@ -227,7 +227,7 @@ function Test() {
     /** Handle submitting */
     useEffect(() => {
         if (isSubmitting && imageUpload.length === fileUpload.length) {
-            handleSubmit(bikeData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
+            handleSubmit(formData, fileUpload, setAlert, setIsSubmitting, setFileUpload, setLoading);
         }
     }, [isSubmitting, fileUpload])
     /** Handle submitting */
@@ -293,7 +293,7 @@ function Test() {
                         alertShow: false,
                         alertStatus: "success",
                     })
-                    setBikeData(values)
+                    setFormData(values)
                     setIsClicking(true);
                     setLoading(true);
                 }}>
