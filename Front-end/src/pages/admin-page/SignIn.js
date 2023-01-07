@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AxiosInstance } from "../../api/AxiosClient";
 import Cookies from 'universal-cookie';
 import { Authen } from "../../api/EndPoint";
@@ -6,6 +6,7 @@ import { TextField } from "../../components/Form/TextField";
 import { Formik, Form } from "formik";
 import { UserSchema } from "../../validation";
 import { AlertMessage } from "../../components/Modal/AlertMessage";
+import { useNavigate } from 'react-router-dom';
 
 const cookies = new Cookies();
 
@@ -14,7 +15,7 @@ const initialValues = {
     password: "",
 };
 
-const handleSignIn = async (values, setAlert) => {
+const handleSignIn = async (values, setAlert, navigate) => {
     const body = {
         username: values.username,
         password: values.password,
@@ -28,6 +29,9 @@ const handleSignIn = async (values, setAlert) => {
                     alertStatus: "success",
                     alertMessage: "Sign in success",
                 })
+                setTimeout(() => {
+                    navigate('/dashboard');
+                }, 500);
             } else {
                 setAlert({
                     alertShow: true,
@@ -52,6 +56,9 @@ function SignIn() {
         alertMessage: "",
     })
 
+    // Render page
+    const navigate = useNavigate();
+
     return (
         <div className="container">
             <h1 className="text-center">Sign In</h1>
@@ -66,7 +73,7 @@ function SignIn() {
                 initialValues={initialValues}
                 validationSchema={UserSchema}
                 onSubmit={(values) => {
-                    handleSignIn(values, setAlert);
+                    handleSignIn(values, setAlert, navigate);
                 }}>
                 {({
                     isSubmitting,
