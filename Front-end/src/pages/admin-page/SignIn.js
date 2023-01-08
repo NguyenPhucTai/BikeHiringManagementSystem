@@ -15,7 +15,7 @@ const initialValues = {
     password: "",
 };
 
-const handleSignIn = async (values, setAlert, navigate) => {
+const handleSignIn = async (values, setAlert, navigate, setToken) => {
     const body = {
         username: values.username,
         password: values.password,
@@ -24,6 +24,7 @@ const handleSignIn = async (values, setAlert, navigate) => {
         .then((res) => {
             if (res.data.code === 1) {
                 cookies.set('accessToken', res.data.data.token);
+                setToken(res.data.data.token);
                 setAlert({
                     alertShow: true,
                     alertStatus: "success",
@@ -49,7 +50,10 @@ const handleSignIn = async (values, setAlert, navigate) => {
         })
 }
 
-function SignIn() {
+function SignIn(props) {
+
+    const { setToken } = props;
+
     const [alert, setAlert] = useState({
         alertShow: false,
         alertStatus: "success",
@@ -73,7 +77,7 @@ function SignIn() {
                 initialValues={initialValues}
                 validationSchema={UserSchema}
                 onSubmit={(values) => {
-                    handleSignIn(values, setAlert, navigate);
+                    handleSignIn(values, setAlert, navigate, setToken);
                 }}>
                 {({
                     isSubmitting,

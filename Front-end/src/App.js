@@ -1,5 +1,5 @@
-import React, { Fragment } from "react";
-import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
+import React, { Fragment, useEffect, useState } from "react";
+import { Routes, Route, BrowserRouter, Navigate, Outlet } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
 import './styles/style.scss';
@@ -33,7 +33,7 @@ function GlobalRoute({ children }) {
 		<BrowserRouter>
 			<MenuBar />
 			<Routes>{children}</Routes>
-			{/* <Footer /> */}
+			<Footer />
 		</BrowserRouter>
 	);
 }
@@ -42,90 +42,53 @@ function GlobalRoute({ children }) {
 function PrivateRoute({ children }) {
 	return (
 		<BrowserRouter>
-			{/* <MenuBar /> */}
 			<Routes>{children}</Routes>
 		</BrowserRouter>
 	);
 }
 
+const ProtectedRoute = ({ token, redirectPath = '/signin' }) => {
+	console.log(token);
+	if (!token) {
+		return <Navigate to={redirectPath} replace />;
+	}
+	return <Outlet />;
+};
+
 function App() {
-	// return (
-	// 	<Fragment>
-	// 		<BrowserRouter>
-	// 			<Routes>
-	// 				{cookies.get('accessToken') &&
-	// 					<Route path='/dashboard' exact element={<Dashboard />} />
-	// 				}
-	// 				<Route path='/signin' exact element={<SignIn />} />
-	// 				{/* <Route path='*' element={<Navigate to='/404' />} />
-	// 				<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} /> */}
-	// 			</Routes>
-	// 		</BrowserRouter>
-	// 	</Fragment>
-	// )
-	// if (cookies.get('accessToken')) {
-	// 	return (
-	// 		<Fragment>
-	// 			<PrivateRoute>
-	// 				<Route path='/dashboard' exact element={<Dashboard />} />
-	// 				<Route path='/manage/category' exact element={<ManageBikeCategory />} />
-	// 				<Route path='/manage/color' exact element={<ManageBikeColor />} />
-	// 				<Route path='/manage/manufacturer' exact element={<ManageBikeManufacturer />} />
-	// 				<Route path='/manage/bike' exact element={<ManageBikeList />} />
-	// 				<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
-	// 				<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
-	// 				<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
-	// 				<Route path='*' element={<Navigate to='/404' />} />
-	// 				<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
-	// 			</PrivateRoute>
-	// 			{/* <GlobalRoute>
-	// 				<Route path='/' exact element={<Home />} />
-	// 				<Route path='/list' exact element={<List />} />
-	// 				<Route path='/list/manual' exact element={<List category={2} />} />
-	// 				<Route path='/list/automatic' exact element={<List category={1} />} />
-	// 				<Route path='/bike/:id' element={<Detail />} />
-	// 				<Route path='/signin' exact element={<SignIn />} />
-	// 			</GlobalRoute> */}
-	// 		</Fragment>
-	// 	)
-	// } else {
-	// 	return (
-	// 		<Fragment>
-	// 			<GlobalRoute>
-	// 				<Route path='/' exact element={<Home />} />
-	// 				<Route path='/list' exact element={<List />} />
-	// 				<Route path='/list/manual' exact element={<List category={2} />} />
-	// 				<Route path='/list/automatic' exact element={<List category={1} />} />
-	// 				<Route path='/bike/:id' element={<Detail />} />
-	// 				<Route path='/signin' exact element={<SignIn />} />
-	// 				<Route path='*' element={<Navigate to='/404' />} />
-	// 				<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
-	// 			</GlobalRoute>
-	// 		</Fragment>
-	// 	)
-	// }
+
+	const [token, setToken] = useState(null);
+
+	if (token == null && cookies.get('accessToken')) {
+		setToken(cookies.get('accessToken'))
+	}
+
 	return (
 		<Fragment>
-			<GlobalRoute>
-				<Route path='/' exact element={<Home />} />
-				<Route path='/list' exact element={<List />} />
-				<Route path='/list/manual' exact element={<List category={2} />} />
-				<Route path='/list/automatic' exact element={<List category={1} />} />
-				<Route path='/bike/:id' element={<Detail />} />
-				<Route path='/signin' exact element={<SignIn />} />
+			<BrowserRouter>
+				<MenuBar />
+				<Routes>
+					<Route path='/signin' exact element={<SignIn setToken={setToken} />} />
+					<Route path='/' exact element={<Home />} />
+					<Route path='/list' exact element={<List />} />
+					<Route path='/list/manual' exact element={<List category={2} />} />
+					<Route path='/list/automatic' exact element={<List category={1} />} />
+					<Route path='/bike/:id' element={<Detail />} />
+					<Route path='*' element={<Navigate to='/404' />} />
+					<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
 
-				<Route path='/dashboard' exact element={<Dashboard />} />
-				<Route path='/manage/category' exact element={<ManageBikeCategory />} />
-				<Route path='/manage/color' exact element={<ManageBikeColor />} />
-				<Route path='/manage/manufacturer' exact element={<ManageBikeManufacturer />} />
-				<Route path='/manage/bike' exact element={<ManageBikeList />} />
-				<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
-				<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
-				<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
-
-				<Route path='*' element={<Navigate to='/404' />} />
-				<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
-			</GlobalRoute>
+					<Route element={<ProtectedRoute token={token} />}>
+						<Route path='/dashboard' element={<Dashboard />} />
+						<Route path='/manage/category' exact element={<ManageBikeCategory />} />
+						<Route path='/manage/color' exact element={<ManageBikeColor />} />
+						<Route path='/manage/manufacturer' exact element={<ManageBikeManufacturer />} />
+						<Route path='/manage/bike' exact element={<ManageBikeList />} />
+						<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
+						<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
+						<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
+					</Route>
+				</Routes>
+			</BrowserRouter>
 		</Fragment>
 	)
 }
