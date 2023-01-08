@@ -3,7 +3,6 @@ package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.Bike;
-import com.BikeHiringManagement.entity.BikeCategory;
 import com.BikeHiringManagement.entity.BikeImage;
 import com.BikeHiringManagement.model.temp.ComparedObject;
 import com.BikeHiringManagement.model.temp.HistoryObject;
@@ -61,7 +60,7 @@ public class BikeService {
             String sortType = paginationBikeRequest.getSortType();
             Long categoryId = paginationBikeRequest.getCategoryId();
 
-            Map<String, Object> mapBike = bikeSpecification.getListBike(searchKey, page, limit, sortBy, sortType, categoryId);
+            Map<String, Object> mapBike = bikeSpecification.getBikePagination(searchKey, page, limit, sortBy, sortType, categoryId);
             List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
             Long totalItems = (Long) mapBike.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);

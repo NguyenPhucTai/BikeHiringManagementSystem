@@ -1,6 +1,8 @@
 package com.BikeHiringManagement.controller.Authenticate;
 
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.model.request.BikeRequest;
+import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.service.entity.OrderService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
@@ -26,18 +28,36 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createCart (@RequestBody BikeRequest bikeRequest,
+    @PostMapping("/create/{bikeId}")
+    public ResponseEntity<?> createCart (@PathVariable Long bikeId,
                                          HttpServletRequest request) {
 
         try {
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = orderService.createCart(username, bikeRequest.getId());
+            Result result = orderService.createCart(username, bikeId);
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }catch (Exception e) {
             e.printStackTrace();
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/get")
+    public ResponseEntity<?> getBikeById(HttpServletRequest request){
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = orderService.getCartByUsername(username);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return  responseUtils.getResponseEntity( result.getObject(), 1, "Get Successfully", HttpStatus.OK);
+        }catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
 }

@@ -7,7 +7,6 @@ import com.BikeHiringManagement.repository.BikeCategoryRepository;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -33,7 +32,7 @@ public class BikeSpecification {
     @Autowired
     CheckEntityExistService checkEntityExistService;
 
-    public Map<String, Object> getListBike(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId){
+    public Map<String, Object> getBikePagination(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId){
         try{
             Map<String, Object> mapFinal = new HashMap<>();
 
@@ -236,6 +235,64 @@ public class BikeSpecification {
                 return mapFinal;
             }
         }catch (Exception e) {
+            e.printStackTrace();
+            return new HashMap<>();
+        }
+    }
+
+    public Map<String, Object> getBikeListById(List<OrderDetail> listOrderDetail){
+        try {
+            Map<String, Object> mapFinal = new HashMap<>();
+            List<Long> listBikeID = new ArrayList<>();
+            for(OrderDetail item:listOrderDetail) {
+                listBikeID.add(item.getBikeId());
+            }
+
+            //----------------------CREATE QUERY -----------------------------//
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            // ROOT
+            CriteriaQuery<BikeResponse> query = cb.createQuery(BikeResponse.class);
+            Root<Bike> root = query.from(Bike.class);
+            Root<BikeCategory> rootCate = query.from(BikeCategory.class);
+            Root<BikeColor> rootColor = query.from(BikeColor.class);
+            Root<BikeManufacturer> rootManufacturer = query.from(BikeManufacturer.class);
+
+            // CONDITION
+            // ROOT
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("bikeCategoryId"), rootCate.get("id")));
+            predicates.add(cb.equal(root.get("bikeColorId"), rootColor.get("id")));
+            predicates.add(cb.equal(root.get("bikeManufacturerId"), rootManufacturer.get("id")));
+
+            predicates.add(cb.isFalse(root.get("isDeleted")));
+            predicates.add(cb.isFalse(rootCate.get("isDeleted")));
+            predicates.add(cb.isFalse(rootColor.get("isDeleted")));
+            predicates.add(cb.isFalse(rootManufacturer.get("isDeleted")));
+
+            predicates.add(root.get("id").in(listBikeID));
+            //----------------------END SORT-----------------------------//
+            query.multiselect(
+                    root.get("id"),
+                    root.get("name"),
+                    root.get("bikeManualId"),
+                    root.get("bikeNo"),
+                    root.get("hiredNumber"),
+                    rootCate.get("id"),
+                    rootCate.get("name"),
+                    rootCate.get("price"),
+                    rootColor.get("id"),
+                    rootColor.get("name"),
+                    rootManufacturer.get("id"),
+                    rootManufacturer.get("name"),
+                    root.get("status")
+            ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
+
+            List<BikeResponse> listResult = entityManager.createQuery(query) != null ?
+                    entityManager.createQuery(query).getResultList() : new ArrayList<>();
+
+            mapFinal.put("data", listResult);
+            return mapFinal;
+        } catch (Exception e) {
             e.printStackTrace();
             return new HashMap<>();
         }

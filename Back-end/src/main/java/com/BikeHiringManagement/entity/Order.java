@@ -9,7 +9,7 @@ import java.util.Date;
 @Table(name = "orders")
 public class Order extends BaseEntity{
 
-    @Column(name = "customer_id", nullable = false)
+    @Column(name = "customer_id")
     private Long customerId;
 
     @Column(name = "expected_start_date")

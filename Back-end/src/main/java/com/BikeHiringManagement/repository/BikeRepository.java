@@ -12,6 +12,8 @@ public interface BikeRepository extends JpaRepository<Bike, Long>, JpaSpecificat
     boolean existsByNameAndIsDeleted(String name, Boolean check);
     boolean existsByBikeNoAndName(String bikeNo, String name);
 
+    boolean existsByIdAndStatusAndIsDeleted(Long id, String status, Boolean check);
+
     Bike findBikeById(Long id);
 
     @Query("SELECT b, ct.name FROM Bike b inner join BikeCategory ct on b.bikeCategoryId = ct.id")
