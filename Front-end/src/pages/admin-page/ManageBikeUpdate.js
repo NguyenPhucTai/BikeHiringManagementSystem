@@ -290,7 +290,7 @@ function ManageBikeUpdate() {
 
         // CASE 3: NO EXCEED LIMIT IMAGE NUMBER
         else if (isClicking) {
-            var index = 0;
+            var index = data.imageList.length;
             imageUpload.forEach((data) => {
                 index++;
                 let randomString = GenerateRandomString(10);
@@ -408,6 +408,7 @@ function ManageBikeUpdate() {
                                     setAlert({ alertShow: false });
                                     setImageID(0);
                                     setIsImageDelete(false);
+                                    setLoadingData(true);
                                 }}>Close</button>
                         </div>
                     </ Fragment>
