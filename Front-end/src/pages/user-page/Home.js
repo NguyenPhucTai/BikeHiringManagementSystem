@@ -7,7 +7,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Cookies from 'universal-cookie';
 import { PageLoad } from '../../components/Base/PageLoad';
 
-const cookies = new Cookies();
+// Redux
+import { useDispatch } from "react-redux";
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
 const handleGetListBike = async (categoryId, setListManual, setListAutomatic, setLoadingData) => {
     const body = {
@@ -47,10 +49,21 @@ const handleGetListBike = async (categoryId, setListManual, setListAutomatic, se
 }
 
 function Home() {
+
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
+        setLoadingPage(false);
+    }
+
+    // USE STATE
     const [listManual, setListManual] = useState([]);
     const [listAutomatic, setListAutomatic] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
 
+    // USE EFFECT
     useEffect(() => {
         if (loadingData) {
             handleGetListBike(1, setListManual, setListAutomatic, setLoadingData);

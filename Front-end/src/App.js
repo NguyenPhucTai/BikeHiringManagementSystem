@@ -25,30 +25,12 @@ import ManageBikeCreate from "./pages/admin-page/ManageBikeCreate";
 import ManageBikeDetail from "./pages/admin-page/ManageBikeDetail";
 import ManageBikeUpdate from "./pages/admin-page/ManageBikeUpdate";
 
+// Redux
+import { useSelector } from "react-redux";
+
 const cookies = new Cookies();
 
-/** Access user page */
-function GlobalRoute({ children }) {
-	return (
-		<BrowserRouter>
-			<MenuBar />
-			<Routes>{children}</Routes>
-			<Footer />
-		</BrowserRouter>
-	);
-}
-
-/** Access admin page */
-function PrivateRoute({ children }) {
-	return (
-		<BrowserRouter>
-			<Routes>{children}</Routes>
-		</BrowserRouter>
-	);
-}
-
 const ProtectedRoute = ({ token, redirectPath = '/signin' }) => {
-	console.log(token);
 	if (!token) {
 		return <Navigate to={redirectPath} replace />;
 	}
@@ -57,18 +39,22 @@ const ProtectedRoute = ({ token, redirectPath = '/signin' }) => {
 
 function App() {
 
-	const [token, setToken] = useState(null);
+	let reduxToken = null;
+	let reduxIsShowPublicNavBar = null;
 
-	if (token == null && cookies.get('accessToken')) {
-		setToken(cookies.get('accessToken'))
+	reduxToken = useSelector((state) => state.reduxAuthenticate.accessToken);
+	reduxIsShowPublicNavBar = useSelector((state) => state.reduxAuthenticate.isShowPublicNavBar);
+
+	if (reduxToken == null && cookies.get('accessToken')) {
+		reduxToken = cookies.get('accessToken')
 	}
 
 	return (
 		<Fragment>
 			<BrowserRouter>
-				<MenuBar />
+				{reduxIsShowPublicNavBar && <MenuBar />}
 				<Routes>
-					<Route path='/signin' exact element={<SignIn setToken={setToken} />} />
+					<Route path='/signin' exact element={<SignIn />} />
 					<Route path='/' exact element={<Home />} />
 					<Route path='/list' exact element={<List />} />
 					<Route path='/list/manual' exact element={<List category={2} />} />
@@ -77,7 +63,7 @@ function App() {
 					<Route path='*' element={<Navigate to='/404' />} />
 					<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
 
-					<Route element={<ProtectedRoute token={token} />}>
+					<Route element={<ProtectedRoute token={reduxToken} />}>
 						<Route path='/dashboard' element={<Dashboard />} />
 						<Route path='/manage/category' exact element={<ManageBikeCategory />} />
 						<Route path='/manage/color' exact element={<ManageBikeColor />} />
@@ -88,6 +74,7 @@ function App() {
 						<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
 					</Route>
 				</Routes>
+				{reduxIsShowPublicNavBar && <Footer />}
 			</BrowserRouter>
 		</Fragment>
 	)

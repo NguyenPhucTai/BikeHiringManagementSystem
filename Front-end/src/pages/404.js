@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/style.scss';
 // import logo from './asset/logo.jpg'
 
-const PageNotFound = props => (
-    <div className='page-404'>
-        {/* <img src={logo} alt="logo image" /> */}
-        <h1>404 - Page Not Found!</h1>
-        <h2>{props.warn}</h2>
-    </div>
-);
+// Redux
+import { useDispatch } from "react-redux";
+import { reduxAuthenticateAction } from '../redux-store/redux/reduxAuthenticate.slice';
+
+const PageNotFound = props => {
+
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
+        setLoadingPage(false);
+    }
+
+    return (
+        <div className='page-404'>
+            {/* <img src={logo} alt="logo image" /> */}
+            <h1>404 - Page Not Found!</h1>
+            <h2>{props.warn}</h2>
+        </div>
+    )
+};
 
 export default PageNotFound;

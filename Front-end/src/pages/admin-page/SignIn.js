@@ -8,6 +8,11 @@ import { UserSchema } from "../../validation";
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { useNavigate } from 'react-router-dom';
 
+
+// Redux
+import { useDispatch } from "react-redux";
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
+
 const cookies = new Cookies();
 
 const initialValues = {
@@ -15,7 +20,7 @@ const initialValues = {
     password: "",
 };
 
-const handleSignIn = async (values, setAlert, navigate, setToken) => {
+const handleSignIn = async (values, setAlert, navigate, dispatch) => {
     const body = {
         username: values.username,
         password: values.password,
@@ -24,7 +29,7 @@ const handleSignIn = async (values, setAlert, navigate, setToken) => {
         .then((res) => {
             if (res.data.code === 1) {
                 cookies.set('accessToken', res.data.data.token);
-                setToken(res.data.data.token);
+                dispatch(reduxAuthenticateAction.updateToken(res.data.data.token));
                 setAlert({
                     alertShow: true,
                     alertStatus: "success",
@@ -50,18 +55,25 @@ const handleSignIn = async (values, setAlert, navigate, setToken) => {
         })
 }
 
-function SignIn(props) {
+function SignIn() {
 
-    const { setToken } = props;
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
+        setLoadingPage(false);
+    }
 
+    // Render page
+    const navigate = useNavigate();
+
+    // USE STATE
     const [alert, setAlert] = useState({
         alertShow: false,
         alertStatus: "success",
         alertMessage: "",
     })
-
-    // Render page
-    const navigate = useNavigate();
 
     return (
         <div className="container">
@@ -77,7 +89,7 @@ function SignIn(props) {
                 initialValues={initialValues}
                 validationSchema={UserSchema}
                 onSubmit={(values) => {
-                    handleSignIn(values, setAlert, navigate, setToken);
+                    handleSignIn(values, setAlert, navigate, dispatch);
                 }}>
                 {({
                     isSubmitting,

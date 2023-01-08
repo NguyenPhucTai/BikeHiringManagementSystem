@@ -1,38 +1,56 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { AxiosInstance } from "../../api/AxiosClient";
-import SortBar from "../../components/Navbar/SortBar";
+
+// Library
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Pagination from '@mui/material/Pagination';
+import Badge from 'react-bootstrap/Badge';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from "react-router-dom";
-import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
-import Badge from 'react-bootstrap/Badge';
-import { useSelector } from "react-redux";
-import { PageLoad } from "../../components/Base/PageLoad";
 
+// Fire base
+import { AxiosInstance } from "../../api/AxiosClient";
+import SortBarManagement from "../../components/Navbar/SortBarManagement";
+import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
+
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import { reduxAction } from "../../redux-store/redux/redux.slice";
+import { reduxPaginationAction } from '../../redux-store/redux/reduxPagination.slice';
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
+
+//Component
+import { PageLoad } from "../../components/Base/PageLoad";
+import { PaginationCustom } from "../../components/Table/Pagination";
+
+const SortBy = [
+    { value: "name", label: "Sort by name", key: "1" },
+    { value: "color", label: "Sort by color", key: "2" },
+    { value: "manufacturer", label: "Sort by manufacturer", key: "3" },
+];
+
+
+// FUNCTION
+// CALL API
 const handleGetListBike = async (
-    searchKey,
     categoryId,
-    activePage,
-    sortBy,
-    sortType,
-    setMaxPage,
-    setListMotor,
-    setLoadingData) => {
+    setListData,
+    setLoadingData,
+    setTotalPages,
+    reduxFilter,
+    reduxPagination
+) => {
     const body = {
-        searchKey: searchKey,
+        searchKey: reduxFilter.reduxSearchKey,
         categoryId: categoryId,
-        page: activePage,
-        limit: 12,
-        sortBy: sortBy,
-        sortType: sortType,
+        page: reduxPagination.reduxPage,
+        limit: reduxPagination.reduxRowsPerPage,
+        sortBy: reduxFilter.reduxSortBy,
+        sortType: reduxFilter.reduxSortType
     };
-    // console.log(body)
     await AxiosInstance.post(PublicAPI.getBikePagination, body, {
         headers: {}
     }).then((res) => {
-        var listMotor = res.data.data.content.map((data) => {
+        var listData = res.data.data.content.map((data) => {
             return {
                 id: data.id,
                 name: data.name,
@@ -42,9 +60,11 @@ const handleGetListBike = async (
                 fileName: data.imageList[0].fileName,
             }
         })
-        setListMotor(listMotor)
-        setMaxPage(res.data.data.totalPages)
-        setLoadingData(false)
+        setListData(listData)
+        setTotalPages(res.data.data.totalPages)
+        setTimeout(() => {
+            setLoadingData(false)
+        }, 500);
     })
         .catch((error) => {
             if (error && error.response) {
@@ -53,20 +73,50 @@ const handleGetListBike = async (
         });
 }
 
+
 const List = props => {
-    const [activePage, setActivePage] = useState(1);
-    const [maxPage, setMaxPage] = useState(10);
-    const [listMotor, setListMotor] = useState([]);
+
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
+        setLoadingPage(false);
+    }
+
+    // USESTATE
+    // LIST DATA
+    const [listData, setListData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
-    const searchKey = useSelector((state) => state.redux.searchKey);
-    const sortBy = useSelector((state) => state.redux.sortBy);
-    const sortType = useSelector((state) => state.redux.sortType);
     const [categoryId, setCategoryId] = useState(null);
 
-    const handleChangePage = (event, newPage) => {
-        setActivePage(newPage);
-    };
 
+    // Redux - Filter form
+    let reduxFilter = {
+        reduxSearchKey: useSelector((state) => state.redux.searchKey),
+        reduxSortBy: useSelector((state) => state.redux.sortBy),
+        reduxSortType: useSelector((state) => state.redux.sortType),
+    }
+    const reduxIsSubmitting = useSelector((state) => state.redux.isSubmitting);
+
+
+
+    // Redux - Pagination
+    const [totalPages, setTotalPages] = useState(1);
+    let reduxPagination = {
+        reduxPage: useSelector((state) => state.reduxPagination.page),
+        reduxRowsPerPage: useSelector((state) => state.reduxPagination.rowsPerPage) + 3
+    }
+
+    // useEffect
+    // Table loading - page load
+    useEffect(() => {
+        if (loadingData === true) {
+            handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        }
+    }, [loadingData])
+
+    // USE EFFECT
     useEffect(() => {
         switch (props.category) {
             case 1:
@@ -79,13 +129,31 @@ const List = props => {
                 setCategoryId(null);
                 break;
         }
+        if (reduxPagination.reduxPage !== 1) {
+            dispatch(reduxPaginationAction.updatePage(1));
+        }
+        else {
+            setLoadingData(true);
+        }
     }, [props.category])
 
+    // Table loading filter submit
     useEffect(() => {
-        if (sortBy !== undefined && sortType !== undefined) {
-            handleGetListBike(searchKey, categoryId, activePage, sortBy, sortType, setMaxPage, setListMotor, setLoadingData);
+        if (reduxIsSubmitting === true) {
+            if (reduxPagination.reduxPage === 1) {
+                handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            } else {
+                dispatch(reduxPaginationAction.updatePage(1));
+            }
+            dispatch(reduxAction.setIsSubmitting({ isSubmitting: false }));
         }
-    }, [activePage, searchKey, categoryId])
+    }, [reduxIsSubmitting])
+
+    // Table loading pagination - change page
+    useEffect(() => {
+        handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+    }, [reduxPagination.reduxPage])
+
 
     return (
         !loadingData ?
@@ -95,15 +163,15 @@ const List = props => {
                         <Col lg={12}>
                             <div className="container">
                                 <h2 className="text-center">List Motorcycle</h2>
-                                <SortBar />
+                                <SortBarManagement SortBy={SortBy} />
                                 {loadingData ?
                                     <div className="circular_progress">
                                         <CircularProgress />
                                     </div> :
                                     <Row>
-                                        {listMotor.map((data) => {
+                                        {listData.map((data, index) => {
                                             return (
-                                                <Col className="column" xs={12} sm={6} md={4} lg={3}>
+                                                <Col key={index} className="column" xs={12} sm={6} md={4} lg={3}>
                                                     <Link className="card-item" to={`/bike/${data.id}`}>
                                                         <img src={Firebase_URL + data.filePath} alt={data.fileName} />
                                                         <label className="bikeName">{data.name}</label>
@@ -117,15 +185,10 @@ const List = props => {
                                         })}
                                     </Row>
                                 }
-                                <Pagination
-                                    count={maxPage}
-                                    shape="rounded"
-                                    size="large"
-                                    defaultPage={1}
-                                    showFirstButton
-                                    showLastButton
-                                    page={activePage}
-                                    onChange={handleChangePage} />
+                                <PaginationCustom
+                                    totalPages={totalPages}
+                                    isShowRowPerPage={false}
+                                />
                             </div>
                         </Col>
                     </Row>

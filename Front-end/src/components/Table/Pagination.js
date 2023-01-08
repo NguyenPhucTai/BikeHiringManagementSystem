@@ -40,23 +40,25 @@ export const PaginationCustom = props => {
                         showLastButton={true}
                     />
                 </Col>
-                <Col lg={3} xs={12}>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        rowsPerPage={reduxRowsPerPage}
-                        component='div'
-                        count={-1}
-                        page={reduxPage}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        ActionsComponent={() => {
-                            return <Fragment />;
-                        }}
-                        labelDisplayedRows={() => {
-                            return <Fragment />;
-                        }}
-                    />
-                </Col>
+                {props.isShowRowPerPage !== false &&
+                    <Col lg={3} xs={12}>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            rowsPerPage={reduxRowsPerPage}
+                            component='div'
+                            count={-1}
+                            page={reduxPage}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            ActionsComponent={() => {
+                                return <Fragment />;
+                            }}
+                            labelDisplayedRows={() => {
+                                return <Fragment />;
+                            }}
+                        />
+                    </Col>
+                }
             </Row>
         </Fragment>
     );

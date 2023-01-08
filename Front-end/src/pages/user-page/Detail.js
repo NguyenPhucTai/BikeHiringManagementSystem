@@ -7,11 +7,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
 import ImageGallery from "react-image-gallery";
 import Badge from 'react-bootstrap/Badge';
-import Cookies from 'universal-cookie';
-import { green } from "@mui/material/colors";
 import { PageLoad } from "../../components/Base/PageLoad";
 
-const cookies = new Cookies();
+// Redux
+import { useDispatch } from "react-redux";
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
+
 
 const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingData, Firebase_URL) => {
     await AxiosInstance.get(PublicAPI.getBikeDetail + id, {
@@ -46,6 +47,15 @@ const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingData,
 }
 
 const Detail = props => {
+
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
+        setLoadingPage(false);
+    }
+
     let { id } = useParams()
     const [loadingData, setLoadingData] = useState(true);
     const [listImage, setListImage] = useState([]);

@@ -62,8 +62,8 @@ const MenuBar = () => {
                                     <NavDropdown id="navbarDropdownMenuLink"
                                         title="List of motorbikes"
                                         menuVariant="light"
-                                        renderMenuOnMount={true}
-                                        rootCloseEvent={'mousedown'}
+                                        // renderMenuOnMount={true}
+                                        // rootCloseEvent={'mousedown'}
                                         className="nav-link">
                                         <Nav.Link className="nav-item mx-lg-4" eventKey="link-3-1" as="div">
                                             <Link className="dropdown-item nav-link my-2" to="/list/manual">Manual Transmission Motorcycle</Link>
