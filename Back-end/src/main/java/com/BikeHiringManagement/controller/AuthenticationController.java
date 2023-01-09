@@ -1,4 +1,4 @@
-package com.BikeHiringManagement.controller.System;
+package com.BikeHiringManagement.controller;
 
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.Role;

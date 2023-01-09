@@ -98,6 +98,52 @@ public class BikeService {
         }
     }
 
+    public PageDto getBikePaginationCreateOrder(PaginationBikeRequest paginationBikeRequest) {
+        try {
+            String searchKey = paginationBikeRequest.getSearchKey();
+            Integer page = paginationBikeRequest.getPage();
+            Integer limit = paginationBikeRequest.getLimit();
+            String sortBy = paginationBikeRequest.getSortBy();
+            String sortType = paginationBikeRequest.getSortType();
+
+            Map<String, Object> mapBike = bikeSpecification.getBikePaginationOrderCreate(searchKey, page, limit, sortBy, sortType);
+            List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
+            Long totalItems = (Long) mapBike.get("count");
+            Integer totalPage = responseUtils.getPageCount(totalItems, limit);
+
+            List<BikeResponse> listResult = new ArrayList<>();
+            for(BikeResponse bikeResponse : listRes){
+                List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(bikeResponse.getId(), false);
+
+                if(!listImage.isEmpty()){
+
+                    List<AttachmentResponse> listImageResponse = new ArrayList<>();
+                    for(BikeImage bikeImage : listImage){
+                        AttachmentResponse attachmentResponse = new AttachmentResponse();
+                        attachmentResponse.setId(bikeImage.getId());
+                        attachmentResponse.setFilePath(bikeImage.getPath());
+                        attachmentResponse.setFileName(bikeImage.getName());
+                        listImageResponse.add(attachmentResponse);
+                    }
+                    bikeResponse.setImageList(listImageResponse);
+                }
+                listResult.add(bikeResponse);
+            }
+
+            return PageDto.builder()
+                    .content(listResult)
+                    .numberOfElements(Math.toIntExact(totalItems))
+                    .page(page)
+                    .size(limit)
+                    .totalPages(totalPage)
+                    .totalElements(totalItems)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public Result getBikeById(Long bikeId){
         try{
             Result result = new Result();
