@@ -45,20 +45,6 @@ public class BikeController {
         }
     }
 
-    @PostMapping("/order-create/get")
-    public ResponseEntity<?> getBikePaginationCreateOrder(@RequestBody PaginationBikeRequest reqBody){
-        try{
-            PageDto result = bikeService.getBikePaginationCreateOrder(reqBody);
-            if (result != null) {
-                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
-            }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
-        }
-        catch(Exception e){
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping("/get")
     public ResponseEntity<?> getBikeById(@RequestParam Long bikeId){
         try{
