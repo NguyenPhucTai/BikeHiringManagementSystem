@@ -43,7 +43,7 @@ public class OrderController {
         }
     }
     @GetMapping("/get")
-    public ResponseEntity<?> getBikeById(HttpServletRequest request){
+    public ResponseEntity<?> getCartByUsername(HttpServletRequest request){
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -57,7 +57,20 @@ public class OrderController {
         }catch(Exception e){
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
-
+    //save order info  (order request -> order id + data khác)
+    //delete bike from current cart (order id, bike id) -> update is delete trong order detail thành true
+    @PostMapping("/bike/delete/{orderId}/{bikeId}")
+    public ResponseEntity<?> deleteBikeInCart(@PathVariable Long orderId,@PathVariable Long bikeId, HttpServletRequest request){
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = orderService.deleteBikeInCart(orderId,bikeId);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long>, JpaSpecificationExecutor<OrderDetail> {
     Boolean existsByOrderIdAndBikeIdAndIsDeleted(Long orderId, Long bikeId, boolean isExisted);
+    Boolean existsByOrderIdAndIsDeleted(Long orderId, boolean isExisted);
 
-    List<OrderDetail> findAllOrderDetailByOrderId(Long orderId);
+    OrderDetail findOrderDetailByOrderIdAndBikeId(Long orderId, Long bikeId);
+    List<OrderDetail> findAllOrderDetailByOrderIdAndIsDeleted(Long orderId, boolean check);
 }
