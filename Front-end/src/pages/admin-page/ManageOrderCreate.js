@@ -3,7 +3,8 @@ import React, { useState, useEffect, Fragment } from "react";
 // Library
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Badge from 'react-bootstrap/Badge';
+// import Badge from 'react-bootstrap/Badge';
+import { Badge } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from "react-router-dom";
 
@@ -50,6 +51,8 @@ const handleGetListBike = async (
     await AxiosInstance.post(PublicAPI.getBikePagination, body, {
         headers: {}
     }).then((res) => {
+
+        console.log(res.data.data);
         var listData = res.data.data.content.map((data) => {
             return {
                 id: data.id,
@@ -73,14 +76,13 @@ const handleGetListBike = async (
         });
 }
 
-
-const List = props => {
+function ManageOrderCreate(props) {
 
     // Show Public Navigation
     const dispatch = useDispatch();
     const [loadingPage, setLoadingPage] = useState(true);
     if (loadingPage === true) {
-        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
         setLoadingPage(false);
     }
 
@@ -162,7 +164,7 @@ const List = props => {
                     <Row>
                         <Col lg={12}>
                             <div className="container">
-                                <h2 className="text-center">List Motorcycle</h2>
+                                <h2 className="text-center">Create Order Page</h2>
                                 <SortBarManagement SortBy={SortBy} />
                                 {loadingData ?
                                     <div className="circular_progress">
@@ -176,7 +178,8 @@ const List = props => {
                                                         <img src={Firebase_URL + data.filePath} alt={data.fileName} />
                                                         <label className="bikeName">{data.name}</label>
                                                         <div className="bikeTag">
-                                                            <Badge bg="success">{data.bikeCategory}</Badge>
+                                                            <p className="bikeCategory">{data.bikeCategory}</p>
+                                                            {/* <Badge bg="success"></Badge> */}
                                                         </div>
                                                         <p className="bikePrice">Price: <span>{data.price}</span></p>
                                                     </Link>
@@ -201,4 +204,4 @@ const List = props => {
     )
 }
 
-export default List;
+export default ManageOrderCreate;

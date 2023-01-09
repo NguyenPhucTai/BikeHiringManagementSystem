@@ -2,9 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 
 // Library
 import Cookies from 'universal-cookie';
-import { useSelector, useDispatch } from "react-redux";
-import { reduxAction } from "../../redux-store/redux/redux.slice";
-import { reduxPaginationAction } from '../../redux-store/redux/reduxPagination.slice';
+
 import { Formik, Form } from 'formik';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -23,6 +21,12 @@ import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { GetFormattedDate } from "../../function/DateTimeFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
+
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import { reduxAction } from "../../redux-store/redux/redux.slice";
+import { reduxPaginationAction } from '../../redux-store/redux/reduxPagination.slice';
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
 const cookies = new Cookies();
 
@@ -195,6 +199,14 @@ const handleDeleteData = async (
 
 function ManageBikeCategory() {
 
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
+        setLoadingPage(false);
+    }
+
     // Table variables
     const tableTitleList = ['ID', 'NAME', 'PRICE']
 
@@ -205,7 +217,6 @@ function ManageBikeCategory() {
     };
 
     // Redux - Filter form
-    const dispatch = useDispatch();
     let reduxFilter = {
         reduxSearchKey: useSelector((state) => state.redux.searchKey),
         reduxSortBy: useSelector((state) => state.redux.sortBy),

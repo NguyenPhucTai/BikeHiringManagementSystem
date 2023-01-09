@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { Routes, Route, BrowserRouter, Navigate, Outlet } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
@@ -24,6 +24,7 @@ import ManageBikeList from "./pages/admin-page/ManageBikeList";
 import ManageBikeCreate from "./pages/admin-page/ManageBikeCreate";
 import ManageBikeDetail from "./pages/admin-page/ManageBikeDetail";
 import ManageBikeUpdate from "./pages/admin-page/ManageBikeUpdate";
+import ManageOrderCreate from "./pages/admin-page/ManageOrderCreate";
 
 // Redux
 import { useSelector } from "react-redux";
@@ -72,6 +73,7 @@ function App() {
 						<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
 						<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
 						<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
+						<Route path='/manage/order/create' element={<ManageOrderCreate />} />
 					</Route>
 				</Routes>
 				{reduxIsShowPublicNavBar && <Footer />}

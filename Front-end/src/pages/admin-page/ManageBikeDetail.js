@@ -4,16 +4,10 @@ import React, { Fragment, useState, useEffect } from "react";
 import { AxiosInstance } from "../../api/AxiosClient";
 import { Formik, Form } from "formik";
 import Cookies from 'universal-cookie';
-import LinearProgress from '@mui/material/LinearProgress';
-import Box from '@mui/material/Box';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
-
-// Firebase
-import { storage } from "../../firebase/firebase";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 // Component
 import { TextField } from "../../components/Form/TextField";
@@ -22,6 +16,10 @@ import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { GetFormattedDate } from "../../function/DateTimeFormat";
+
+// Redux
+import { useDispatch } from "react-redux";
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
 const cookies = new Cookies();
 
@@ -97,6 +95,14 @@ const handleDeleteBikeById = async (
 
 function ManageBikeDetail() {
 
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
+        setLoadingPage(false);
+    }
+
     // GET ID FROM URL
     let { id } = useParams()
 
@@ -112,10 +118,6 @@ function ManageBikeDetail() {
     // GET DETAIL
     const [data, setData] = useState({});
     const [isDeleted, setIsDeleted] = useState(false);
-
-    // VARIABLE
-    // LOADING BAR
-    const [loading, setLoading] = useState(false);
 
     // VARIABLE
     // DELETE POPUP
@@ -215,11 +217,6 @@ function ManageBikeDetail() {
             <div className="container">
                 {deletePopup}
                 <h1 className="text-center">BIKE DETAIL</h1>
-                {loading && (
-                    <Box sx={{ width: '100%' }}>
-                        <LinearProgress />
-                    </Box>
-                )}
                 <div className="button-section" style={{ textAlign: "right" }}>
                     <button className="btn btn-primary" style={{ marginLeft: "16px" }} onClick={() => navigate('/manage/bike/update/' + id)}>UPDATE</button>
                     <button className="btn btn-danger" style={{ marginLeft: "16px" }} onClick={() => setShowPopup(true)}>DELETE</button>

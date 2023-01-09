@@ -2,9 +2,6 @@ import React, { Fragment, useEffect, useState } from 'react';
 
 // Library
 import Cookies from 'universal-cookie';
-import { useSelector, useDispatch } from "react-redux";
-import { reduxAction } from "../../redux-store/redux/redux.slice";
-import { reduxPaginationAction } from '../../redux-store/redux/reduxPagination.slice';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useNavigate } from 'react-router-dom';
@@ -12,13 +9,20 @@ import { useNavigate } from 'react-router-dom';
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from '../../api/EndPoint';
+import { BikeManagement } from '../../api/EndPoint';
 
 //Component
 import { TableView } from '../../components/Table/TableView';
 import SortBarManagement from "../../components/Navbar/SortBarManagement";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
+
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import { reduxAction } from "../../redux-store/redux/redux.slice";
+import { reduxPaginationAction } from '../../redux-store/redux/reduxPagination.slice';
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
+
 
 const cookies = new Cookies();
 
@@ -87,12 +91,19 @@ const handleGetDataPagination = async (
 
 function ManageBikeList() {
 
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
+        setLoadingPage(false);
+    }
+
     // USE STATE
     // Table variables
     const tableTitleList = ['ID', 'NAME', 'CATEGORY', 'HIRED NUMBER', 'STATUS']
 
     // Redux - Filter form
-    const dispatch = useDispatch();
     let reduxFilter = {
         reduxSearchKey: useSelector((state) => state.redux.searchKey),
         reduxSortBy: useSelector((state) => state.redux.sortBy),

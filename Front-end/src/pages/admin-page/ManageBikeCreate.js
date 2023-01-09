@@ -25,17 +25,11 @@ import { GenerateRandomString } from "../../function/RandomString";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 
-const cookies = new Cookies();
+// Redux
+import { useDispatch } from "react-redux";
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
-const initialValues = {
-    bikeName: "",
-    bikeManualId: "",
-    bikeNo: "",
-    bikeCategory: 0,
-    bikeColor: 0,
-    bikeManufacturer: 0,
-    files: [{}],
-};
+const cookies = new Cookies();
 
 // FUNCTION
 // INTERNAL PAGE
@@ -180,6 +174,14 @@ const handleSubmit = async (formData, fileUpload, setAlert, setIsSubmitting, set
 };
 
 function ManageBikeCreate() {
+
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
+        setLoadingPage(false);
+    }
 
     // Render page
     const navigate = useNavigate();

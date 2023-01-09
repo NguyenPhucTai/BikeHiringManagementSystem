@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { AxiosInstance } from "../../api/AxiosClient";
 import Cookies from 'universal-cookie';
 import { Authen } from "../../api/EndPoint";
@@ -30,6 +30,7 @@ const handleSignIn = async (values, setAlert, navigate, dispatch) => {
             if (res.data.code === 1) {
                 cookies.set('accessToken', res.data.data.token);
                 dispatch(reduxAuthenticateAction.updateToken(res.data.data.token));
+                dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
                 setAlert({
                     alertShow: true,
                     alertStatus: "success",

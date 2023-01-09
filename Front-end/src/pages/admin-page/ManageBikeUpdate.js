@@ -27,6 +27,11 @@ import { GenerateRandomString } from "../../function/RandomString";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 
+// Redux
+import { useDispatch } from "react-redux";
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
+
+
 const cookies = new Cookies();
 
 // FUNCTION
@@ -216,6 +221,14 @@ const handleSubmit = async (
 
 
 function ManageBikeUpdate() {
+
+    // Show Public Navigation
+    const dispatch = useDispatch();
+    const [loadingPage, setLoadingPage] = useState(true);
+    if (loadingPage === true) {
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
+        setLoadingPage(false);
+    }
 
     // GET ID FROM URL
     let { id } = useParams()
