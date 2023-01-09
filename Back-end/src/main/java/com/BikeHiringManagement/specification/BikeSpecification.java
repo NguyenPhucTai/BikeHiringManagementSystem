@@ -124,28 +124,34 @@ public class BikeSpecification {
                     case "name":
                         query.orderBy(cb.asc(root.get("name")));
                         break;
+                    case "bikeManualId":
+                        query.orderBy(cb.asc(root.get("bikeManualId")));
+                        break;
                     case "hiredNumber":
                         query.orderBy(cb.asc(root.get("hiredNumber")));
                         break;
-                    case "bikeColor":
+                    case "color":
                         query.orderBy(cb.asc(root.get("bikeColorId")));
                         break;
-                    case "bikeManufacturer":
+                    case "manufacturer":
                         query.orderBy(cb.asc(root.get("bikeManufacturerId")));
                         break;
                 }
             } else {
                 switch (sortBy) {
-                    case "id":
-                        query.orderBy(cb.desc(root.get("id")));
+                    case "name":
+                        query.orderBy(cb.desc(root.get("name")));
+                        break;
+                    case "bikeManualId":
+                        query.orderBy(cb.desc(root.get("bikeManualId")));
                         break;
                     case "hiredNumber":
                         query.orderBy(cb.desc(root.get("hiredNumber")));
                         break;
-                    case "bikeColor":
+                    case "color":
                         query.orderBy(cb.desc(root.get("bikeColorId")));
                         break;
-                    case "bikeManufacturer":
+                    case "manufacturer":
                         query.orderBy(cb.desc(root.get("bikeManufacturerId")));
                         break;
                 }
