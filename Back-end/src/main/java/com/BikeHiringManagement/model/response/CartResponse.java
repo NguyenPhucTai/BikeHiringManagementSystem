@@ -7,8 +7,9 @@ import java.util.Date;
 import java.util.List;
 @Data
 public class CartResponse {
-    public Long orderId;
+    public Long id;
 
+    public Long customerId;
     public String customerName;
     public String phoneNumber;
 

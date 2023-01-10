@@ -1,10 +1,7 @@
 package com.BikeHiringManagement.service.entity;
 
 import com.BikeHiringManagement.constant.Constant;
-import com.BikeHiringManagement.entity.Bike;
-import com.BikeHiringManagement.entity.BikeImage;
-import com.BikeHiringManagement.entity.Order;
-import com.BikeHiringManagement.entity.OrderDetail;
+import com.BikeHiringManagement.entity.*;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.model.response.AttachmentResponse;
 import com.BikeHiringManagement.model.response.BikeResponse;
@@ -12,6 +9,7 @@ import com.BikeHiringManagement.model.response.CartResponse;
 import com.BikeHiringManagement.model.temp.HistoryObject;
 import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.repository.BikeRepository;
+import com.BikeHiringManagement.repository.CustomerRepository;
 import com.BikeHiringManagement.repository.OrderDetailRepository;
 import com.BikeHiringManagement.repository.OrderRepository;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
@@ -38,11 +36,15 @@ public class OrderService {
 
     @Autowired
     OrderDetailRepository orderDetailRepository;
+
     @Autowired
-    BikeSpecification bikeSpecification;
+    CustomerRepository customerRepository;
 
     @Autowired
     BikeRepository bikeRepository;
+
+    @Autowired
+    BikeSpecification bikeSpecification;
 
     @Autowired
     ModelMapper modelMapper;
@@ -57,30 +59,51 @@ public class OrderService {
     public Result createCart(String username, Long bikeId){
         try{
             long orderId = -1;
-            // Check if Bike ID is existed
+
+            // Check IF Bike ID is existed
             if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeId)){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID is not existed!!!");
             }
-            // Check if Bike Status is available
+            // Check IF Bike Status is AVAILABLE
             if(!bikeRepository.existsByIdAndStatusAndIsDeleted(bikeId, "AVAILABLE", false)){
                 return new Result(Constant.LOGIC_ERROR_CODE, "Bike status not available!!!");
             }
+
             // IF Cart exist -> Just Add Bike ID to Order Detail
             if(orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)){
+
                 Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
                 orderId = currentCart.getId();
 
-                // Check if Bike has been included in order
-                if (orderDetailRepository.existsByOrderIdAndBikeIdAndIsDeleted(orderId, bikeId, false)){
-                    return new Result(Constant.LOGIC_ERROR_CODE, "The Bike Id: " + bikeId + " has been added to this cart!");
+                // Check IF Bike has been included in order
+                if (orderDetailRepository.existsByOrderIdAndBikeId(orderId, bikeId)){
+                    OrderDetail existBikeInCart = orderDetailRepository.findOrderDetailByOrderIdAndBikeId(orderId, bikeId);
+
+                    // IF exist -> throw alert
+                    if(existBikeInCart.getIsDeleted() == true)
+                    {
+                        return new Result(Constant.LOGIC_ERROR_CODE, "The Bike Id: " + bikeId + " has been added to this cart!");
+                    }
+
+                    // IF exist + status is delete -> update is delete to FALSE
+                    else
+                    {
+                        existBikeInCart.setIsDeleted(false);
+                        orderDetailRepository.save(existBikeInCart);
+                        return new Result(Constant.SUCCESS_CODE, "Create new cart successfully");
+                    }
                 }
-            }else{
+            }
+
+            // IF Cart is NOT exist -> Create new Cart
+            else{
                 Order order = new Order();
                 order.setCreatedUser(username);
                 order.setCreatedDate(new Date());
                 Order createdOrder = orderRepository.save(order);
                 orderId = createdOrder.getId();
             }
+
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setCreatedDate(new Date());
             orderDetail.setCreatedUser(username);
@@ -97,27 +120,51 @@ public class OrderService {
     public Result getCartByUsername(String username){
         try{
             Result result = new Result();
+
             if(orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)){
                 Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
-                Long orderId = currentCart.getId();
+                long orderId = currentCart.getId();
+
+                // GET List bike exist in Cart
                 List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, false);
                 Map<String, Object> mapBike = bikeSpecification.getBikeListById(listOrderDetail);
                 List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
-                CartResponse cartResponse = new CartResponse();
-                //map current cart to cart response
-                //get customer name from customer id in current cart
-                cartResponse.setOrderId(orderId);
-                cartResponse.setCustomerName("Customer Name in here");
-                cartResponse.setPhoneNumber("Customer Phone in here");
-                //list Bike
+
+                // Future code
+                // GET Customer info
+                boolean isFoundCustomer = false;
+                Long customerId = null;
+                String customerName = null;
+                String customerPhone = null;
+                if(currentCart.getCustomerId() != null && customerRepository.existsByIdAndIsDeleted(currentCart.getCustomerId(), false))
+                {
+                    Customer customer = customerRepository.findCustomerByIdAndIsDeleted(currentCart.getCustomerId(), false);
+                    customerId = customer.getId();
+                    customerName = customer.getName();
+                    customerPhone = customer.getPhoneNumber();
+                    isFoundCustomer = true;
+                }
+
+                // Clone current cart to cart response
+                CartResponse cartResponse = modelMapper.map(currentCart, CartResponse.class);
                 cartResponse.setListBike(listRes);
-                //calculate Date
+
+                // Set expected Start Date and End Date
+                // Start Date = Today
+                // End Date = Tomorrow
                 Date today = new Date();
-                Date tomorrow =  new Date();
-                tomorrow.setDate(today.getDate() + 1);
+                Date tomorrow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
                 cartResponse.setExpectedStartDate(today);
                 cartResponse.setExpectedEndDate(tomorrow);
-                //calculate Cost
+
+                // Set customer info
+                if(isFoundCustomer){
+                    cartResponse.setCustomerId(customerId);
+                    cartResponse.setCustomerName(customerName);
+                    cartResponse.setPhoneNumber(customerPhone);
+                }
+
+                // Calculate default cost (1 day hiring)
                 double sum = 0;
                 for(BikeResponse item : listRes){
                     sum += item.getPrice();
@@ -140,22 +187,26 @@ public class OrderService {
 
     public Result deleteBikeInCart(Long orderId, Long bikeId){
         try{
-            if(orderDetailRepository.existsByOrderIdAndIsDeleted(orderId, false)) {
+            if(orderDetailRepository.existsByOrderIdAndBikeId(orderId, bikeId)) {
+
                 // Check bike exist
                 if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeId)){
                     return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID is not existed!!!");
                 }
+
+                // Check IF bike is not exist in cart
                 OrderDetail currentCartDetail = orderDetailRepository.findOrderDetailByOrderIdAndBikeId(orderId,bikeId);
                 if(currentCartDetail.getIsDeleted() == true) {
                     return new Result(Constant.LOGIC_ERROR_CODE, "The Bike Id: " + bikeId + " has not been existed in this cart!");
                 }
+
                 // REMOVE BIKE IN ORDER DETAIL
                 currentCartDetail.setIsDeleted(true);
                 orderDetailRepository.save(currentCartDetail);
                 return new Result(Constant.SUCCESS_CODE, "Delete bike in cart successfully");
             }
             else{
-                return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
+                return new Result(Constant.LOGIC_ERROR_CODE, "The Bike is not existed in Cart!!!");
             }
         }catch (Exception e) {
             e.printStackTrace();

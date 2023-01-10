@@ -25,10 +25,11 @@ import { PaginationCustom } from "../../components/Table/Pagination";
 
 const SortBy = [
     { value: "name", label: "Sort by name", key: "1" },
-    { value: "color", label: "Sort by color", key: "2" },
-    { value: "manufacturer", label: "Sort by manufacturer", key: "3" },
+    { value: "bikeManualId", label: "Sort by bike manual ID", key: "2" },
+    { value: "hiredNumber", label: "Sort by hired number", key: "3" },
+    { value: "color", label: "Sort by color", key: "4" },
+    { value: "manufacturer", label: "Sort by manufacturer", key: "5" }
 ];
-
 
 // FUNCTION
 // CALL API
@@ -51,7 +52,6 @@ const handleGetListBike = async (
     await AxiosInstance.post(PublicAPI.getBikePagination, body, {
         headers: {}
     }).then((res) => {
-
         console.log(res.data.data);
         var listData = res.data.data.content.map((data) => {
             return {
@@ -101,8 +101,6 @@ function ManageOrderCreate(props) {
     }
     const reduxIsSubmitting = useSelector((state) => state.redux.isSubmitting);
 
-
-
     // Redux - Pagination
     const [totalPages, setTotalPages] = useState(1);
     let reduxPagination = {
@@ -117,27 +115,6 @@ function ManageOrderCreate(props) {
             handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
         }
     }, [loadingData])
-
-    // USE EFFECT
-    useEffect(() => {
-        switch (props.category) {
-            case 1:
-                setCategoryId(1);
-                break;
-            case 2:
-                setCategoryId(2);
-                break;
-            default:
-                setCategoryId(null);
-                break;
-        }
-        if (reduxPagination.reduxPage !== 1) {
-            dispatch(reduxPaginationAction.updatePage(1));
-        }
-        else {
-            setLoadingData(true);
-        }
-    }, [props.category])
 
     // Table loading filter submit
     useEffect(() => {
