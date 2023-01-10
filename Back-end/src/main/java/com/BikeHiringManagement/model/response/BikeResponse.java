@@ -25,8 +25,8 @@ public class BikeResponse {
     private Date createdDate;
     private String modifiedUser;
     private Date modifiedDate;
+    private Long orderId;
     private List<AttachmentResponse> imageList;
-
 
     public BikeResponse() {
     }

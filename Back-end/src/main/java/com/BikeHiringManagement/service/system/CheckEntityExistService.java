@@ -1,6 +1,7 @@
 package com.BikeHiringManagement.service.system;
 
 
+import com.BikeHiringManagement.entity.OrderDetail;
 import com.BikeHiringManagement.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ public class CheckEntityExistService {
     @Autowired
     BikeRepository bikeRepository;
     @Autowired
+    OrderRepository orderRepository;
+    @Autowired
     RoleRepository roleRepository;
     @Autowired
     UserRepository userRepository;
@@ -27,6 +30,7 @@ public class CheckEntityExistService {
     private static final int BIKE_IMAGE = 3;
     private static final int BIKE_MANUFACTURER = 4;
     private static final int BIKE = 5;
+    private static final int ORDER = 6;
 
     public Boolean isEntityExisted(Integer constantNumber, String type, Object value){
         boolean isExisted = false;
@@ -79,6 +83,11 @@ public class CheckEntityExistService {
                         isExisted = true;
                 if (type == "name")
                     if(bikeRepository.existsByNameAndIsDeleted(name, false))
+                        isExisted = true;
+                break;
+            case ORDER:
+                if (type == "id")
+                    if(orderRepository.existsByIdAndIsDeleted(id, false))
                         isExisted = true;
                 break;
         }
