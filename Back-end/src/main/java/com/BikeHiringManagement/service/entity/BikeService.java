@@ -59,12 +59,14 @@ public class BikeService {
             String sortBy = paginationBikeRequest.getSortBy();
             String sortType = paginationBikeRequest.getSortType();
             Long categoryId = paginationBikeRequest.getCategoryId();
+            Boolean isInCart = paginationBikeRequest.getIsInCart();
 
             Map<String, Object> mapBike = bikeSpecification.getBikePagination(searchKey, page, limit, sortBy, sortType, categoryId);
             List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
             Long totalItems = (Long) mapBike.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);
 
+            // Image handling
             List<BikeResponse> listResult = new ArrayList<>();
             for(BikeResponse bikeResponse : listRes){
                 List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(bikeResponse.getId(), false);
@@ -82,6 +84,12 @@ public class BikeService {
                     bikeResponse.setImageList(listImageResponse);
                 }
                 listResult.add(bikeResponse);
+            }
+
+            // Get orderId IF in CART
+            if(isInCart)
+            {
+                
             }
 
             return PageDto.builder()
