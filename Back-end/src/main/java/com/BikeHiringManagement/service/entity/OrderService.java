@@ -2,7 +2,10 @@ package com.BikeHiringManagement.service.entity;
 
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.*;
+import com.BikeHiringManagement.model.request.AttachmentRequest;
+import com.BikeHiringManagement.model.request.BikeRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
+import com.BikeHiringManagement.model.request.OrderRequest;
 import com.BikeHiringManagement.model.response.AttachmentResponse;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.model.response.CartResponse;
@@ -166,6 +169,36 @@ public class OrderService {
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
+        }
+    }
+
+    public Result saveOrder(OrderRequest orderRequest, String username){
+        try{
+            if(!orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
+            }
+            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
+
+            order.setTempCustomerName(orderRequest.getTempCustomerName());
+            order.setTempCustomerPhone(orderRequest.getTempCustomerPhone());
+            order.setExpectedStartDate(orderRequest.getExpectedStartDate());
+            order.setExpectedEndDate(orderRequest.getExpectedEndDate());
+            order.setActualStartDate(orderRequest.getActualStartDate());
+            order.setActualEndDate(orderRequest.getActualEndDate());
+            order.setIsUsedService(orderRequest.getIsUsedService());
+            order.setServiceCost(orderRequest.getServiceCost());
+            order.setServiceDescription(orderRequest.getServiceDescription());
+            order.setDeposit_type(orderRequest.getDeposit_type());
+            order.setDeposit_amount(orderRequest.getDeposit_amount());
+            order.setDeposit_identify_card(orderRequest.getDeposit_identify_card());
+            order.setNote(order.getNote());
+
+            orderRepository.save(order);
+
+            return new Result(Constant.SUCCESS_CODE, "Save order successfully");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
 

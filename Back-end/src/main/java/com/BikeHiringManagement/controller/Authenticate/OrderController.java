@@ -2,6 +2,7 @@ package com.BikeHiringManagement.controller.Authenticate;
 
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.model.request.BikeRequest;
+import com.BikeHiringManagement.model.request.OrderRequest;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.service.entity.OrderService;
@@ -59,6 +60,21 @@ public class OrderController {
         }
     }
     //save order info  (order request -> order id + data khác)
+
+    @PostMapping("/save")
+    public ResponseEntity<?> saveOrder (@RequestBody OrderRequest orderRequest,
+                                         HttpServletRequest request) {
+
+        try {
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = orderService.saveOrder(orderRequest, username);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     //delete bike from current cart (order id, bike id) -> update is delete trong order detail thành true
     @PostMapping("/delete-bike/orderId={orderId}&bikeId={bikeId}")
     public ResponseEntity<?> deleteBikeInCart(@PathVariable Long orderId,@PathVariable Long bikeId, HttpServletRequest request){
