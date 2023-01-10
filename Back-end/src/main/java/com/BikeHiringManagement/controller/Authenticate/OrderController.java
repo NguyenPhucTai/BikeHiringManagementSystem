@@ -79,7 +79,9 @@ public class OrderController {
     @PostMapping("/delete-bike/orderId={orderId}&bikeId={bikeId}")
     public ResponseEntity<?> deleteBikeInCart(@PathVariable Long orderId,@PathVariable Long bikeId, HttpServletRequest request){
         try{
-            Result result = orderService.deleteBikeInCart(orderId,bikeId);
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = orderService.deleteBikeInCart(orderId, bikeId, username);
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }
         catch(Exception e){

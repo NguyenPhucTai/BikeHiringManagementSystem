@@ -4,6 +4,8 @@ import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.Bike;
 import com.BikeHiringManagement.entity.BikeImage;
+import com.BikeHiringManagement.entity.Order;
+import com.BikeHiringManagement.entity.OrderDetail;
 import com.BikeHiringManagement.model.temp.ComparedObject;
 import com.BikeHiringManagement.model.temp.HistoryObject;
 import com.BikeHiringManagement.model.temp.Result;
@@ -12,9 +14,7 @@ import com.BikeHiringManagement.model.request.BikeRequest;
 import com.BikeHiringManagement.model.request.PaginationBikeRequest;
 import com.BikeHiringManagement.model.response.AttachmentResponse;
 import com.BikeHiringManagement.model.response.BikeResponse;
-import com.BikeHiringManagement.repository.BikeCategoryRepository;
-import com.BikeHiringManagement.repository.BikeImageRepository;
-import com.BikeHiringManagement.repository.BikeRepository;
+import com.BikeHiringManagement.repository.*;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeSpecification;
@@ -35,6 +35,12 @@ public class BikeService {
 
     @Autowired
     BikeImageRepository bikeImageRepository;
+
+    @Autowired
+    OrderRepository orderRepository;
+
+    @Autowired
+    OrderDetailRepository orderDetailRepository;
 
     @Autowired
     BikeSpecification bikeSpecification;
@@ -60,6 +66,7 @@ public class BikeService {
             String sortType = paginationBikeRequest.getSortType();
             Long categoryId = paginationBikeRequest.getCategoryId();
             Boolean isInCart = paginationBikeRequest.getIsInCart();
+            String username = paginationBikeRequest.getUsername();
 
             Map<String, Object> mapBike = bikeSpecification.getBikePagination(searchKey, page, limit, sortBy, sortType, categoryId);
             List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
@@ -87,9 +94,23 @@ public class BikeService {
             }
 
             // Get orderId IF in CART
-            if(isInCart)
+            if(isInCart != null)
             {
-                
+                if(orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false))
+                {
+                    Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
+                    List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(order.getId(), false);
+                    for(OrderDetail item : listOrderDetail)
+                    {
+                        for(BikeResponse bikeResponse : listResult)
+                        {
+                            if(bikeResponse.getId() == item.getBikeId())
+                            {
+                                bikeResponse.setOrderId(order.getId());
+                            }
+                        }
+                    }
+                }
             }
 
             return PageDto.builder()

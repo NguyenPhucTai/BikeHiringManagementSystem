@@ -91,6 +91,8 @@ public class OrderService {
                     // IF exist + status is delete -> update is delete to FALSE
                     else
                     {
+                        existBikeInCart.setModifiedUser(username);
+                        existBikeInCart.setModifiedDate(new Date());
                         existBikeInCart.setIsDeleted(false);
                         orderDetailRepository.save(existBikeInCart);
                         return new Result(Constant.SUCCESS_CODE, "Add bike to cart successfully");
@@ -202,7 +204,7 @@ public class OrderService {
         }
     }
 
-    public Result deleteBikeInCart(Long orderId, Long bikeId){
+    public Result deleteBikeInCart(Long orderId, Long bikeId, String username){
         try{
             if(orderDetailRepository.existsByOrderIdAndBikeId(orderId, bikeId)) {
 
@@ -219,6 +221,8 @@ public class OrderService {
 
                 // REMOVE BIKE IN ORDER DETAIL
                 currentCartDetail.setIsDeleted(true);
+                currentCartDetail.setModifiedDate(new Date());
+                currentCartDetail.setModifiedUser(username);
                 orderDetailRepository.save(currentCartDetail);
                 return new Result(Constant.SUCCESS_CODE, "Delete bike in cart successfully");
             }

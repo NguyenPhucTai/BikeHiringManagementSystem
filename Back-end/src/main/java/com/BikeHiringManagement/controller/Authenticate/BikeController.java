@@ -32,8 +32,11 @@ public class BikeController {
     JwtUtils jwtUtils;
 
     @PostMapping("/get")
-    public ResponseEntity<?> getBikePagination(@RequestBody PaginationBikeRequest reqBody){
+    public ResponseEntity<?> getBikePagination(@RequestBody PaginationBikeRequest reqBody, HttpServletRequest request){
         try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            reqBody.setUsername(username);
             PageDto result = bikeService.getBikePagination(reqBody);
             if (result != null) {
                 return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
