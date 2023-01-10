@@ -130,46 +130,30 @@ public class OrderService {
                 Map<String, Object> mapBike = bikeSpecification.getBikeListById(listOrderDetail);
                 List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
 
-                // Future code
-                // GET Customer info
-                boolean isFoundCustomer = false;
-                Long customerId = null;
-                String customerName = null;
-                String customerPhone = null;
-                if(currentCart.getCustomerId() != null && customerRepository.existsByIdAndIsDeleted(currentCart.getCustomerId(), false))
-                {
-                    Customer customer = customerRepository.findCustomerByIdAndIsDeleted(currentCart.getCustomerId(), false);
-                    customerId = customer.getId();
-                    customerName = customer.getName();
-                    customerPhone = customer.getPhoneNumber();
-                    isFoundCustomer = true;
-                }
-
                 // Clone current cart to cart response
                 CartResponse cartResponse = modelMapper.map(currentCart, CartResponse.class);
                 cartResponse.setListBike(listRes);
+                cartResponse.setCustomerName(currentCart.getTempCustomerName());
+                cartResponse.setPhoneNumber(currentCart.getTempCustomerPhone());
 
                 // Set expected Start Date and End Date
                 // Start Date = Today
                 // End Date = Tomorrow
-                Date today = new Date();
-                Date tomorrow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
-                cartResponse.setExpectedStartDate(today);
-                cartResponse.setExpectedEndDate(tomorrow);
-
-                // Set customer info
-                if(isFoundCustomer){
-                    cartResponse.setCustomerId(customerId);
-                    cartResponse.setCustomerName(customerName);
-                    cartResponse.setPhoneNumber(customerPhone);
+                if(currentCart.getExpectedStartDate() == null && currentCart.getExpectedEndDate() == null){
+                    Date today = new Date();
+                    Date tomorrow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
+                    cartResponse.setExpectedStartDate(today);
+                    cartResponse.setExpectedEndDate(tomorrow);
                 }
 
                 // Calculate default cost (1 day hiring)
-                double sum = 0;
-                for(BikeResponse item : listRes){
-                    sum += item.getPrice();
+                if(currentCart.getCalculatedCost() == null){
+                    double sum = 0;
+                    for(BikeResponse item : listRes){
+                        sum += item.getPrice();
+                    }
+                    cartResponse.setCalculatedCost(sum);
                 }
-                cartResponse.setCalculatedCost(sum);
 
                 result.setMessage("Get successful");
                 result.setCode(Constant.SUCCESS_CODE);

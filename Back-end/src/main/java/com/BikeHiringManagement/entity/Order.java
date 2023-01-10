@@ -12,6 +12,12 @@ public class Order extends BaseEntity{
     @Column(name = "customer_id")
     private Long customerId;
 
+    @Column(name = "temp_customer_name")
+    private String tempCustomerName;
+
+    @Column(name = "temp_customer_phone")
+    private String tempCustomerPhone;
+
     @Column(name = "expected_start_date")
     private Date expectedStartDate;
 
