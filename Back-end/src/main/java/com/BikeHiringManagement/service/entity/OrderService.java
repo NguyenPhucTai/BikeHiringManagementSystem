@@ -80,7 +80,7 @@ public class OrderService {
                     OrderDetail existBikeInCart = orderDetailRepository.findOrderDetailByOrderIdAndBikeId(orderId, bikeId);
 
                     // IF exist -> throw alert
-                    if(existBikeInCart.getIsDeleted() == true)
+                    if(existBikeInCart.getIsDeleted() == false)
                     {
                         return new Result(Constant.LOGIC_ERROR_CODE, "The Bike Id: " + bikeId + " has been added to this cart!");
                     }
@@ -90,7 +90,7 @@ public class OrderService {
                     {
                         existBikeInCart.setIsDeleted(false);
                         orderDetailRepository.save(existBikeInCart);
-                        return new Result(Constant.SUCCESS_CODE, "Create new cart successfully");
+                        return new Result(Constant.SUCCESS_CODE, "Add bike to cart successfully");
                     }
                 }
             }

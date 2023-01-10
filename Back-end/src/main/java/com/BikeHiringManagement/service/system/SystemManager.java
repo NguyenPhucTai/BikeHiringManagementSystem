@@ -51,7 +51,6 @@ public class SystemManager {
                     userDetails.setName(existUser.get().getName());
                     return userDetails;
                 } catch (Exception e) {
-                    e.printStackTrace();
                     userDetails.setResponseMessage("wrong_password");
                     return userDetails;
                 }

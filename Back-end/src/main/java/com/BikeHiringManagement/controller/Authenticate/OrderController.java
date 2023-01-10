@@ -60,11 +60,9 @@ public class OrderController {
     }
     //save order info  (order request -> order id + data khác)
     //delete bike from current cart (order id, bike id) -> update is delete trong order detail thành true
-    @PostMapping("/bike/delete/{orderId}/{bikeId}")
+    @PostMapping("/delete-bike/orderId={orderId}&bikeId={bikeId}")
     public ResponseEntity<?> deleteBikeInCart(@PathVariable Long orderId,@PathVariable Long bikeId, HttpServletRequest request){
         try{
-            String jwt = jwtUtils.getJwtFromRequest(request);
-            String username = jwtUtils.getUserNameFromJwtToken(jwt);
             Result result = orderService.deleteBikeInCart(orderId,bikeId);
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }
