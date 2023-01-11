@@ -4,7 +4,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 // import Badge from 'react-bootstrap/Badge';
-import { Badge } from '@mui/material';
+import { Badge, Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from "react-router-dom";
 
@@ -24,11 +24,12 @@ import { PageLoad } from "../../components/Base/PageLoad";
 import { PaginationCustom } from "../../components/Table/Pagination";
 
 const SortBy = [
-    { value: "name", label: "Sort by name", key: "1" },
-    { value: "bikeManualId", label: "Sort by bike manual ID", key: "2" },
-    { value: "hiredNumber", label: "Sort by hired number", key: "3" },
-    { value: "color", label: "Sort by color", key: "4" },
-    { value: "manufacturer", label: "Sort by manufacturer", key: "5" }
+    { value: "id", label: "Sort by ID", key: "1" },
+    { value: "name", label: "Sort by name", key: "2" },
+    { value: "bikeManualId", label: "Sort by bike manual ID", key: "3" },
+    { value: "hiredNumber", label: "Sort by hired number", key: "4" },
+    { value: "color", label: "Sort by color", key: "5" },
+    { value: "manufacturer", label: "Sort by manufacturer", key: "6" }
 ];
 
 // FUNCTION
@@ -47,7 +48,8 @@ const handleGetListBike = async (
         page: reduxPagination.reduxPage,
         limit: reduxPagination.reduxRowsPerPage,
         sortBy: reduxFilter.reduxSortBy,
-        sortType: reduxFilter.reduxSortType
+        sortType: reduxFilter.reduxSortType,
+        isInCart: true
     };
     await AxiosInstance.post(PublicAPI.getBikePagination, body, {
         headers: {}
@@ -57,8 +59,8 @@ const handleGetListBike = async (
             return {
                 id: data.id,
                 name: data.name,
-                bikeCategory: data.bikeCategoryName,
-                price: data.price,
+                bikeManualId: data.bikeManualId,
+                hiredNumber: data.hiredNumber,
                 filePath: data.imageList[0].filePath,
                 fileName: data.imageList[0].fileName,
             }
@@ -150,16 +152,18 @@ function ManageOrderCreate(props) {
                                     <Row>
                                         {listData.map((data, index) => {
                                             return (
-                                                <Col key={index} className="column" xs={12} sm={6} md={4} lg={3}>
-                                                    <Link className="card-item" to={`/bike/${data.id}`}>
+                                                <Col key={index} className="column" xs={12} sm={6} md={4} lg={3} style={{ maxHeight: "30rem" }}>
+                                                    <div className="card-item">
                                                         <img src={Firebase_URL + data.filePath} alt={data.fileName} />
                                                         <label className="bikeName">{data.name}</label>
-                                                        <div className="bikeTag">
+                                                        {/* <div className="bikeTag">
                                                             <p className="bikeCategory">{data.bikeCategory}</p>
-                                                            {/* <Badge bg="success"></Badge> */}
-                                                        </div>
-                                                        <p className="bikePrice">Price: <span>{data.price}</span></p>
-                                                    </Link>
+                                                            <Badge bg="success"></Badge>
+                                                        </div> */}
+                                                        <p className="bikeManualId">Manual ID: <span>{data.bikeManualId}</span></p>
+                                                        <p className="bikeHiredNumber">Hired Number: <span>{data.hiredNumber}</span></p>
+                                                        <Button variant="contained">Add to Cart</Button>
+                                                    </div>
                                                 </Col>
                                             )
                                         })}
