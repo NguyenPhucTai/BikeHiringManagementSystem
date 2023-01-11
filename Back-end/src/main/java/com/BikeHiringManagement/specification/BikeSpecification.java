@@ -32,7 +32,7 @@ public class BikeSpecification {
     @Autowired
     CheckEntityExistService checkEntityExistService;
 
-    public Map<String, Object> getBikePagination(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId){
+    public Map<String, Object> getBikePagination(String searchKey, Integer page, Integer limit, String sortBy, String sortType, Long categoryId, Boolean isInCart){
         try{
             Map<String, Object> mapFinal = new HashMap<>();
 
@@ -64,6 +64,7 @@ public class BikeSpecification {
             }
 
 
+
             // CONDITION
             // ROOT
             List<Predicate> predicates = new ArrayList<>();
@@ -78,6 +79,11 @@ public class BikeSpecification {
 
             if(isCategoryExist){
                 predicates.add(cb.equal(rootCate.get("id"), categoryId));
+            }
+
+            if(isInCart != null)
+            {
+                predicates.add(cb.equal(root.get("status"), "AVAILABLE"));
             }
 
             if (!StringUtils.isEmpty(searchKey)) {
@@ -106,6 +112,11 @@ public class BikeSpecification {
                 predicatesCount.add(cb.equal(rootCateCount.get("id"), categoryId));
             }
 
+            if(isInCart != null)
+            {
+                predicatesCount.add(cb.equal(rootCount.get("status"), "AVAILABLE"));
+            }
+
             if (!StringUtils.isEmpty(searchKey)) {
                 predicatesCount.add(cb.or(
                         cb.like(cb.lower(rootCount.get("name")) , "%" + searchKey.toLowerCase() + "%"),
@@ -121,6 +132,9 @@ public class BikeSpecification {
             // Sort theo Name - Cate Name - Hired Number - Price
             if (sortType.equalsIgnoreCase("asc")) {
                 switch (sortBy) {
+                    case "id":
+                        query.orderBy(cb.asc(root.get("id")));
+                        break;
                     case "name":
                         query.orderBy(cb.asc(root.get("name")));
                         break;
@@ -139,6 +153,9 @@ public class BikeSpecification {
                 }
             } else {
                 switch (sortBy) {
+                    case "id":
+                        query.orderBy(cb.desc(root.get("id")));
+                        break;
                     case "name":
                         query.orderBy(cb.desc(root.get("name")));
                         break;

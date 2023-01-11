@@ -68,7 +68,7 @@ public class BikeService {
             Boolean isInCart = paginationBikeRequest.getIsInCart();
             String username = paginationBikeRequest.getUsername();
 
-            Map<String, Object> mapBike = bikeSpecification.getBikePagination(searchKey, page, limit, sortBy, sortType, categoryId);
+            Map<String, Object> mapBike = bikeSpecification.getBikePagination(searchKey, page, limit, sortBy, sortType, categoryId, isInCart);
             List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
             Long totalItems = (Long) mapBike.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);
