@@ -31,9 +31,9 @@ const SortBy = [
     { value: "name", label: "Sort by name", key: "2" },
     { value: "bikeManualId", label: "Sort by manual ID", key: "3" },
     { value: "hiredNumber", label: "Sort by hired number", key: "5" },
-    { value: "bikeCategoryId", label: "Sort by hired number", key: "6" },
-    { value: "bikeColorId", label: "Sort by hired number", key: "7" },
-    { value: "bikeManufacturerId", label: "Sort by hired number", key: "8" },
+    { value: "bikeCategoryId", label: "Sort by category", key: "6" },
+    { value: "bikeColorId", label: "Sort by color", key: "7" },
+    { value: "bikeManufacturerId", label: "Sort by manufacturer", key: "8" },
     { value: "status", label: "Sort by status", key: "9" },
 ];
 

@@ -95,7 +95,9 @@ public class OrderService {
                         existBikeInCart.setModifiedDate(new Date());
                         existBikeInCart.setIsDeleted(false);
                         orderDetailRepository.save(existBikeInCart);
-                        return new Result(Constant.SUCCESS_CODE, "Add bike to cart successfully");
+
+                        int bikeNum = getNumberOfBikeInCart(orderId);
+                        return new Result(Constant.SUCCESS_CODE, "Add bike to cart successfully", bikeNum);
                     }
                 }
             }
@@ -115,7 +117,9 @@ public class OrderService {
             orderDetail.setOrderId(orderId);
             orderDetail.setBikeId(bikeId);
             orderDetailRepository.save(orderDetail);
-            return new Result(Constant.SUCCESS_CODE, "Create new cart successfully");
+
+            int bikeNum = getNumberOfBikeInCart(orderId);
+            return new Result(Constant.SUCCESS_CODE, "Create new cart successfully", bikeNum);
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
@@ -235,27 +239,18 @@ public class OrderService {
         }
     }
 
-//    public Result createOrder(ObjectNameRequest orderCreateRequest){
-//        try{
-//            if(checkEntityExistService.isEntityExisted(Constant.BIKE_COLOR, "name", orderCreateRequest.getName())){
-//                return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has been existed!!!");
-//            }else{
-//                BikeColor newBikeColor = modelMapper.map(orderCreateRequest, BikeColor.class);
-//                newBikeColor.setCreatedDate(new Date());
-//                newBikeColor.setCreatedUser(orderCreateRequest.getUsername());
-//                BikeColor savedBikeColor =  bikeColorRepository.save(newBikeColor);
-//
-//                HistoryObject historyObject = new HistoryObject();
-//                historyObject.setUsername(orderCreateRequest.getUsername());
-//                historyObject.setEntityId(savedBikeColor.getId());
-//                historyService.saveHistory(Constant.HISTORY_CREATE, savedBikeColor, historyObject);
-//
-//                return new Result(Constant.SUCCESS_CODE, "Create new bike color successfully");
-//            }
-//
-//        }catch (Exception e) {
-//            e.printStackTrace();
-//            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
-//        }
-//    }
+    public Integer getNumberOfBikeInCart(Long orderId)
+    {
+        try{
+            if(orderRepository.existsByIdAndStatus(orderId, "IN CART")){
+                int bikeNum = orderDetailRepository.countAllByOrderIdAndIsDeleted(orderId, false);
+                return bikeNum;
+            }
+            return -1;
+        }catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
 }

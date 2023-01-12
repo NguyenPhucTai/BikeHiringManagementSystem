@@ -54,13 +54,26 @@ const showAlert = (setAlert, message, isSuccess) => {
 
 // FUNCTION
 // CALL API
-const handleGetBikeById = async (id, setData) => {
+const handleGetBikeById = async (id, setData, setDefaultCategory, setDefaultManufacturer, setDefaultColor) => {
 
     await AxiosInstance.get(BikeManagement.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
             setData(res.data.data);
+            setDefaultCategory({
+                value: res.data.data.bikeCategoryId,
+                label: res.data.data.bikeCategoryName,
+            })
+            setDefaultManufacturer({
+                value: res.data.data.bikeManufacturerId,
+                label: res.data.data.bikeManufacturerName,
+            })
+            setDefaultColor({
+                value: res.data.data.bikeColorId,
+                label: res.data.data.bikeColor,
+            })
+            console.log(res.data.data);
         }
     }).catch((error) => {
         if (error && error.response) {
@@ -142,12 +155,11 @@ const handleGetManufacturerList = async (setListManufacturer) => {
             }
         })
         setListManufacturer(listManufacturer)
-    })
-        .catch((error) => {
-            if (error && error.response) {
-                console.log("Error: ", error);
-            }
-        });
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
 };
 
 const handleDeleteImage = async (imageId, setAlert, setShowCloseButton, setIsImageDelete) => {
@@ -283,7 +295,9 @@ function ManageBikeUpdate() {
         bikeManufacturer: 0,
         files: [{}],
     };
-
+    const [defaultCategory, setDefaultCategory] = useState({});
+    const [defaultManufacturer, setDefaultManufacturer] = useState({});
+    const [defaultColor, setDefaultColor] = useState({});
 
     // IMAGE HANDLING
     // USE EFFECT
@@ -378,7 +392,7 @@ function ManageBikeUpdate() {
             handleGetCategoryList(setListCategory);
             handleGetColorList(setListColor);
             handleGetManufacturerList(setListManufacturer)
-            handleGetBikeById(id, setData);
+            handleGetBikeById(id, setData, setDefaultCategory, setDefaultManufacturer, setDefaultColor);
             setLoadingData(false)
         }
     }, [loadingData])
@@ -551,10 +565,11 @@ function ManageBikeUpdate() {
                                         <SelectField
                                             label={"Bike Category"}
                                             name={"bikeCategory"}
+                                            value={defaultCategory}
                                             options={listCategory}
-                                            value={{ label: data.bikeCategoryName, value: data.bikeCategoryId }}
                                             placeholder={"Choose bike category"}
                                             onChange={(selectOption) => {
+                                                setDefaultCategory(selectOption)
                                                 setFieldValue("bikeCategory", selectOption.value);
                                             }}
                                             onBlur={() => {
@@ -566,10 +581,11 @@ function ManageBikeUpdate() {
                                         <SelectField
                                             label={"Bike Manufacturer"}
                                             name={"bikeManufacturer"}
+                                            value={defaultManufacturer}
                                             options={listManufacturer}
-                                            value={{ label: data.bikeManufacturerName, value: data.bikeManufacturerId }}
                                             placeholder={"Choose bike manufacturer"}
                                             onChange={(selectOption) => {
+                                                setDefaultManufacturer(selectOption);
                                                 setFieldValue("bikeManufacturer", selectOption.value);
                                             }}
                                             onBlur={() => {
@@ -581,10 +597,11 @@ function ManageBikeUpdate() {
                                         <SelectField
                                             label={"Bike Color"}
                                             name={"bikeColor"}
+                                            value={defaultColor}
                                             options={listColor}
-                                            value={{ label: data.bikeColor, value: data.bikeColorId }}
                                             placeholder={"Choose bike color"}
                                             onChange={(selectOption) => {
+                                                setDefaultColor(selectOption);
                                                 setFieldValue("bikeColor", selectOption.value);
                                             }}
                                             onBlur={() => {

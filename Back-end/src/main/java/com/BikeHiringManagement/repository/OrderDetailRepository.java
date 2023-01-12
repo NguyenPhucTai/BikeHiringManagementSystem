@@ -12,6 +12,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long>,
     Boolean existsByOrderIdAndBikeId(Long orderId, Long bikeId);
     Boolean existsByOrderIdAndIsDeleted(Long orderId, boolean isExisted);
 
+    Integer countAllByOrderIdAndIsDeleted(Long orderId, boolean check);
+
     OrderDetail findOrderDetailByOrderIdAndBikeId(Long orderId, Long bikeId);
     List<OrderDetail> findAllOrderDetailByOrderIdAndIsDeleted(Long orderId, boolean check);
 }

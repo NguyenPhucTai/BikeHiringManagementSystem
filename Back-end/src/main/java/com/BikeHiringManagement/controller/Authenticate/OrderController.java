@@ -37,7 +37,10 @@ public class OrderController {
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
             Result result = orderService.createCart(username, bikeId);
-            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+            if((Integer) result.getObject() == -1){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return responseUtils.getResponseEntity(result.getObject(), result.getCode(), result.getMessage(), HttpStatus.OK);
         }catch (Exception e) {
             e.printStackTrace();
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);

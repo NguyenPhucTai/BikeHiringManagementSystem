@@ -47,6 +47,12 @@ export const ManufacturerManagement = {
     getById: "/admin/bike-manufacturer/get?id="
 }
 
+export const OrderManagement = {
+    createCart: "/admin/order/create/",
+    getCartByUsername: "/admin/order/get",
+    deleteBike: "/admin/order/delete-bike/",
+    saveCart: "/admin/order/save"
+}
 
 // Fire Base
 export const Firebase_URL = "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F"

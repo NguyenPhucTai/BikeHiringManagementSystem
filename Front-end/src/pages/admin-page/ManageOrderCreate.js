@@ -4,14 +4,16 @@ import React, { useState, useEffect, Fragment } from "react";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 // import Badge from 'react-bootstrap/Badge';
-import { Badge, Button } from '@mui/material';
+import { Badge, Button, IconButton, StyledBadge } from '@mui/material';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from "react-router-dom";
+import Cookies from 'universal-cookie';
 
 // Fire base
 import { AxiosInstance } from "../../api/AxiosClient";
 import SortBarManagement from "../../components/Navbar/SortBarManagement";
-import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
+import { Firebase_URL, BikeManagement, OrderManagement } from "../../api/EndPoint";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -32,10 +34,11 @@ const SortBy = [
     { value: "manufacturer", label: "Sort by manufacturer", key: "6" }
 ];
 
+const cookies = new Cookies();
+
 // FUNCTION
 // CALL API
 const handleGetListBike = async (
-    categoryId,
     setListData,
     setLoadingData,
     setTotalPages,
@@ -44,23 +47,22 @@ const handleGetListBike = async (
 ) => {
     const body = {
         searchKey: reduxFilter.reduxSearchKey,
-        categoryId: categoryId,
         page: reduxPagination.reduxPage,
         limit: reduxPagination.reduxRowsPerPage,
         sortBy: reduxFilter.reduxSortBy,
         sortType: reduxFilter.reduxSortType,
         isInCart: true
     };
-    await AxiosInstance.post(PublicAPI.getBikePagination, body, {
-        headers: {}
+    await AxiosInstance.post(BikeManagement.getBikePagination, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
-        console.log(res.data.data);
         var listData = res.data.data.content.map((data) => {
             return {
                 id: data.id,
                 name: data.name,
                 bikeManualId: data.bikeManualId,
                 hiredNumber: data.hiredNumber,
+                orderId: data.orderId,
                 filePath: data.imageList[0].filePath,
                 fileName: data.imageList[0].fileName,
             }
@@ -70,12 +72,31 @@ const handleGetListBike = async (
         setTimeout(() => {
             setLoadingData(false)
         }, 500);
-    })
-        .catch((error) => {
-            if (error && error.response) {
-                console.log("Error: ", error);
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
+}
+
+const createCart = async (bikeId, setCarNumber) => {
+    await AxiosInstance.post(OrderManagement.createCart + bikeId, null, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            if (res.data.data !== null) {
+                setCarNumber(res.data.data);
             }
-        });
+        }
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
+}
+
+
+const showCart = () => {
 }
 
 function ManageOrderCreate(props) {
@@ -92,8 +113,7 @@ function ManageOrderCreate(props) {
     // LIST DATA
     const [listData, setListData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
-    const [categoryId, setCategoryId] = useState(null);
-
+    const [cartNumber, setCarNumber] = useState(0);
 
     // Redux - Filter form
     let reduxFilter = {
@@ -114,7 +134,7 @@ function ManageOrderCreate(props) {
     // Table loading - page load
     useEffect(() => {
         if (loadingData === true) {
-            handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            handleGetListBike(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
         }
     }, [loadingData])
 
@@ -122,7 +142,7 @@ function ManageOrderCreate(props) {
     useEffect(() => {
         if (reduxIsSubmitting === true) {
             if (reduxPagination.reduxPage === 1) {
-                handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+                handleGetListBike(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
             } else {
                 dispatch(reduxPaginationAction.updatePage(1));
             }
@@ -132,9 +152,13 @@ function ManageOrderCreate(props) {
 
     // Table loading pagination - change page
     useEffect(() => {
-        handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        handleGetListBike(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
     }, [reduxPagination.reduxPage])
 
+    // Table loading pagination - change page
+    useEffect(() => {
+        handleGetListBike(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+    }, [cartNumber])
 
     return (
         !loadingData ?
@@ -144,6 +168,13 @@ function ManageOrderCreate(props) {
                         <Col lg={12}>
                             <div className="container">
                                 <h2 className="text-center">Create Order Page</h2>
+                                <div className="view-cart">
+                                    <IconButton aria-label="cart" onClick={() => showCart()}>
+                                        <Badge badgeContent={cartNumber} color="secondary" max={999} showZero>
+                                            <ShoppingCartIcon />
+                                        </Badge>
+                                    </IconButton>
+                                </div>
                                 <SortBarManagement SortBy={SortBy} />
                                 {loadingData ?
                                     <div className="circular_progress">
@@ -156,13 +187,13 @@ function ManageOrderCreate(props) {
                                                     <div className="card-item">
                                                         <img src={Firebase_URL + data.filePath} alt={data.fileName} />
                                                         <label className="bikeName">{data.name}</label>
-                                                        {/* <div className="bikeTag">
-                                                            <p className="bikeCategory">{data.bikeCategory}</p>
-                                                            <Badge bg="success"></Badge>
-                                                        </div> */}
                                                         <p className="bikeManualId">Manual ID: <span>{data.bikeManualId}</span></p>
                                                         <p className="bikeHiredNumber">Hired Number: <span>{data.hiredNumber}</span></p>
-                                                        <Button variant="contained">Add to Cart</Button>
+                                                        {data.orderId === null ?
+                                                            <Button variant="contained" onClick={() => createCart(data.id, setCarNumber)}>Add to Cart</Button>
+                                                            :
+                                                            <Button variant="contained" disabled>Add to Cart</Button>
+                                                        }
                                                     </div>
                                                 </Col>
                                             )

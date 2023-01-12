@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
     boolean existsByCreatedUserAndStatusAndIsDeleted(String username, String status, boolean check);
+    boolean existsByIdAndStatus(Long id, String status);
     boolean existsByIdAndIsDeleted(Long id, boolean check);
 
     Order findByCreatedUserAndStatusAndIsDeleted(String username, String status, boolean check);
