@@ -29,14 +29,14 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
-    @PostMapping("/create/{bikeId}")
-    public ResponseEntity<?> createCart (@PathVariable Long bikeId,
+    @PostMapping("/add-bike")
+    public ResponseEntity<?> addBikeToCart (@RequestBody OrderRequest orderRequest,
                                          HttpServletRequest request) {
 
         try {
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = orderService.createCart(username, bikeId);
+            Result result = orderService.createCart(username, orderRequest.getBikeId());
             if((Integer) result.getObject() == -1){
                 return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -62,7 +62,23 @@ public class OrderController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    //save order info  (order request -> order id + data khác)
+
+    @GetMapping("/cart/bike-number")
+    public ResponseEntity<?> getBikeNumberInCart(HttpServletRequest request){
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = orderService.getBikeNumberInCart(username);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
+        }catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PostMapping("/save")
     public ResponseEntity<?> saveOrder (@RequestBody OrderRequest orderRequest,

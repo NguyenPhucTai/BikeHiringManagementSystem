@@ -63,13 +63,11 @@ public class OrderService {
         try{
             long orderId = -1;
 
-            // Check IF Bike ID is existed
-            if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeId)){
-                return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID is not existed!!!");
-            }
-            // Check IF Bike Status is AVAILABLE
-            if(!bikeRepository.existsByIdAndStatusAndIsDeleted(bikeId, "AVAILABLE", false)){
-                return new Result(Constant.LOGIC_ERROR_CODE, "Bike status not available!!!");
+            if(bikeId != null){
+                // Check IF Bike ID is existed
+                if(!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeId)){
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID is not existed!!!");
+                }
             }
 
             // IF Cart exist -> Just Add Bike ID to Order Detail
@@ -78,26 +76,28 @@ public class OrderService {
                 Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
                 orderId = currentCart.getId();
 
-                // Check IF Bike has been included in order
-                if (orderDetailRepository.existsByOrderIdAndBikeId(orderId, bikeId)){
-                    OrderDetail existBikeInCart = orderDetailRepository.findOrderDetailByOrderIdAndBikeId(orderId, bikeId);
+                if(bikeId != null){
+                    // Check IF Bike has been included in order
+                    if (orderDetailRepository.existsByOrderIdAndBikeId(orderId, bikeId)){
+                        OrderDetail existBikeInCart = orderDetailRepository.findOrderDetailByOrderIdAndBikeId(orderId, bikeId);
 
-                    // IF exist -> throw alert
-                    if(existBikeInCart.getIsDeleted() == false)
-                    {
-                        return new Result(Constant.LOGIC_ERROR_CODE, "The Bike Id: " + bikeId + " has been added to this cart!");
-                    }
+                        // IF exist -> throw alert
+                        if(existBikeInCart.getIsDeleted() == false)
+                        {
+                            return new Result(Constant.LOGIC_ERROR_CODE, "The Bike Id: " + bikeId + " has been added to this cart!");
+                        }
 
-                    // IF exist + status is delete -> update is delete to FALSE
-                    else
-                    {
-                        existBikeInCart.setModifiedUser(username);
-                        existBikeInCart.setModifiedDate(new Date());
-                        existBikeInCart.setIsDeleted(false);
-                        orderDetailRepository.save(existBikeInCart);
+                        // IF exist + status is delete -> update is delete to FALSE
+                        else
+                        {
+                            existBikeInCart.setModifiedUser(username);
+                            existBikeInCart.setModifiedDate(new Date());
+                            existBikeInCart.setIsDeleted(false);
+                            orderDetailRepository.save(existBikeInCart);
 
-                        int bikeNum = getNumberOfBikeInCart(orderId);
-                        return new Result(Constant.SUCCESS_CODE, "Add bike to cart successfully", bikeNum);
+                            int bikeNum = getNumberOfBikeInCart(orderId);
+                            return new Result(Constant.SUCCESS_CODE, "Add bike to cart successfully", bikeNum);
+                        }
                     }
                 }
             }
@@ -111,14 +111,20 @@ public class OrderService {
                 orderId = createdOrder.getId();
             }
 
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setCreatedDate(new Date());
-            orderDetail.setCreatedUser(username);
-            orderDetail.setOrderId(orderId);
-            orderDetail.setBikeId(bikeId);
-            orderDetailRepository.save(orderDetail);
+            if(bikeId != null){
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setCreatedDate(new Date());
+                orderDetail.setCreatedUser(username);
+                orderDetail.setOrderId(orderId);
+                orderDetail.setBikeId(bikeId);
+                orderDetailRepository.save(orderDetail);
+            }
 
             int bikeNum = getNumberOfBikeInCart(orderId);
+
+            if(bikeId == null){
+                return new Result(Constant.SUCCESS_CODE, "NEW ORDER", orderId);
+            }
             return new Result(Constant.SUCCESS_CODE, "Create new cart successfully", bikeNum);
         }catch (Exception e) {
             e.printStackTrace();
@@ -129,6 +135,9 @@ public class OrderService {
     public Result getCartByUsername(String username){
         try{
             Result result = new Result();
+            Double calculatedCost = 0.0;
+            Date today = new Date();
+            Date tomorrow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
 
             if(orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)){
                 Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
@@ -149,19 +158,16 @@ public class OrderService {
                 // Start Date = Today
                 // End Date = Tomorrow
                 if(currentCart.getExpectedStartDate() == null && currentCart.getExpectedEndDate() == null){
-                    Date today = new Date();
-                    Date tomorrow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
                     cartResponse.setExpectedStartDate(today);
                     cartResponse.setExpectedEndDate(tomorrow);
                 }
 
                 // Calculate default cost (1 day hiring)
                 if(currentCart.getCalculatedCost() == null){
-                    double sum = 0;
                     for(BikeResponse item : listRes){
-                        sum += item.getPrice();
+                        calculatedCost += item.getPrice();
                     }
-                    cartResponse.setCalculatedCost(sum);
+                    cartResponse.setCalculatedCost(calculatedCost);
                 }
 
                 result.setMessage("Get successful");
@@ -170,8 +176,34 @@ public class OrderService {
                 return  result;
             }
             else{
-                return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
+                Result resultCreate = createCart(username, null);
+                Long orderId = (Long) resultCreate.getObject();
+
+                CartResponse cartResponse = new CartResponse();
+                cartResponse.setId(orderId);
+                cartResponse.setExpectedStartDate(today);
+                cartResponse.setExpectedEndDate(tomorrow);
+                cartResponse.setCalculatedCost(calculatedCost);
+
+                result.setMessage("Create new cart successfully");
+                result.setCode(resultCreate.getCode());
+                result.setObject(cartResponse);
+                return  result;
             }
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
+        }
+    }
+
+    public Result getBikeNumberInCart(String username){
+        try{
+            int bikeNum = 0;
+            if(orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)){
+                Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
+                bikeNum = orderDetailRepository.countAllByOrderIdAndIsDeleted(order.getId(), false);
+            }
+            return new Result(Constant.SUCCESS_CODE, "Get successfully", bikeNum);
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);

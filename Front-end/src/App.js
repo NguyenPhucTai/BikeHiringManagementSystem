@@ -24,7 +24,8 @@ import ManageBikeList from "./pages/admin-page/ManageBikeList";
 import ManageBikeCreate from "./pages/admin-page/ManageBikeCreate";
 import ManageBikeDetail from "./pages/admin-page/ManageBikeDetail";
 import ManageBikeUpdate from "./pages/admin-page/ManageBikeUpdate";
-import ManageOrderCreate from "./pages/admin-page/ManageOrderCreate";
+import CreateCart from "./pages/admin-page/CreateCart";
+import CreateOrder from "./pages/admin-page/CreateOrder";
 
 // Redux
 import { useSelector } from "react-redux";
@@ -73,7 +74,8 @@ function App() {
 						<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
 						<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
 						<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
-						<Route path='/manage/order/create' element={<ManageOrderCreate />} />
+						<Route path='/manage/order/create' element={<CreateCart />} />
+						<Route path='/manage/order/cart' element={<CreateOrder />} />
 					</Route>
 				</Routes>
 				{reduxIsShowPublicNavBar && <Footer />}

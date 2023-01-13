@@ -9,6 +9,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from "react-router-dom";
 import Cookies from 'universal-cookie';
+import { useNavigate } from "react-router-dom";
 
 // Fire base
 import { AxiosInstance } from "../../api/AxiosClient";
@@ -79,8 +80,11 @@ const handleGetListBike = async (
     });
 }
 
-const createCart = async (bikeId, setCarNumber) => {
-    await AxiosInstance.post(OrderManagement.createCart + bikeId, null, {
+const handleCreateCart = async (bikeId, setCarNumber) => {
+    const body = {
+        bikeId: bikeId
+    };
+    await AxiosInstance.post(OrderManagement.addBikeToCart, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -95,11 +99,22 @@ const createCart = async (bikeId, setCarNumber) => {
     });
 }
 
-
-const showCart = () => {
+const handleBikeNumberInCart = async (setCarNumber) => {
+    await AxiosInstance.get(OrderManagement.getBikeNumberInCart, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            console.log(res.data.data);
+            setCarNumber(res.data.data)
+        }
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
 }
 
-function ManageOrderCreate(props) {
+function CreateCart(props) {
 
     // Show Public Navigation
     const dispatch = useDispatch();
@@ -108,6 +123,9 @@ function ManageOrderCreate(props) {
         dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
         setLoadingPage(false);
     }
+
+    //Navigate
+    const navigate = useNavigate();
 
     // USESTATE
     // LIST DATA
@@ -135,6 +153,7 @@ function ManageOrderCreate(props) {
     useEffect(() => {
         if (loadingData === true) {
             handleGetListBike(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            handleBikeNumberInCart(setCarNumber);
         }
     }, [loadingData])
 
@@ -169,7 +188,7 @@ function ManageOrderCreate(props) {
                             <div className="container">
                                 <h2 className="text-center">Create Order Page</h2>
                                 <div className="view-cart">
-                                    <IconButton aria-label="cart" onClick={() => showCart()}>
+                                    <IconButton aria-label="cart" onClick={() => navigate('/manage/order/cart')}>
                                         <Badge badgeContent={cartNumber} color="secondary" max={999} showZero>
                                             <ShoppingCartIcon />
                                         </Badge>
@@ -190,7 +209,7 @@ function ManageOrderCreate(props) {
                                                         <p className="bikeManualId">Manual ID: <span>{data.bikeManualId}</span></p>
                                                         <p className="bikeHiredNumber">Hired Number: <span>{data.hiredNumber}</span></p>
                                                         {data.orderId === null ?
-                                                            <Button variant="contained" onClick={() => createCart(data.id, setCarNumber)}>Add to Cart</Button>
+                                                            <Button variant="contained" onClick={() => handleCreateCart(data.id, setCarNumber)}>Add to Cart</Button>
                                                             :
                                                             <Button variant="contained" disabled>Add to Cart</Button>
                                                         }
@@ -216,4 +235,4 @@ function ManageOrderCreate(props) {
     )
 }
 
-export default ManageOrderCreate;
+export default CreateCart;

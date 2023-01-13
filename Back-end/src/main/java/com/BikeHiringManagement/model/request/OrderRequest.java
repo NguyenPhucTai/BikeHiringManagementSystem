@@ -32,5 +32,7 @@ public class OrderRequest {
 
     private String note;
 
+    private Long bikeId;
+
     //private Double totalAmount;
 }

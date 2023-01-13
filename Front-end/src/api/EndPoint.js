@@ -48,10 +48,11 @@ export const ManufacturerManagement = {
 }
 
 export const OrderManagement = {
-    createCart: "/admin/order/create/",
+    addBikeToCart: "/admin/order/add-bike",
     getCartByUsername: "/admin/order/get",
     deleteBike: "/admin/order/delete-bike/",
-    saveCart: "/admin/order/save"
+    saveCart: "/admin/order/save",
+    getBikeNumberInCart: "/admin/order/cart/bike-number"
 }
 
 // Fire Base
