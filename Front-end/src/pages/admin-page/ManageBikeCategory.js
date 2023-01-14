@@ -16,7 +16,7 @@ import { CategoryManagement } from '../../api/EndPoint';
 import { TableCRUD } from '../../components/Table/TableCRUD';
 import SortBarManagement from "../../components/Navbar/SortBarManagement";
 import { Popup } from '../../components/Modal/Popup';
-import { TextField } from '../../components/Form/TextField';
+import { TextFieldCustom } from '../../components/Form/TextFieldCustom';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { GetFormattedDate } from "../../function/DateTimeFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
@@ -351,13 +351,13 @@ function ManageBikeCategory() {
                             setFieldValue,
                         }) => (
                             <Form className="d-flex flex-column">
-                                <TextField
+                                <TextFieldCustom
                                     label={"Name"}
                                     name={"name"}
                                     type={"text"}
                                     placeholder={"Enter the category name"}
                                 />
-                                <TextField
+                                <TextFieldCustom
                                     label={"Price"}
                                     name={"price"}
                                     type={"number"}
@@ -430,13 +430,13 @@ function ManageBikeCategory() {
                             setFieldValue,
                         }) => (
                             <Form className="d-flex flex-column">
-                                <TextField
+                                <TextFieldCustom
                                     label={"Name"}
                                     name={"name"}
                                     type={"text"}
                                     placeholder={"Enter the category name"}
                                 />
-                                <TextField
+                                <TextFieldCustom
                                     label={"Price"}
                                     name={"price"}
                                     type={"number"}

@@ -100,7 +100,6 @@ const List = props => {
     const reduxIsSubmitting = useSelector((state) => state.redux.isSubmitting);
 
 
-
     // Redux - Pagination
     const [totalPages, setTotalPages] = useState(1);
     let reduxPagination = {
@@ -108,38 +107,37 @@ const List = props => {
         reduxRowsPerPage: useSelector((state) => state.reduxPagination.rowsPerPage) + 3
     }
 
-    // useEffect
-    // Table loading - page load
+    // USE EFFECT
+    // Table loading pagination - change page
     useEffect(() => {
-        if (loadingData === true) {
-            handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
-        }
-    }, [loadingData])
+        setLoadingData(true)
+        handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+    }, [reduxPagination.reduxPage])
 
     // USE EFFECT
+    // Page Loading
     useEffect(() => {
-        switch (props.category) {
-            case 1:
-                setCategoryId(1);
-                break;
-            case 2:
-                setCategoryId(2);
-                break;
-            default:
-                setCategoryId(null);
-                break;
-        }
+        setLoadingData(true)
         if (reduxPagination.reduxPage !== 1) {
             dispatch(reduxPaginationAction.updatePage(1));
         }
-        else {
-            setLoadingData(true);
+        if (props.category == 1) {
+            setCategoryId(1);
+            handleGetListBike(1, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        } else if (props.category == 2) {
+            setCategoryId(2);
+            handleGetListBike(2, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        } else {
+            setCategoryId(null);
+            handleGetListBike(null, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
         }
     }, [props.category])
 
+    // USE EFFECT
     // Table loading filter submit
     useEffect(() => {
         if (reduxIsSubmitting === true) {
+            console.log("SUBMIT")
             if (reduxPagination.reduxPage === 1) {
                 handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
             } else {
@@ -148,12 +146,6 @@ const List = props => {
             dispatch(reduxAction.setIsSubmitting({ isSubmitting: false }));
         }
     }, [reduxIsSubmitting])
-
-    // Table loading pagination - change page
-    useEffect(() => {
-        handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
-    }, [reduxPagination.reduxPage])
-
 
     return (
         !loadingData ?

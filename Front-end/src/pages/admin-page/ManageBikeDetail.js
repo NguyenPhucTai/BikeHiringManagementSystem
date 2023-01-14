@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 
 // Component
-import { TextField } from "../../components/Form/TextField";
+import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { Firebase_URL, BikeManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
@@ -238,7 +238,7 @@ function ManageBikeDetail() {
                         <Form className="d-flex flex-column">
                             <Row>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Bike Id"}
                                         name={"id"}
                                         type={"text"}
@@ -246,7 +246,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Bike Manual Id"}
                                         name={"bikeManualId"}
                                         type={"text"}
@@ -254,7 +254,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Bike Name"}
                                         name={"bikeName"}
                                         type={"text"}
@@ -262,7 +262,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Bike No"}
                                         name={"bikeNo"}
                                         type={"text"}
@@ -270,7 +270,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Bike Category"}
                                         name={"bikeCategory"}
                                         type={"text"}
@@ -278,7 +278,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Price"}
                                         name={"price"}
                                         type={"text"}
@@ -286,7 +286,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Bike Manufacturer"}
                                         name={"bikeManufacturer"}
                                         type={"text"}
@@ -294,7 +294,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Bike Color"}
                                         name={"bikeColor"}
                                         type={"text"}
@@ -302,7 +302,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Hired Number"}
                                         name={"hiredNumber"}
                                         type={"text"}
@@ -310,7 +310,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Status"}
                                         name={"status"}
                                         type={"text"}
@@ -318,7 +318,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Create User"}
                                         name={"createdUser"}
                                         type={"text"}
@@ -326,7 +326,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Create Date"}
                                         name={"createdDate"}
                                         type={"text"}
@@ -334,7 +334,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Modified User"}
                                         name={"modifiedUser"}
                                         type={"text"}
@@ -342,7 +342,7 @@ function ManageBikeDetail() {
                                     />
                                 </Col>
                                 <Col xs={12} sm={6}>
-                                    <TextField
+                                    <TextFieldCustom
                                         label={"Modified Date"}
                                         name={"modifiedDate"}
                                         type={"text"}

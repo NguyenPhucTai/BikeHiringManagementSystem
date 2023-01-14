@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { AxiosInstance } from "../api/AxiosClient";
 import { Formik, Form } from "formik";
-import { TextField } from "../components/Form/TextField";
+import { TextFieldCustom } from "../components/Form/TextFieldCustom";
 import { SelectField } from "../components/Form/SelectField";
 import { BikeCategories } from "../components/Form/SelectItem";
 import { DropzoneArea } from "material-ui-dropzone";
@@ -310,7 +310,7 @@ function Test() {
                     <Form className="d-flex flex-column">
                         <Row>
                             <Col xs={12} sm={6}>
-                                <TextField
+                                <TextFieldCustom
                                     label={"Bike Manual Id"}
                                     name={"bikeManualId"}
                                     type={"text"}
@@ -318,7 +318,7 @@ function Test() {
                                 />
                             </Col>
                             <Col xs={12} sm={6}>
-                                <TextField
+                                <TextFieldCustom
                                     label={"Bike Name"}
                                     name={"bikeName"}
                                     type={"text"}
@@ -326,7 +326,7 @@ function Test() {
                                 />
                             </Col>
                             <Col xs={12} sm={6}>
-                                <TextField
+                                <TextFieldCustom
                                     label={"Bike No"}
                                     name={"bikeNo"}
                                     type={"text"}

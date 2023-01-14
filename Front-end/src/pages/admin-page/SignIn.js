@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AxiosInstance } from "../../api/AxiosClient";
 import Cookies from 'universal-cookie';
 import { Authen } from "../../api/EndPoint";
-import { TextField } from "../../components/Form/TextField";
+import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { Formik, Form } from "formik";
 import { UserSchema } from "../../validation";
 import { AlertMessage } from "../../components/Modal/AlertMessage";
@@ -103,13 +103,13 @@ function SignIn() {
                     setFieldValue,
                 }) => (
                     <Form className="d-flex flex-column">
-                        <TextField
+                        <TextFieldCustom
                             label={"Username"}
                             name={"username"}
                             type={"text"}
                             placeholder={"Enter the username"}
                         />
-                        <TextField
+                        <TextFieldCustom
                             label={"Password"}
                             name={"password"}
                             type={"password"}

@@ -20,7 +20,7 @@ import { Firebase_URL } from "../../api/EndPoint";
 
 // Component
 import { AlertMessage } from "../../components/Modal/AlertMessage";
-import { TextField } from "../../components/Form/TextField";
+import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { SelectField } from "../../components/Form/SelectField";
 import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from "../../api/EndPoint";
 import { GenerateRandomString } from "../../function/RandomString";
@@ -538,7 +538,7 @@ function ManageBikeUpdate() {
                             <Form className="d-flex flex-column">
                                 <Row className="mb-3">
                                     <Col xs={12} sm={6}>
-                                        <TextField
+                                        <TextFieldCustom
                                             label={"Bike Manual Id"}
                                             name={"bikeManualId"}
                                             type={"text"}
@@ -546,7 +546,7 @@ function ManageBikeUpdate() {
                                         />
                                     </Col>
                                     <Col xs={12} sm={6}>
-                                        <TextField
+                                        <TextFieldCustom
                                             label={"Bike Name"}
                                             name={"bikeName"}
                                             type={"text"}
@@ -554,7 +554,7 @@ function ManageBikeUpdate() {
                                         />
                                     </Col>
                                     <Col xs={12} sm={6}>
-                                        <TextField
+                                        <TextFieldCustom
                                             label={"Bike No"}
                                             name={"bikeNo"}
                                             type={"text"}

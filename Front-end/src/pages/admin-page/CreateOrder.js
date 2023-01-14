@@ -1,22 +1,27 @@
-import React, { Fragment, useState, useEffect, useRef } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 
 // Library
 import { AxiosInstance } from "../../api/AxiosClient";
 import { Formik, Form } from "formik";
-import { DropzoneArea } from "material-ui-dropzone";
 import { BikeSchema } from "../../validation";
 import Cookies from 'universal-cookie';
 import LinearProgress from '@mui/material/LinearProgress';
-import Box from '@mui/material/Box';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import { Radio, RadioGroup, FormControlLabel, } from "@mui/material";
+
+// Library - date time
+import TextField from '@mui/material/TextField';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers';
+import dayjs, { Dayjs } from 'dayjs';
 
 
 // Component
 import { AlertMessage } from "../../components/Modal/AlertMessage";
-import { TextField } from "../../components/Form/TextField";
+import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { SelectField } from "../../components/Form/SelectField";
 import { OrderManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
@@ -45,6 +50,9 @@ function CreateOrder() {
     // CART
     const [data, setData] = useState({});
     const [formData, setFormData] = useState({});
+    const [expectedStartDate, setExpectedStartDate] = useState(null);
+    const [expectedEndDate, setExpectedEndDate] = useState(null);
+
 
     // VARIABLE
     // PAGE LOADING
@@ -65,14 +73,24 @@ function CreateOrder() {
 
     // Formik variables
     const initialValues = {
-        bikeName: "",
-        bikeManualId: "",
-        bikeNo: "",
-        bikeCategory: 0,
-        bikeColor: 0,
+        customerName: "",
+        phoneNumber: "",
+        expectedStartDate: "",
+        expectedEndDate: "",
+        calculatedCost: 0,
         bikeManufacturer: 0,
-        files: [{}],
+        isUsedService: false,
+        serviceDescription: "",
+        serviceCost: 0,
+        deposit_type: "",
+        deposit_amount: "",
+        deposit_identify_card: "",
+        note: "",
+        totalAmount: 0,
+        listBike: [{}]
     };
+
+
 
     // USE EFFECT
     // PAGE LOADING
@@ -154,25 +172,111 @@ function CreateOrder() {
                             <Form className="d-flex flex-column">
                                 <Row className="mb-3">
                                     <Col xs={12} sm={6}>
-                                        <TextField
-                                            label={"Bike Manual Id"}
-                                            name={"bikeManualId"}
+                                        <TextFieldCustom
+                                            label={"Customer Name"}
+                                            name={"customerName"}
                                             type={"text"}
-                                            placeholder={"Enter the bike manual id"}
+                                            placeholder={"Enter the customer name"}
                                         />
                                     </Col>
                                     <Col xs={12} sm={6}>
-                                        <TextField
-                                            label={"Bike Name"}
-                                            name={"bikeName"}
+                                        <TextFieldCustom
+                                            label={"Phone Number"}
+                                            name={"phoneNumber"}
                                             type={"text"}
-                                            placeholder={"Enter the bike name"}
+                                            placeholder={"Enter the phone number"}
                                         />
                                     </Col>
+                                    <Col xs={12} sm={6}>
+                                        <Row >
+                                            <label className='form-label'>Expected Start Date</label>
+                                        </Row>
+                                        <Row style={{ width: "50%" }}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DateTimePicker
+                                                    value={expectedStartDate}
+                                                    onChange={(newValue) => setExpectedStartDate(newValue)}
+                                                    renderInput={(params) => (
+                                                        <TextField {...params} />
+                                                    )}
+                                                />
+                                            </LocalizationProvider>
+                                        </Row>
+
+                                    </Col>
+                                    <Col xs={12} sm={6}>
+                                        <Row>
+                                            <label className='form-label'>Expected End Date</label>
+                                        </Row>
+                                        <Row style={{ width: "50%" }}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DateTimePicker
+                                                    value={expectedEndDate}
+                                                    onChange={(newValue) => setExpectedEndDate(newValue)}
+                                                    renderInput={(params) => (
+                                                        <TextField {...params} />
+                                                    )}
+                                                />
+                                            </LocalizationProvider>
+                                        </Row>
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <label className='form-label'>Bike List</label>
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Cost"}
+                                            name={"calculatedCost"}
+                                            type={"number"}
+                                            placeholder={"Enter the cost"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <label className='form-label'>Using Service?</label>
+                                        <RadioGroup
+                                            aria-labelledby="demo-controlled-radio-buttons-group"
+                                            name="controlled-radio-buttons-group"
+                                            defaultValue="yes"
+                                            onChange={handleChange}
+                                        >
+                                            <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                                            <FormControlLabel value="no" control={<Radio />} label="No" />
+                                        </RadioGroup>
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Service Description"}
+                                            name={"serviceDescription"}
+                                            type={"text"}
+                                            placeholder={"Enter the description"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Service Cost"}
+                                            name={"serviceCost"}
+                                            type={"number"}
+                                            placeholder={"Enter the service cost"}
+                                        />
+                                    </Col>
+                                    {/* <Col xs={12} sm={12}>
+                                        <label className='form-label'>Deposite type</label>
+                                        <RadioGroup
+                                            aria-labelledby="demo-controlled-radio-buttons-group"
+                                            name="controlled-radio-buttons-group"
+                                            defaultValue="yes"
+                                            onChange={handleChange}
+                                        >
+                                            <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                                            <FormControlLabel value="no" control={<Radio />} label="No" />
+                                        </RadioGroup>
+                                    </Col> */}
+
                                     <button type="submit" className="btn btn-dark btn-md mt-3">
                                         Submit
                                     </button>
                                 </Row>
+
                             </Form>
                         )}
                     </Formik>

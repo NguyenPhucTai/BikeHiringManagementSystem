@@ -18,7 +18,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage
 
 // Component
 import { AlertMessage } from "../../components/Modal/AlertMessage";
-import { TextField } from "../../components/Form/TextField";
+import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { SelectField } from "../../components/Form/SelectField";
 import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from "../../api/EndPoint";
 import { GenerateRandomString } from "../../function/RandomString";
@@ -380,7 +380,7 @@ function ManageBikeCreate() {
                             <Form className="d-flex flex-column">
                                 <Row>
                                     <Col xs={12} sm={6}>
-                                        <TextField
+                                        <TextFieldCustom
                                             label={"Bike Manual Id"}
                                             name={"bikeManualId"}
                                             type={"text"}
@@ -388,7 +388,7 @@ function ManageBikeCreate() {
                                         />
                                     </Col>
                                     <Col xs={12} sm={6}>
-                                        <TextField
+                                        <TextFieldCustom
                                             label={"Bike Name"}
                                             name={"bikeName"}
                                             type={"text"}
@@ -396,7 +396,7 @@ function ManageBikeCreate() {
                                         />
                                     </Col>
                                     <Col xs={12} sm={6}>
-                                        <TextField
+                                        <TextFieldCustom
                                             label={"Bike No"}
                                             name={"bikeNo"}
                                             type={"text"}
