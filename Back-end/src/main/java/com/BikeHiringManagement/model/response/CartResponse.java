@@ -24,9 +24,10 @@ public class CartResponse {
     public String serviceDescription;
     public Double serviceCost;
 
-    public String deposit_type;
-    public Double deposit_amount;
-    public String deposit_identify_card;
+    private String depositType;
+    private Double depositAmount;
+    private String depositIdentifyCard;
+    private String depositHotel;
 
     public String note;
 

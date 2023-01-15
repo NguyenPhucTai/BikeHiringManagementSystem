@@ -226,9 +226,10 @@ public class OrderService {
             order.setIsUsedService(orderRequest.getIsUsedService());
             order.setServiceCost(orderRequest.getServiceCost());
             order.setServiceDescription(orderRequest.getServiceDescription());
-            order.setDepositType(orderRequest.getDeposit_type());
-            order.setDepositAmount(orderRequest.getDeposit_amount());
-            order.setDepositIdentifyCard(orderRequest.getDeposit_identify_card());
+            order.setDepositType(orderRequest.getDepositType());
+            order.setDepositAmount(orderRequest.getDepositAmount());
+            order.setDepositIdentifyCard(orderRequest.getDepositIdentifyCard());
+            order.setDepositHotel(orderRequest.getDepositHotel());
             order.setNote(order.getNote());
 
             orderRepository.save(order);

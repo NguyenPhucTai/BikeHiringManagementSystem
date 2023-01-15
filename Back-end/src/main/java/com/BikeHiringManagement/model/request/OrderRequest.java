@@ -26,9 +26,10 @@ public class OrderRequest {
     private String serviceDescription;
     private Double serviceCost;
 
-    private String deposit_type;
-    private Double deposit_amount;
-    private String deposit_identify_card;
+    private String depositType;
+    private Double depositAmount;
+    private String depositIdentifyCard;
+    private String depositHotel;
 
     private String note;
 

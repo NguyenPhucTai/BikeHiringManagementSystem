@@ -51,6 +51,9 @@ public class Order extends BaseEntity{
     @Column(name = "deposit_identify_card")
     private String depositIdentifyCard;
 
+    @Column(name = "deposit_hotel")
+    private String depositHotel;
+
     @Column(name = "note")
     private String note;
 
