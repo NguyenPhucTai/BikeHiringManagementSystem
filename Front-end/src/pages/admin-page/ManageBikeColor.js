@@ -74,8 +74,10 @@ const handleGetDataPagination = async (
             }
         })
         setListData(listData)
-        setLoadingData(false)
         setTotalPages(res.data.data.totalPages)
+        setTimeout(() => {
+            setLoadingData(false)
+        }, 500);
     }).catch((error) => {
         if (error && error.response) {
             console.log("Error: ", error);
@@ -254,6 +256,7 @@ function ManageBikeColor() {
 
     // Table loading filter submit
     useEffect(() => {
+        setLoadingData(true);
         if (reduxIsSubmitting === true) {
             if (reduxPagination.reduxPage === 1) {
                 handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
@@ -266,11 +269,13 @@ function ManageBikeColor() {
 
     // Table loading pagination - change page
     useEffect(() => {
+        setLoadingData(true);
         handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
     }, [reduxPagination.reduxPage])
 
     // Table loading pagination - change row per page -> call above useEffect
     useEffect(() => {
+        setLoadingData(true);
         if (reduxPagination.reduxPage === 1) {
             handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
         } else {

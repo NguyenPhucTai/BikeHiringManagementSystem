@@ -43,13 +43,13 @@ public class Order extends BaseEntity{
     private Double serviceCost;
 
     @Column(name = "deposit_type")
-    private String deposit_type;
+    private String depositType;
 
     @Column(name = "deposit_amount")
-    private Double deposit_amount;
+    private Double depositAmount;
 
     @Column(name = "deposit_identify_card")
-    private String deposit_identify_card;
+    private String depositIdentifyCard;
 
     @Column(name = "note")
     private String note;

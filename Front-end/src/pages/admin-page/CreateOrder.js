@@ -52,7 +52,8 @@ function CreateOrder() {
     const [formData, setFormData] = useState({});
     const [expectedStartDate, setExpectedStartDate] = useState(null);
     const [expectedEndDate, setExpectedEndDate] = useState(null);
-
+    const [isUsedService, setIsUsedService] = useState("");
+    const [depositType, setDepositType] = useState("");
 
     // VARIABLE
     // PAGE LOADING
@@ -79,12 +80,10 @@ function CreateOrder() {
         expectedEndDate: "",
         calculatedCost: 0,
         bikeManufacturer: 0,
-        isUsedService: false,
         serviceDescription: "",
         serviceCost: 0,
-        deposit_type: "",
-        deposit_amount: "",
-        deposit_identify_card: "",
+        depositAmount: "",
+        depositIdentifyCard: "",
         note: "",
         totalAmount: 0,
         listBike: [{}]
@@ -259,18 +258,59 @@ function CreateOrder() {
                                             placeholder={"Enter the service cost"}
                                         />
                                     </Col>
-                                    {/* <Col xs={12} sm={12}>
-                                        <label className='form-label'>Deposite type</label>
+                                    <Col xs={12} sm={12}>
+                                        <label className='form-label'>Deposit type</label>
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
                                             name="controlled-radio-buttons-group"
-                                            defaultValue="yes"
+                                            defaultValue="identifyCard"
                                             onChange={handleChange}
                                         >
-                                            <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                                            <FormControlLabel value="no" control={<Radio />} label="No" />
+                                            <FormControlLabel value="identifyCard" control={<Radio />} label="IdentifyCard" />
+                                            <FormControlLabel value="money" control={<Radio />} label="Money" />
+                                            <FormControlLabel value="hotel" control={<Radio />} label="Hotel" />
                                         </RadioGroup>
-                                    </Col> */}
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Identify Card"}
+                                            name={"identifyCard"}
+                                            type={"text"}
+                                            placeholder={"Enter the Identify Card"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Despoit"}
+                                            name={"serviceCost"}
+                                            type={"number"}
+                                            placeholder={"Enter the service cost"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Hotel"}
+                                            name={"hotel"}
+                                            type={"text"}
+                                            placeholder={"Enter the hotel address"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Note"}
+                                            name={"note"}
+                                            type={"text"}
+                                            placeholder={"Enter the note"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Total Cost"}
+                                            name={"totalAmount"}
+                                            type={"number"}
+                                            placeholder={"Total Cost"}
+                                        />
+                                    </Col>
 
                                     <button type="submit" className="btn btn-dark btn-md mt-3">
                                         Submit

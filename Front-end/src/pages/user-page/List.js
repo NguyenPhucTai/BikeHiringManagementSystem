@@ -74,6 +74,21 @@ const handleGetListBike = async (
 }
 
 
+// FUNCTION
+// INTERNAL
+const callGetListBikeByCategoryId = (categoryId, setCategoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination) => {
+    if (categoryId == 1) {
+        setCategoryId(1);
+        handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+    } else if (categoryId == 2) {
+        setCategoryId(2);
+        handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+    } else {
+        setCategoryId(null);
+        handleGetListBike(null, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+    }
+}
+
 const List = props => {
 
     // Show Public Navigation
@@ -111,26 +126,19 @@ const List = props => {
     // Table loading pagination - change page
     useEffect(() => {
         setLoadingData(true)
-        handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        if (reduxPagination.reduxPage !== 1) {
+            handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        } else {
+            callGetListBikeByCategoryId(props.category, setCategoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        }
     }, [reduxPagination.reduxPage])
 
     // USE EFFECT
     // Page Loading
     useEffect(() => {
         setLoadingData(true)
-        if (reduxPagination.reduxPage !== 1) {
-            dispatch(reduxPaginationAction.updatePage(1));
-        }
-        if (props.category == 1) {
-            setCategoryId(1);
-            handleGetListBike(1, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
-        } else if (props.category == 2) {
-            setCategoryId(2);
-            handleGetListBike(2, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
-        } else {
-            setCategoryId(null);
-            handleGetListBike(null, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
-        }
+        dispatch(reduxPaginationAction.updatePage(1));
+        callGetListBikeByCategoryId(props.category, setCategoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
     }, [props.category])
 
     // USE EFFECT
