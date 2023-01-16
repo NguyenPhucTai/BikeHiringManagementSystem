@@ -159,6 +159,7 @@ function CreateCart(props) {
 
     // Table loading filter submit
     useEffect(() => {
+        setLoadingData(true)
         if (reduxIsSubmitting === true) {
             if (reduxPagination.reduxPage === 1) {
                 handleGetListBike(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
@@ -171,6 +172,7 @@ function CreateCart(props) {
 
     // Table loading pagination - change page
     useEffect(() => {
+        setLoadingData(true)
         handleGetListBike(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
     }, [reduxPagination.reduxPage])
 
