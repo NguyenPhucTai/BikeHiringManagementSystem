@@ -78,7 +78,7 @@ function App() {
 						<Route path='/manage/order/cart' element={<CreateOrder />} />
 					</Route>
 				</Routes>
-				{reduxIsShowPublicNavBar && <Footer />}
+				{/* {reduxIsShowPublicNavBar && <Footer />} */}
 			</BrowserRouter>
 		</Fragment>
 	)

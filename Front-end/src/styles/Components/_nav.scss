@@ -1,29 +1,28 @@
-.navbar {
-    box-shadow: rgb(50 50 93 / 25%) 0px 5px 15px -5px, rgb(0 0 0 / 30%) 0px 10px 15px -5px;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-
-    @media screen and (max-width: 1095px) {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-}
-
 .navbar-nav {
     text-align: center;
 }
 
-// .nav-item.dropdown:hover .dropdown-menu {
-//     display: block;
-// }
+.navbar-brand {
+    font-weight: 600;
+    color: $color-coral !important;
+}
 
-// .nav-item.dropdown .dropdown-menu {
-//     display: none;
-// }
+.navbar-light .navbar-nav .nav-link:focus,
+.navbar-light .navbar-nav .nav-link:hover {
+    background-color: $color-coral;
+    color: rgba(255, 255, 255);
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    background-color: $color-coral;
+    color: rgba(255, 255, 255);
+}
 
 .nav-pills .nav-link.active,
 .nav-pills .show>.nav-link {
     background-color: $color-coral;
+    color: rgba(255, 255, 255);
 }
 
 .nav-link {
@@ -31,40 +30,20 @@
     color: rgba(0, 0, 0, .55);
 }
 
-.dropdown {
-    padding: 0;
-}
-
-.dropdown-menu[data-bs-popper] {
-    top: 80% !important
-}
-
 .dropdown-item {
     font-weight: 600;
     color: rgba(0, 0, 0, .55);
-    margin: 0px !important;
-    padding: 0.7rem 1rem;
-}
-
-.dropdown-item:focus {
-    background-color: $color-coral;
-    color: rgba(0, 0, 0, .7);
+    padding: 0.5rem !important;
 }
 
 .dropdown-menu {
-    padding: 0px !important;
+    padding: 0rem !important;
+
+    @media screen and (max-width: 992px) {
+        text-align: center;
+    }
 }
 
 .dropdown-divider {
-    margin: 0px;
-}
-
-@media screen and (max-width: 992px) {
-    .navbar-collapse {
-        margin-top: 30px;
-    }
-
-    .nav-link {
-        padding: 8px !important;
-    }
+    margin: 0rem !important;
 }
