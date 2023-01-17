@@ -7,5 +7,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface CustomerRepository extends JpaRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
     Customer findCustomerByIdAndIsDeleted(long customerId, boolean check);
 
+    Customer findCustomerByPhoneNumberAndIsDeleted(String phoneNumber, boolean check);
+
     boolean existsByIdAndIsDeleted(long id, boolean check);
+
+    boolean existsByPhoneNumberAndIsDeleted(String phoneNumber, boolean check);
 }

@@ -10,4 +10,5 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     boolean existsByIdAndIsDeleted(Long id, boolean check);
 
     Order findByCreatedUserAndStatusAndIsDeleted(String username, String status, boolean check);
+
 }

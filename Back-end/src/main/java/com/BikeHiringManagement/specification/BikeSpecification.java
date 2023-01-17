@@ -321,4 +321,43 @@ public class BikeSpecification {
         }
     }
 
+    public Map<String, Object> getBikePriceListById(List<OrderDetail> listOrderDetail){
+        try {
+            Map<String, Object> mapFinal = new HashMap<>();
+            List<Long> listBikeID = new ArrayList<>();
+            for(OrderDetail item:listOrderDetail) {
+                listBikeID.add(item.getBikeId());
+            }
+
+            //----------------------CREATE QUERY -----------------------------//
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            // ROOT
+            CriteriaQuery<BikeResponse> query = cb.createQuery(BikeResponse.class);
+            Root<Bike> root = query.from(Bike.class);
+            Root<BikeCategory> rootCate = query.from(BikeCategory.class);
+
+            // CONDITION
+            // ROOT
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("bikeCategoryId"), rootCate.get("id")));
+
+            predicates.add(cb.isFalse(root.get("isDeleted")));
+            predicates.add(cb.isFalse(rootCate.get("isDeleted")));
+
+            predicates.add(root.get("id").in(listBikeID));
+            //----------------------END SORT-----------------------------//
+            query.select(
+                    rootCate.get("price")
+            ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
+
+            List<BikeResponse> listResult = entityManager.createQuery(query) != null ?
+                    entityManager.createQuery(query).getResultList() : new ArrayList<>();
+
+            mapFinal.put("data", listResult);
+            return mapFinal;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HashMap<>();
+        }
+    }
 }

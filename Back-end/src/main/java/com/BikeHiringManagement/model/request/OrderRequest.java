@@ -9,18 +9,14 @@ import java.util.List;
 public class OrderRequest {
     //private Long id;
 
-    //private Long customerId;
-    //private String customerName;
-    //private String phoneNumber;
+    private String phoneNumber;
     private String tempCustomerPhone;
     private String tempCustomerName;
 
-    //private List<BikeResponse> listBike;
     private Date expectedStartDate;
     private Date expectedEndDate;
     private Date actualStartDate;
     private Date actualEndDate;
-    //private Double calculatedCost;
 
     private Boolean isUsedService;
     private String serviceDescription;
@@ -35,5 +31,4 @@ public class OrderRequest {
 
     private Long bikeId;
 
-    //private Double totalAmount;
 }

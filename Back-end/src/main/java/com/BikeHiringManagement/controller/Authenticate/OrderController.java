@@ -94,7 +94,7 @@ public class OrderController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    //delete bike from current cart (order id, bike id) -> update is delete trong order detail thành true
+
     @PostMapping("/delete-bike/orderId={orderId}&bikeId={bikeId}")
     public ResponseEntity<?> deleteBikeInCart(@PathVariable Long orderId,@PathVariable Long bikeId, HttpServletRequest request){
         try{
@@ -106,6 +106,26 @@ public class OrderController {
         catch(Exception e){
             e.printStackTrace();
             return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/create-order/orderId={orderId}")
+    public ResponseEntity<?> createOrder (@RequestBody OrderRequest orderRequest,
+                                          HttpServletRequest request,
+                                          @PathVariable Long orderId) {
+
+        try {
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = orderService.createOrder(orderRequest, orderId, username);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
