@@ -8,6 +8,7 @@ import Cookies from 'universal-cookie';
 import PageNotFound from './pages/404';
 import MenuBar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
+import SideBar from './components/Navbar/Sidebar';
 
 // user page
 import Home from './pages/user-page/Home';
@@ -55,6 +56,7 @@ function App() {
 		<Fragment>
 			<BrowserRouter>
 				{reduxIsShowPublicNavBar && <MenuBar />}
+				{!reduxIsShowPublicNavBar && <SideBar />}
 				<Routes>
 					<Route path='/signin' exact element={<SignIn />} />
 					<Route path='/' exact element={<Home />} />
@@ -74,8 +76,8 @@ function App() {
 						<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
 						<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
 						<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
-						<Route path='/manage/order/create' element={<CreateCart />} />
-						<Route path='/manage/order/cart' element={<CreateOrder />} />
+						<Route path='/manage/order/cart' element={<CreateCart />} />
+						<Route path='/manage/order/create' element={<CreateOrder />} />
 					</Route>
 				</Routes>
 				{/* {reduxIsShowPublicNavBar && <Footer />} */}
