@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react"
 import { Pagination, Navigation } from "swiper";
 import { Firebase_URL } from "../../api/EndPoint";
 import Badge from 'react-bootstrap/Badge';
+import { GetFormattedCurrency } from "../../function/CurrencyFormat";
 
 export const ListSwiper = ({ listBike, ...props }) => {
     return (
@@ -28,6 +29,7 @@ export const ListSwiper = ({ listBike, ...props }) => {
                     },
                 }}
                 slidesPerView={4}
+                autoHeight={true}
                 loop={true}
                 pagination={{
                     clickable: true,
@@ -38,14 +40,14 @@ export const ListSwiper = ({ listBike, ...props }) => {
             >
                 {listBike.map((data) => {
                     return (
-                        <SwiperSlide>
+                        <SwiperSlide key={data.id}>
                             <Link className="card-item" to={`/bike/${data.id}`}>
                                 <img src={Firebase_URL + data.filePath} alt={data.fileName} />
                                 <label className="bikeName">{data.name}</label>
                                 <div className="bikeTag">
                                     <Badge>{data.bikeCategory}</Badge>
                                 </div>
-                                <p className="bikePrice">Price: <span>{data.price}</span></p>
+                                <p className="bikePrice">Price: <span>{GetFormattedCurrency(data.price)}</span></p>
                             </Link>
                         </SwiperSlide>
                     )

@@ -3,8 +3,6 @@
 }
 
 .swiper-slide {
-    min-height: 25rem;
-    max-height: 25rem;
     text-align: left;
     display: flex;
     flex-direction: column;
@@ -14,7 +12,7 @@
 
 .swiper-button-prev,
 .swiper-button-next {
-    color: $color-coral  !important;
+    color: $color-coral !important;
 }
 
 .swiper-button-prev {
@@ -26,5 +24,10 @@
 }
 
 .swiper-pagination-bullet-active {
-    background-color: $color-coral  !important;
+    background-color: $color-coral !important;
+}
+
+.swiper-autoheight,
+.swiper-autoheight .swiper-slide {
+    height: 355px !important;
 }

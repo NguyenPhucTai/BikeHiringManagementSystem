@@ -32,7 +32,10 @@ const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingData,
         listImage.forEach(e => {
             var image = {
                 original: Firebase_URL + e.filePath,
-                thumbnail: Firebase_URL + e.filePath
+                thumbnail: Firebase_URL + e.filePath,
+                originalHeight: '400px',
+                originalWidth: '400px',
+                originalClass: 'image-item-origin'
             }
             listLinkImage.push(image)
         });
@@ -81,6 +84,7 @@ const Detail = props => {
                                     showPlayButton={false}
                                     thumbnailPosition={"right"}
                                     items={listImage}
+                                    useBrowserFullscreen={false}
                                 />
                             </Col>
                             <Col lg={6} xs={12} className="public">
