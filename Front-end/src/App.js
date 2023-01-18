@@ -76,7 +76,7 @@ function App() {
 						<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
 						<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
 						<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
-						<Route path='/manage/order/cart' element={<CreateCart />} />
+						<Route path='/manage/cart/create' element={<CreateCart />} />
 						<Route path='/manage/order/create' element={<CreateOrder />} />
 					</Route>
 				</Routes>
