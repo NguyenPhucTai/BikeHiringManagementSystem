@@ -188,9 +188,9 @@ function CreateCart(props) {
                     <Row>
                         <Col lg={12}>
                             <div className="container">
-                                <h2 className="text-center">Create Order Page</h2>
+                                <h2 className="text-center">Add Bike To Cart</h2>
                                 <div className="view-cart">
-                                    <IconButton aria-label="cart" onClick={() => navigate('/manage/order/cart')}>
+                                    <IconButton aria-label="cart" onClick={() => navigate('/manage/order/create')}>
                                         <Badge badgeContent={cartNumber} color="secondary" max={999} showZero>
                                             <ShoppingCartIcon />
                                         </Badge>

@@ -48,7 +48,7 @@ const Sidebar = () => {
                     <Navbar.Brand href="/">Rent Motorcycles</Navbar.Brand>
                 </div>
                 <div>
-                    <a href="/manage/order/create" className="btn btn-primary">Create order</a>
+                    <a href="/manage/cart/create" className="btn btn-primary">Go to cart</a>
                 </div>
             </Navbar>
             <Drawer
