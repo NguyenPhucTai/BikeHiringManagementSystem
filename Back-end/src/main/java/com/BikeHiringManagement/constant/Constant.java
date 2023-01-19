@@ -29,4 +29,10 @@ public class Constant {
     public static final String HISTORY_UPDATE = "UPDATE";
     public static final String HISTORY_DELETE = "DELETE";
 
+    // Formula
+    public static final Long FORMULA_BIKE_HIRING_CALCULATION = (long) 1;
+
+    // TIME
+    public static final double MILLI_TO_HOUR = 1000 * 60 * 60;
+
 }
