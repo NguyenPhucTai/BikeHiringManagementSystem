@@ -50,6 +50,18 @@ const handleGetCart = async (setLoadingData, setData, setListBike) => {
             })
             setListBike(listBike)
             setData(res.data.data)
+
+            var now = dayjs()
+            var expectedStartDate = dayjs(res.data.data.expectedStartDate)
+            let month = Number(expectedStartDate.get('month')) + 1;
+
+            console.log(res.data.data.expectedStartDate)
+            console.log("Date: " + expectedStartDate.get('date'))
+            console.log("Month Library: " + expectedStartDate.get('month'))
+            console.log("Month: " + month)
+            console.log("Year: " + expectedStartDate.get('year'))
+            console.log("Hour: " + expectedStartDate.get('hour'))
+            console.log("Minute: " + expectedStartDate.get('minute'))
         }
         setLoadingData(false)
     }).catch((error) => {

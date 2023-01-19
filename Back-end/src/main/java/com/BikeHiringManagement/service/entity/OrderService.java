@@ -1,21 +1,25 @@
 package com.BikeHiringManagement.service.entity;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.*;
 import com.BikeHiringManagement.model.request.OrderRequest;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.model.response.CartResponse;
 import com.BikeHiringManagement.model.temp.Result;
-import com.BikeHiringManagement.repository.BikeRepository;
-import com.BikeHiringManagement.repository.CustomerRepository;
-import com.BikeHiringManagement.repository.OrderDetailRepository;
-import com.BikeHiringManagement.repository.OrderRepository;
+import com.BikeHiringManagement.repository.*;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeSpecification;
+import com.udojava.evalex.Expression;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.lang.Math;
 
 import java.util.*;
@@ -38,6 +42,15 @@ public class OrderService {
 
     @Autowired
     BikeRepository bikeRepository;
+
+    @Autowired
+    FormulaRepository formulaRepository;
+
+    @Autowired
+    FormulaVariableRepository formulaVariableRepository;
+
+    @Autowired
+    FormulaCoefficientRepository formulaCoefficientRepository;
 
     @Autowired
     BikeSpecification bikeSpecification;
@@ -137,7 +150,7 @@ public class OrderService {
                 // GET List bike exist in Cart
                 List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, false);
                 List<Long> listBikeID = new ArrayList<>();
-                for(OrderDetail item:listOrderDetail) {
+                for (OrderDetail item : listOrderDetail) {
                     listBikeID.add(item.getBikeId());
                 }
 
@@ -273,83 +286,89 @@ public class OrderService {
             if (!orderRepository.existsByIdAndStatus(orderId, "IN CART")) {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
             }
-            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username,"IN CART", false);
-            //created date, username logic
+            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
             order.setCreatedDate(new Date());
             order.setCreatedUser(username);
             order.setModifiedUser(null);
             order.setModifiedDate(null);
 
-            //customer logic
+            /*--------------------------- CUSTOMER LOGIC ------------------------*/
             String phoneCustomer = orderRequest.getPhoneNumber();
-            //if phone num is not existed in dtb
-            if (!customerRepository.existsByPhoneNumberAndIsDeleted(phoneCustomer, false)){
-                    Customer customer = new Customer();
-                    customer.setCreatedDate(new Date());
-                    customer.setCreatedUser(username);
-                    customer.setPhoneNumber(phoneCustomer);
-                    customer.setName(orderRequest.getTempCustomerName());
-                    Customer saveCustomer = customerRepository.save(customer);
-                    //add customer id
-                    order.setCustomerId(saveCustomer.getId());
+            Long customerId = null;
+            // IF Customer DO NOT exist By Phone
+            if (!customerRepository.existsByPhoneNumberAndIsDeleted(phoneCustomer, false)) {
+                Customer customer = new Customer();
+                customer.setCreatedDate(new Date());
+                customer.setCreatedUser(username);
+                customer.setPhoneNumber(phoneCustomer);
+                customer.setName(orderRequest.getTempCustomerName());
+                Customer saveCustomer = customerRepository.save(customer);
+                customerId = saveCustomer.getId();
+
             }
-            //if phone num existed
+            // IF Customer exist By Phone
             else {
                 Customer customer = customerRepository.findCustomerByPhoneNumberAndIsDeleted(phoneCustomer, false);
-                order.setCustomerId(customer.getId());
+                customerId = customer.getId();
             }
-            //date logic
+            order.setCustomerId(customerId);
+
+
+            /*--------------------------- CALCULATE COST LOGIC ------------------------*/
             order.setExpectedStartDate(orderRequest.getExpectedStartDate());
             order.setExpectedEndDate(orderRequest.getExpectedEndDate());
-            Double dayHiring = calculateDaysHiring(orderRequest.getExpectedStartDate(), orderRequest.getExpectedEndDate());
 
-            //cost logic
+            // CALCULATE TOTAL BIKE PRICE
+            double bikeCost = 0.0;
+            double calculatedCost = 0.0;
             List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, false);
             Map<String, Object> mapBike = bikeSpecification.getBikePriceListById(listOrderDetail);
-            List<Double> listRes = (List<Double>) mapBike.get("data");
-            Double costHiring = calculateCostHiring(dayHiring, listRes);
-            order.setCalculatedCost(costHiring);
+            List<Double> listBikePrice = (List<Double>) mapBike.get("data");
+            bikeCost = listBikePrice.stream().mapToDouble(f -> f.doubleValue()).sum();
 
-            //service logic
+            calculatedCost = calculateCostByFormula(Constant.FORMULA_BIKE_HIRING_CALCULATION, orderRequest.getExpectedStartDate(), orderRequest.getExpectedEndDate(), bikeCost);
+            if (calculatedCost < 0.0) {
+                return new Result(Constant.LOGIC_ERROR_CODE, "Error when calculating cost. Please contact IT!!!");
+            }
+            order.setCalculatedCost(calculatedCost);
+
+
+            /*--------------------------- SERVICE COST LOGIC ------------------------*/
+            double totalAmount = 0.0;
+            double serviceCost = 0.0;
+
             order.setIsUsedService(orderRequest.getIsUsedService());
-            if(order.getIsUsedService()){
+            if (order.getIsUsedService()) {
                 order.setServiceDescription(orderRequest.getServiceDescription());
-                Double serviceCost = orderRequest.getServiceCost();
-                order.setServiceCost(serviceCost);
-                //total amount
-                Double totalAmount = costHiring + serviceCost;
-                order.setTotalAmount(totalAmount);
+                order.setServiceCost(orderRequest.getServiceCost());
+                serviceCost = orderRequest.getServiceCost();
             }
-            else{
-                //total amount
-                order.setTotalAmount(costHiring);
-            }
+            totalAmount = calculatedCost + serviceCost;
+            order.setTotalAmount(totalAmount);
 
-            //deposit logic
+
+            /*--------------------------- DEPOSIT COST LOGIC ------------------------*/
             String depositType = orderRequest.getDepositType();
             order.setDepositType(depositType);
-            switch (depositType) {
-                case "DEPOSITWITHMONEY":
+            switch (depositType.toUpperCase()) {
+                case "MONEY":
                     order.setDepositAmount(order.getDepositAmount());
                     break;
-                case "DEPOSITWITHHOTEL":
+                case "HOTEL":
                     order.setDepositHotel(order.getDepositHotel());
                     break;
-                case "DEPOSITWITHIDCARD":
+                case "IDENTIFYCARD":
                     order.setDepositIdentifyCard(order.getDepositIdentifyCard());
                     break;
             }
 
-            //update status
+            /*--------------------------- UPDATE OTHER FIELD ------------------------*/
             order.setStatus("PENDING");
-            //return null for 2 field temp
             order.setTempCustomerPhone(null);
             order.setTempCustomerName(null);
-            //note
             order.setNote(orderRequest.getNote());
-
-
             orderRepository.save(order);
+
             return new Result(Constant.SUCCESS_CODE, "Save order successfully");
         } catch (Exception e) {
             e.printStackTrace();
@@ -393,7 +412,7 @@ public class OrderService {
             double diffDays = diff / (24 * 60 * 60 * 1000);
             double result = 0;
 
-            if(diffDays < 1 )
+            if (diffDays < 1)
                 result = 1;
             else if (diffDays >= 1 && diffHours < 1)
                 result = (long) (diffDays);
@@ -411,11 +430,11 @@ public class OrderService {
         }
     }
 
-    public Double calculateCostHiring(Double dayHiring, List<Double> listBikePrice){
+    public Double calculateCostHiring(Double dayHiring, List<Double> listBikePrice) {
         try {
             double amount = 0.0;
-            if(!listBikePrice.isEmpty()){
-                for(Double i : listBikePrice){
+            if (!listBikePrice.isEmpty()) {
+                for (Double i : listBikePrice) {
                     amount += i;
                 }
                 return amount * dayHiring;
@@ -426,6 +445,62 @@ public class OrderService {
             return -1.0;
         }
     }
+
+
+    public Double calculateCostByFormula(Long formulaId, Date startDate, Date endDate, double bikeCost) {
+        try {
+            NumberFormat numberFormater5F = NumberFormat.getInstance();
+            numberFormater5F.setGroupingUsed(false);
+            numberFormater5F.setMinimumFractionDigits(5);
+            double finalCost = 0.0;
+
+            String formula = null;
+            double totalHour = 0.0;
+            double diffHour = 0.0;
+            double coefficient = 0.0;
+
+            // GET FORMULA
+            if (!formulaRepository.existsByIdAndIsDeleted(Constant.FORMULA_BIKE_HIRING_CALCULATION, Boolean.FALSE)) {
+                return -1.0;
+            }
+            Formula formulaObject = formulaRepository.findFormulaByIdAndIsDeleted(Constant.FORMULA_BIKE_HIRING_CALCULATION, Boolean.FALSE);
+            formula = formulaObject.getFormula();
+
+            // CALCULATE TOTAL HOUR
+            totalHour = (endDate.getTime() - startDate.getTime()) / Constant.MILLI_TO_HOUR;
+
+            // HIRING DAYS > 1 DAY
+            if (totalHour > 24) {
+                diffHour = totalHour % 24.0;
+
+                // GET FORMULA COEFFICIENT
+                if (!formulaCoefficientRepository.existsByFormulaIdAndUpperLimitGreaterThanAndLowerLimitLessThanEqualAndIsDeleted(formulaId, diffHour, diffHour, Boolean.FALSE)) {
+                    return -1.0;
+                }
+                FormulaCoefficient formulaCoefficient = formulaCoefficientRepository.findFormulaCoefficientByFormulaIdAndUpperLimitGreaterThanAndLowerLimitLessThanEqualAndIsDeleted(formulaId, diffHour, diffHour, Boolean.FALSE);
+                coefficient = formulaCoefficient.getCoefficient();
+
+                // APPLY FORMULA
+                BigDecimal bigDecimalResult = new Expression(formula, MathContext.DECIMAL128)
+                        .with("A", numberFormater5F.format(bikeCost))
+                        .and("B", numberFormater5F.format(totalHour))
+                        .and("C", numberFormater5F.format(coefficient))
+                        .eval();
+                finalCost = bigDecimalResult.doubleValue();
+            }
+
+            // HIRING DAYS <= 1 DAY
+            else {
+                finalCost = bikeCost;
+            }
+
+            return finalCost;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1.0;
+        }
+    }
+
 }
 
 

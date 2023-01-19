@@ -63,4 +63,7 @@ public class Order extends BaseEntity{
     @Column(name = "total_amount")
     private Double totalAmount;
 
+    @Column(name = "is_used_month_hiring")
+    private Boolean isUsedMonthHiring = Boolean.FALSE;
+
 }
