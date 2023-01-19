@@ -10,6 +10,8 @@ import java.util.List;
 public interface BikeRepository extends JpaRepository<Bike, Long>, JpaSpecificationExecutor<Bike> {
     boolean existsByIdAndIsDeleted(Long id, Boolean check);
     boolean existsByNameAndIsDeleted(String name, Boolean check);
+
+    boolean existsByIdAndBikeManualIdAndIsDeleted(Long bikeId, String bikeManualId, Boolean check);
     boolean existsByBikeNoAndName(String bikeNo, String name);
 
     boolean existsByIdAndStatusAndIsDeleted(Long id, String status, Boolean check);

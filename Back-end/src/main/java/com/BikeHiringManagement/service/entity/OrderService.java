@@ -136,7 +136,12 @@ public class OrderService {
 
                 // GET List bike exist in Cart
                 List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, false);
-                Map<String, Object> mapBike = bikeSpecification.getBikeListById(listOrderDetail);
+                List<Long> listBikeID = new ArrayList<>();
+                for(OrderDetail item:listOrderDetail) {
+                    listBikeID.add(item.getBikeId());
+                }
+
+                Map<String, Object> mapBike = bikeSpecification.getBikeListById(listBikeID);
                 List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
 
                 // Clone current cart to cart response

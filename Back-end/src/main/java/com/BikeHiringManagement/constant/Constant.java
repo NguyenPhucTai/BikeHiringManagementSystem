@@ -20,6 +20,7 @@ public class Constant {
     public static final Integer BIKE_MANUFACTURER = 4;
     public static final Integer BIKE = 5;
     public static final Integer ORDER = 6;
+    public static final Integer MAINTAIN = 7;
 
     // History log
     // Action name
