@@ -29,15 +29,16 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
-    @PostMapping("/add-bike")
-    public ResponseEntity<?> addBikeToCart (@RequestBody OrderRequest orderRequest,
-                                         HttpServletRequest request) {
-
+    @PostMapping("/cart/add-bike")
+    public ResponseEntity<?> cartAddBike(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
         try {
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = orderService.createCart(username, orderRequest.getBikeId());
-            if((Integer) result.getObject() == -1){
+            Result result = orderService.cartAddBike(username, orderRequest.getBikeId());
+
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
                 return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             return responseUtils.getResponseEntity(result.getObject(), result.getCode(), result.getMessage(), HttpStatus.OK);
@@ -46,12 +47,13 @@ public class OrderController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/get")
-    public ResponseEntity<?> getCartByUsername(HttpServletRequest request){
+
+    @GetMapping("/cart/get")
+    public ResponseEntity<?> cartGetByUsername(HttpServletRequest request){
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = orderService.getCartByUsername(username);
+            Result result = orderService.cartGetByUsername(username);
             if(result.getCode() == Constant.LOGIC_ERROR_CODE){
                 return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
             }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
@@ -63,12 +65,12 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/cart/bike-number")
-    public ResponseEntity<?> getBikeNumberInCart(HttpServletRequest request){
+    @GetMapping("/cart/get/bike-number")
+    public ResponseEntity<?> cartGetBikeNumber(HttpServletRequest request){
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = orderService.getBikeNumberInCart(username);
+            Result result = orderService.cartGetBikeNumber(username);
             if(result.getCode() == Constant.LOGIC_ERROR_CODE){
                 return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
             }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
@@ -80,27 +82,17 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<?> saveOrder (@RequestBody OrderRequest orderRequest,
-                                         HttpServletRequest request) {
-
-        try {
-            String jwt = jwtUtils.getJwtFromRequest(request);
-            String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = orderService.saveOrder(orderRequest, username);
-            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
-        }catch (Exception e) {
-            e.printStackTrace();
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/delete-bike/orderId={orderId}&bikeId={bikeId}")
-    public ResponseEntity<?> deleteBikeInCart(@PathVariable Long orderId,@PathVariable Long bikeId, HttpServletRequest request){
+    @PostMapping("/cart/delete-bike/orderId={orderId}&bikeId={bikeId}")
+    public ResponseEntity<?> cartDeleteBike(@PathVariable Long orderId,@PathVariable Long bikeId, HttpServletRequest request){
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = orderService.deleteBikeInCart(orderId, bikeId, username);
+            Result result = orderService.cartDeleteBike(orderId, bikeId, username);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }
         catch(Exception e){
@@ -108,6 +100,41 @@ public class OrderController {
             return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/cart/calculate-hiring-cost")
+    public ResponseEntity<?> cartCalculateHiringCost(@RequestBody OrderRequest orderRequest) {
+        try {
+            Result result = orderService.cartCalculateHiringCost(orderRequest);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return responseUtils.getResponseEntity(result.getObject(), result.getCode(), result.getMessage(), HttpStatus.OK);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/cart/save")
+    public ResponseEntity<?> cartSave (@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
+        try {
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = orderService.cartSave(orderRequest, username);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/create-order/orderId={orderId}")
     public ResponseEntity<?> createOrder (@RequestBody OrderRequest orderRequest,
                                           HttpServletRequest request,

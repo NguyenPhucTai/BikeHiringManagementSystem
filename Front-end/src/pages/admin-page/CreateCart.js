@@ -84,7 +84,7 @@ const handleCreateCart = async (bikeId, setCarNumber) => {
     const body = {
         bikeId: bikeId
     };
-    await AxiosInstance.post(OrderManagement.addBikeToCart, body, {
+    await AxiosInstance.post(OrderManagement.cartAddBike, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -100,7 +100,7 @@ const handleCreateCart = async (bikeId, setCarNumber) => {
 }
 
 const handleBikeNumberInCart = async (setCarNumber) => {
-    await AxiosInstance.get(OrderManagement.getBikeNumberInCart, {
+    await AxiosInstance.get(OrderManagement.cartGetBikeNumber, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class OrderRequest {
-    //private Long id;
+    private Long id;
 
     private String phoneNumber;
     private String tempCustomerPhone;

@@ -32,4 +32,6 @@ public class CartResponse {
     public String note;
 
     public Double totalAmount;
+
+    private Boolean isUsedMonthHiring;
 }

@@ -35,7 +35,7 @@ import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthentica
 const cookies = new Cookies();
 
 const handleGetCart = async (setLoadingData, setData, setListBike) => {
-    await AxiosInstance.get(OrderManagement.getCartByUsername, {
+    await AxiosInstance.get(OrderManagement.cartGetByUsername, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {

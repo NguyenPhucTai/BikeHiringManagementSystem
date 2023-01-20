@@ -13,7 +13,7 @@ public interface BikeImageRepository extends JpaRepository<BikeImage, Long>, Jpa
     boolean existsByNameAndIsDeleted(String name, Boolean check);
     boolean existsByIdAndIsDeleted(Long id, Boolean check);
 
-    List<BikeImage> findAllByBikeIdAndIsDeletedOrderByNameAsc(Long id, boolean check);
+    List<BikeImage> findAllByBikeIdAndIsDeletedOrderByNameAsc(Long id, Boolean check);
     BikeImage findBikeImageById(Long id);
 
     @Modifying

@@ -24,6 +24,7 @@ import java.lang.Math;
 
 import java.util.*;
 import java.util.function.DoublePredicate;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -64,22 +65,23 @@ public class OrderService {
     @Autowired
     HistoryService historyService;
 
-
-    public Result createCart(String username, Long bikeId) {
+    /*--------------------------- RETURN FUNCTION ------------------------*/
+    public Result cartAddBike(String username, Long bikeId) {
         try {
             long orderId = -1;
 
+            // Check IF Bike ID is existed
             if (bikeId != null) {
-                // Check IF Bike ID is existed
                 if (!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeId)) {
                     return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID is not existed!!!");
                 }
             }
 
+            /*--------------------------- ORDER LOGIC ------------------------*/
             // IF Cart exist -> Just Add Bike ID to Order Detail
-            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)) {
+            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE)) {
 
-                Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
+                Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE);
                 orderId = currentCart.getId();
 
                 if (bikeId != null) {
@@ -99,7 +101,7 @@ public class OrderService {
                             existBikeInCart.setIsDeleted(false);
                             orderDetailRepository.save(existBikeInCart);
 
-                            int bikeNum = getNumberOfBikeInCart(orderId);
+                            int bikeNum = getNumberOfBikeInCartById(orderId);
                             return new Result(Constant.SUCCESS_CODE, "Add bike to cart successfully", bikeNum);
                         }
                     }
@@ -115,6 +117,8 @@ public class OrderService {
                 orderId = createdOrder.getId();
             }
 
+
+            /*--------------------------- ORDER DETAIL LOGIC ------------------------*/
             if (bikeId != null) {
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setCreatedDate(new Date());
@@ -124,11 +128,13 @@ public class OrderService {
                 orderDetailRepository.save(orderDetail);
             }
 
-            int bikeNum = getNumberOfBikeInCart(orderId);
-
+            /*--------------------------- RETURN ORDER ID ------------------------*/
             if (bikeId == null) {
                 return new Result(Constant.SUCCESS_CODE, "NEW ORDER", orderId);
             }
+
+            /*--------------------------- RETURN BIKE NUMBER ------------------------*/
+            int bikeNum = getNumberOfBikeInCartById(orderId);
             return new Result(Constant.SUCCESS_CODE, "Create new cart successfully", bikeNum);
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,33 +142,42 @@ public class OrderService {
         }
     }
 
-    public Result getCartByUsername(String username) {
+    public Result cartGetByUsername(String username) {
         try {
             Result result = new Result();
             Double calculatedCost = 0.0;
             Date today = new Date();
             Date tomorrow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
+            Long orderId = null;
+            CartResponse cartResponse = new CartResponse();
 
-            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)) {
-                Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
-                long orderId = currentCart.getId();
+            /*--------------------------- CART EXISTS ------------------------*/
+            // RETURN ALL INFO OF CART
+            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE)) {
+                // GET CURRENT CART
+                Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE);
+                orderId = currentCart.getId();
 
-                // GET List bike exist in Cart
-                List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, false);
-                List<Long> listBikeID = new ArrayList<>();
-                for (OrderDetail item : listOrderDetail) {
-                    listBikeID.add(item.getBikeId());
-                }
-
-                Map<String, Object> mapBike = bikeSpecification.getBikeListById(listBikeID);
-                List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
-
-                // Clone current cart to cart response
-                CartResponse cartResponse = modelMapper.map(currentCart, CartResponse.class);
-                cartResponse.setListBike(listRes);
+                // CREATE CART TO RESPONSE
+                cartResponse = modelMapper.map(currentCart, CartResponse.class);
                 cartResponse.setCustomerName(currentCart.getTempCustomerName());
                 cartResponse.setPhoneNumber(currentCart.getTempCustomerPhone());
 
+                /*--------------------------- BIKE LOGIC ------------------------*/
+                // GET BIKE LIST IN CART
+                List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, Boolean.FALSE);
+                List<Long> listBikeID = listOrderDetail.stream().map(x -> x.getBikeId()).collect(Collectors.toList());
+                Map<String, Object> mapBike = bikeSpecification.getBikeListById(listBikeID);
+                List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
+                cartResponse.setListBike(listRes);
+
+                /*--------------------------- CUSTOMER LOGIC ------------------------*/
+                if (currentCart.getTempCustomerPhone() != null) {
+                    cartResponse.setCustomerName(currentCart.getTempCustomerName());
+                    cartResponse.setPhoneNumber(currentCart.getTempCustomerPhone());
+                }
+
+                /*--------------------------- DATE LOGIC ------------------------*/
                 // Set expected Start Date and End Date
                 // Start Date = Today
                 // End Date = Tomorrow
@@ -171,23 +186,23 @@ public class OrderService {
                     cartResponse.setExpectedEndDate(tomorrow);
                 }
 
+                /*--------------------------- COST LOGIC ------------------------*/
                 // Calculate default cost (1 day hiring)
-                if (currentCart.getCalculatedCost() == null) {
-                    for (BikeResponse item : listRes) {
-                        calculatedCost += item.getPrice();
-                    }
+                if (currentCart.getCalculatedCost() == null && listRes.size() > 0) {
+                    calculatedCost = listRes.stream().filter(x -> x.getPrice() != null).mapToDouble(BikeResponse::getPrice).sum();
                     cartResponse.setCalculatedCost(calculatedCost);
                 }
 
                 result.setMessage("Get successful");
                 result.setCode(Constant.SUCCESS_CODE);
-                result.setObject(cartResponse);
-                return result;
-            } else {
-                Result resultCreate = createCart(username, null);
-                Long orderId = (Long) resultCreate.getObject();
+            }
 
-                CartResponse cartResponse = new CartResponse();
+            /*--------------------------- CART NOT EXIST ------------------------*/
+            else {
+                // CREATE NEW CART
+                Result resultCreate = cartAddBike(username, null);
+                orderId = (Long) resultCreate.getObject();
+
                 cartResponse.setId(orderId);
                 cartResponse.setExpectedStartDate(today);
                 cartResponse.setExpectedEndDate(tomorrow);
@@ -198,19 +213,23 @@ public class OrderService {
                 result.setObject(cartResponse);
                 return result;
             }
+
+            result.setObject(cartResponse);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
         }
     }
 
-    public Result getBikeNumberInCart(String username) {
+    public Result cartGetBikeNumber(String username) {
         try {
             int bikeNum = 0;
-            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)) {
-                Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
-                bikeNum = orderDetailRepository.countAllByOrderIdAndIsDeleted(order.getId(), false);
+            if (!orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE)) {
+                return new Result(Constant.LOGIC_ERROR_CODE, "User is not having cart!");
             }
+            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE);
+            bikeNum = orderDetailRepository.countAllByOrderIdAndIsDeleted(order.getId(), false);
             return new Result(Constant.SUCCESS_CODE, "Get successfully", bikeNum);
         } catch (Exception e) {
             e.printStackTrace();
@@ -218,7 +237,70 @@ public class OrderService {
         }
     }
 
-    public Result saveOrder(OrderRequest orderRequest, String username) {
+    public Result cartDeleteBike(Long orderId, Long bikeId, String username) {
+        try {
+            // CHECK IF BIKE ID EXIST IN CART
+            if (orderDetailRepository.existsByOrderIdAndBikeId(orderId, bikeId)) {
+
+                // CHECK IF BIKE EXIST
+                if (!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeId)) {
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID is not existed!!!");
+                }
+
+                OrderDetail currentCartDetail = orderDetailRepository.findOrderDetailByOrderIdAndBikeId(orderId, bikeId);
+
+                // CHECK IF BIKE IS NOT EXIST IN CART
+                if (currentCartDetail.getIsDeleted() == true) {
+                    return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID: " + bikeId + " is not existed in cart!");
+                }
+
+                // REMOVE BIKE IN ORDER DETAIL
+                currentCartDetail.setIsDeleted(true);
+                currentCartDetail.setModifiedDate(new Date());
+                currentCartDetail.setModifiedUser(username);
+                orderDetailRepository.save(currentCartDetail);
+
+                return new Result(Constant.SUCCESS_CODE, "Delete bike in cart successfully");
+            } else {
+                return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID: " + bikeId + " is not existed in cart!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
+
+    public Result cartCalculateHiringCost(OrderRequest orderRequest){
+        try {
+            Double calculatedCost = 0.0;
+            Double bikeCost = 0.0;
+            Long orderId = orderRequest.getId();
+
+            // CHECK IF ORDER IS EXISTED
+            if(!checkEntityExistService.isEntityExisted(Constant.ORDER, "id",orderId)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The order id " + orderId + " has not been existed!!!");
+            }
+
+            // GET LIST BIKE IN ORDER
+            List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, false);
+            Map<String, Object> mapBike = bikeSpecification.getBikePriceListById(listOrderDetail);
+            List<Double> listBikePrice = (List<Double>) mapBike.get("data");
+            bikeCost = listBikePrice.stream().mapToDouble(f -> f.doubleValue()).sum();
+
+            // CALCULATE COST
+            calculatedCost = calculateCostByFormula(Constant.FORMULA_BIKE_HIRING_CALCULATION, orderRequest.getExpectedStartDate(), orderRequest.getExpectedEndDate(), bikeCost);
+            if (calculatedCost < 0.0) {
+                return new Result(Constant.LOGIC_ERROR_CODE, "Error when calculating cost. Please contact IT!!!");
+            }
+
+            return new Result(Constant.SUCCESS_CODE, "Calculate successfully!", calculatedCost);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
+
+    public Result cartSave(OrderRequest orderRequest, String username) {
         try {
             if (!orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)) {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
@@ -251,36 +333,77 @@ public class OrderService {
         }
     }
 
-    public Result deleteBikeInCart(Long orderId, Long bikeId, String username) {
+
+    /*--------------------------- RETURN FUNCTION ------------------------*/
+    public Integer getNumberOfBikeInCartById(Long orderId) {
         try {
-            if (orderDetailRepository.existsByOrderIdAndBikeId(orderId, bikeId)) {
-
-                // Check bike exist
-                if (!checkEntityExistService.isEntityExisted(Constant.BIKE, "id", bikeId)) {
-                    return new Result(Constant.LOGIC_ERROR_CODE, "The Bike ID is not existed!!!");
-                }
-
-                // Check IF bike is not exist in cart
-                OrderDetail currentCartDetail = orderDetailRepository.findOrderDetailByOrderIdAndBikeId(orderId, bikeId);
-                if (currentCartDetail.getIsDeleted() == true) {
-                    return new Result(Constant.LOGIC_ERROR_CODE, "The Bike Id: " + bikeId + " has not been existed in this cart!");
-                }
-
-                // REMOVE BIKE IN ORDER DETAIL
-                currentCartDetail.setIsDeleted(true);
-                currentCartDetail.setModifiedDate(new Date());
-                currentCartDetail.setModifiedUser(username);
-                orderDetailRepository.save(currentCartDetail);
-                return new Result(Constant.SUCCESS_CODE, "Delete bike in cart successfully");
-            } else {
-                return new Result(Constant.LOGIC_ERROR_CODE, "The Bike is not existed in Cart!!!");
+            if (orderRepository.existsByIdAndStatus(orderId, "IN CART")) {
+                int bikeNum = orderDetailRepository.countAllByOrderIdAndIsDeleted(orderId, Boolean.FALSE);
+                return bikeNum;
             }
+            return -1;
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+            return -1;
         }
     }
 
+    public Double calculateCostByFormula(Long formulaId, Date startDate, Date endDate, double bikeCost) {
+        try {
+            NumberFormat numberFormater5F = NumberFormat.getInstance();
+            numberFormater5F.setGroupingUsed(false);
+            numberFormater5F.setMinimumFractionDigits(5);
+            double finalCost = 0.0;
+
+            String formula = null;
+            double totalHour = 0.0;
+            double diffHour = 0.0;
+            double coefficient = 0.0;
+
+            // GET FORMULA
+            if (!formulaRepository.existsByIdAndIsDeleted(Constant.FORMULA_BIKE_HIRING_CALCULATION, Boolean.FALSE)) {
+                return -1.0;
+            }
+            Formula formulaObject = formulaRepository.findFormulaByIdAndIsDeleted(Constant.FORMULA_BIKE_HIRING_CALCULATION, Boolean.FALSE);
+            formula = formulaObject.getFormula();
+
+            // CALCULATE TOTAL HOUR
+            totalHour = (endDate.getTime() - startDate.getTime()) / Constant.MILLI_TO_HOUR;
+
+            // HIRING DAYS > 1 DAY
+            if (totalHour > 24) {
+                diffHour = totalHour % 24.0;
+
+                // GET FORMULA COEFFICIENT
+                if (!formulaCoefficientRepository.existsByFormulaIdAndUpperLimitGreaterThanAndLowerLimitLessThanEqualAndIsDeleted(formulaId, diffHour, diffHour, Boolean.FALSE)) {
+                    return -1.0;
+                }
+                FormulaCoefficient formulaCoefficient = formulaCoefficientRepository.findFormulaCoefficientByFormulaIdAndUpperLimitGreaterThanAndLowerLimitLessThanEqualAndIsDeleted(formulaId, diffHour, diffHour, Boolean.FALSE);
+                coefficient = formulaCoefficient.getCoefficient();
+
+                // APPLY FORMULA
+                BigDecimal bigDecimalResult = new Expression(formula, MathContext.DECIMAL128)
+                        .with("A", numberFormater5F.format(bikeCost))
+                        .and("B", numberFormater5F.format(totalHour))
+                        .and("C", numberFormater5F.format(coefficient))
+                        .eval();
+                finalCost = bigDecimalResult.doubleValue();
+            }
+
+            // HIRING DAYS <= 1 DAY
+            else {
+                finalCost = bikeCost;
+            }
+
+            return finalCost;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1.0;
+        }
+    }
+
+
+    /*--------------------------- FIXING FUNCTION ------------------------*/
     public Result createOrder(OrderRequest orderRequest, Long orderId, String username) {
         try {
             if (!orderRepository.existsByIdAndStatus(orderId, "IN CART")) {
@@ -293,7 +416,7 @@ public class OrderService {
             order.setModifiedDate(null);
 
             /*--------------------------- CUSTOMER LOGIC ------------------------*/
-            String phoneCustomer = orderRequest.getPhoneNumber();
+            String phoneCustomer = orderRequest.getTempCustomerPhone();
             Long customerId = null;
             // IF Customer DO NOT exist By Phone
             if (!customerRepository.existsByPhoneNumberAndIsDeleted(phoneCustomer, false)) {
@@ -376,19 +499,6 @@ public class OrderService {
         }
     }
 
-    public Integer getNumberOfBikeInCart(Long orderId) {
-        try {
-            if (orderRepository.existsByIdAndStatus(orderId, "IN CART")) {
-                int bikeNum = orderDetailRepository.countAllByOrderIdAndIsDeleted(orderId, false);
-                return bikeNum;
-            }
-            return -1;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
     public double calculateDaysHiring(Date startDate, Date endDate) {
         try {
             //String dateStart = "01/14/2012 07:29:58";
@@ -447,59 +557,6 @@ public class OrderService {
     }
 
 
-    public Double calculateCostByFormula(Long formulaId, Date startDate, Date endDate, double bikeCost) {
-        try {
-            NumberFormat numberFormater5F = NumberFormat.getInstance();
-            numberFormater5F.setGroupingUsed(false);
-            numberFormater5F.setMinimumFractionDigits(5);
-            double finalCost = 0.0;
-
-            String formula = null;
-            double totalHour = 0.0;
-            double diffHour = 0.0;
-            double coefficient = 0.0;
-
-            // GET FORMULA
-            if (!formulaRepository.existsByIdAndIsDeleted(Constant.FORMULA_BIKE_HIRING_CALCULATION, Boolean.FALSE)) {
-                return -1.0;
-            }
-            Formula formulaObject = formulaRepository.findFormulaByIdAndIsDeleted(Constant.FORMULA_BIKE_HIRING_CALCULATION, Boolean.FALSE);
-            formula = formulaObject.getFormula();
-
-            // CALCULATE TOTAL HOUR
-            totalHour = (endDate.getTime() - startDate.getTime()) / Constant.MILLI_TO_HOUR;
-
-            // HIRING DAYS > 1 DAY
-            if (totalHour > 24) {
-                diffHour = totalHour % 24.0;
-
-                // GET FORMULA COEFFICIENT
-                if (!formulaCoefficientRepository.existsByFormulaIdAndUpperLimitGreaterThanAndLowerLimitLessThanEqualAndIsDeleted(formulaId, diffHour, diffHour, Boolean.FALSE)) {
-                    return -1.0;
-                }
-                FormulaCoefficient formulaCoefficient = formulaCoefficientRepository.findFormulaCoefficientByFormulaIdAndUpperLimitGreaterThanAndLowerLimitLessThanEqualAndIsDeleted(formulaId, diffHour, diffHour, Boolean.FALSE);
-                coefficient = formulaCoefficient.getCoefficient();
-
-                // APPLY FORMULA
-                BigDecimal bigDecimalResult = new Expression(formula, MathContext.DECIMAL128)
-                        .with("A", numberFormater5F.format(bikeCost))
-                        .and("B", numberFormater5F.format(totalHour))
-                        .and("C", numberFormater5F.format(coefficient))
-                        .eval();
-                finalCost = bigDecimalResult.doubleValue();
-            }
-
-            // HIRING DAYS <= 1 DAY
-            else {
-                finalCost = bikeCost;
-            }
-
-            return finalCost;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1.0;
-        }
-    }
 
 }
 

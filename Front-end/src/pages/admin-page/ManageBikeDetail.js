@@ -56,6 +56,8 @@ const handleGetBikeById = async (id, setData, navigate) => {
         if (res.data.code === 1) {
             if (res.data.data !== null) {
                 setData(res.data.data);
+
+
             } else {
                 navigate("/404");
             }

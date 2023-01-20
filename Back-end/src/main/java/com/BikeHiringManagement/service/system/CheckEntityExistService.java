@@ -36,67 +36,67 @@ public class CheckEntityExistService {
     private static final int ORDER = 6;
     private static final int MAINTAIN = 7;
 
-    public Boolean isEntityExisted(Integer constantNumber, String type, Object value){
+    public Boolean isEntityExisted(Integer constantNumber, String type, Object value) {
         boolean isExisted = false;
         Long id = null;
         String name = null;
 
-        if (type == "id"){
+        if (type == "id") {
             id = Long.parseLong(value.toString());
         }
-        if (type == "name"){
+        if (type == "name") {
             name = value.toString();
         }
 
-        switch (constantNumber){
+        switch (constantNumber) {
             case BIKE_CATEGORY:
                 if (type == "id")
-                    if(bikeCategoryRepository.existsByIdAndIsDeleted(id,false))
+                    if (bikeCategoryRepository.existsByIdAndIsDeleted(id, Boolean.FALSE))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeCategoryRepository.existsByNameAndIsDeleted(name, false))
+                    if (bikeCategoryRepository.existsByNameAndIsDeleted(name, Boolean.FALSE))
                         isExisted = true;
                 break;
             case BIKE_COLOR:
                 if (type == "id")
-                    if(bikeColorRepository.existsByIdAndIsDeleted(id, false))
+                    if (bikeColorRepository.existsByIdAndIsDeleted(id, Boolean.FALSE))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeColorRepository.existsByNameAndIsDeleted(name, false))
+                    if (bikeColorRepository.existsByNameAndIsDeleted(name, Boolean.FALSE))
                         isExisted = true;
                 break;
             case BIKE_IMAGE:
                 if (type == "id")
-                    if(bikeImageRepository.existsByIdAndIsDeleted(id, false))
+                    if (bikeImageRepository.existsByIdAndIsDeleted(id, Boolean.FALSE))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeImageRepository.existsByNameAndIsDeleted(name, false))
+                    if (bikeImageRepository.existsByNameAndIsDeleted(name, Boolean.FALSE))
                         isExisted = true;
                 break;
             case BIKE_MANUFACTURER:
                 if (type == "id")
-                    if(bikeManufacturerRepository.existsByIdAndIsDeleted(id, false))
+                    if (bikeManufacturerRepository.existsByIdAndIsDeleted(id, Boolean.FALSE))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeManufacturerRepository.existsByNameAndIsDeleted(name, false))
+                    if (bikeManufacturerRepository.existsByNameAndIsDeleted(name, Boolean.FALSE))
                         isExisted = true;
                 break;
             case BIKE:
                 if (type == "id")
-                    if(bikeRepository.existsByIdAndIsDeleted(id, false))
+                    if (bikeRepository.existsByIdAndIsDeleted(id, Boolean.FALSE))
                         isExisted = true;
                 if (type == "name")
-                    if(bikeRepository.existsByNameAndIsDeleted(name, false))
+                    if (bikeRepository.existsByNameAndIsDeleted(name, Boolean.FALSE))
                         isExisted = true;
                 break;
             case ORDER:
                 if (type == "id")
-                    if(orderRepository.existsByIdAndIsDeleted(id, false))
+                    if (orderRepository.existsByIdAndIsDeleted(id, Boolean.FALSE))
                         isExisted = true;
                 break;
             case MAINTAIN:
                 if (type == "id")
-                    if(maintainRepository.existsByIdAndIsDeleted(id, false))
+                    if (maintainRepository.existsByIdAndIsDeleted(id, Boolean.FALSE))
                         isExisted = true;
         }
         return isExisted;
