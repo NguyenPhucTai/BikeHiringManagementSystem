@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 
 // Library
 import { AxiosInstance } from "../../api/AxiosClient";
@@ -9,7 +9,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useNavigate } from 'react-router-dom';
-import { Radio, RadioGroup, FormControlLabel, } from "@mui/material";
+import { Radio, RadioGroup, FormControlLabel, Button, Box } from "@mui/material";
 
 // Library - date time
 import TextField from '@mui/material/TextField';
@@ -34,7 +34,33 @@ import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthentica
 
 const cookies = new Cookies();
 
-const handleGetCart = async (setLoadingData, setData, setListBike) => {
+// FUNCTION
+// INTERNAL PAGE
+const showAlert = (setAlert, message, isSuccess) => {
+    if (isSuccess) {
+        setAlert({
+            alertShow: true,
+            alertStatus: "success",
+            alertMessage: message
+        })
+    } else {
+        setAlert({
+            alertShow: true,
+            alertStatus: "error",
+            alertMessage: message
+        })
+    }
+}
+
+const handleGetCart = async (
+    setLoadingData,
+    setData,
+    setListBike,
+    setIsUsedService,
+    setDepositType,
+    setExpectedStartDate,
+    setExpectedEndDate
+) => {
     await AxiosInstance.get(OrderManagement.cartGetByUsername, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
@@ -50,20 +76,15 @@ const handleGetCart = async (setLoadingData, setData, setListBike) => {
             })
             setListBike(listBike)
             setData(res.data.data)
-
-            var now = dayjs()
-            var expectedStartDate = dayjs(res.data.data.expectedStartDate)
-            let month = Number(expectedStartDate.get('month')) + 1;
-
-            console.log(res.data.data.expectedStartDate)
-            console.log("Date: " + expectedStartDate.get('date'))
-            console.log("Month Library: " + expectedStartDate.get('month'))
-            console.log("Month: " + month)
-            console.log("Year: " + expectedStartDate.get('year'))
-            console.log("Hour: " + expectedStartDate.get('hour'))
-            console.log("Minute: " + expectedStartDate.get('minute'))
+            setExpectedStartDate(dayjs(res.data.data.expectedStartDate))
+            setExpectedEndDate(dayjs(res.data.data.expectedEndDate))
+            setIsUsedService(res.data.data.isUsedService == null ? false : res.data.data.isUsedService)
+            setDepositType(res.data.data.depositType == null ? "identifyCard" : res.data.data.depositType)
         }
-        setLoadingData(false)
+        console.log("Get Cart")
+        setTimeout(() => {
+            setLoadingData(false)
+        }, 500);
     }).catch((error) => {
         if (error && error.response) {
             console.log("Error: ", error);
@@ -71,11 +92,44 @@ const handleGetCart = async (setLoadingData, setData, setListBike) => {
     });
 }
 
+const handleSaveCart = async (ref, expectedStartDate, expectedEndDate, setAlert, setLoadingData) => {
 
-const handleSubmit = async (setIsSubmitting) => {
+    const body = {
+        tempCustomerName: ref.current.values.customerName == "" ? null : ref.current.values.customerName,
+        tempCustomerPhone: ref.current.values.phoneNumber == "" ? null : ref.current.values.phoneNumber,
+        expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+        expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+        calculatedCost: ref.current.values.calculatedCost,
+        isUsedService: ref.current.values.isUsedService,
+        serviceDescription: ref.current.values.serviceDescription == "" ? null : ref.current.values.serviceDescription,
+        serviceCost: ref.current.values.serviceCost,
+        depositType: ref.current.values.depositType,
+        depositAmount: ref.current.values.depositAmount,
+        depositIdentifyCard: ref.current.values.depositIdentifyCard == "" ? null : ref.current.values.depositIdentifyCard,
+        depositHotel: ref.current.values.depositHotel == "" ? null : ref.current.values.depositHotel,
+        note: ref.current.values.note == "" ? null : ref.current.values.note,
+        totalAmount: ref.current.values.totalAmount,
+    };
+    console.log(body);
+    await AxiosInstance.post(OrderManagement.cartSave, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+    }).then((res) => {
+        if (res.data.data.code === 1) {
+            showAlert(setAlert, res.data.data.message, true)
+        }
+        setLoadingData(true)
+    }).catch((error) => {
+        showAlert(setAlert, error, false)
+    });
+
+};
+
+const handleSubmit = async (setIsSubmitting, ref) => {
     console.log("submit")
     setIsSubmitting(false);
 };
+
+
 
 function CreateOrder() {
 
@@ -105,6 +159,7 @@ function CreateOrder() {
     // VARIABLE
     // PAGE LOADING
     const [loadingData, setLoadingData] = useState(true);
+    const [isRunLinear, setIsRunLinear] = useState(false);
 
     // VARIABLE
     // ALERT MESSAGE
@@ -118,6 +173,10 @@ function CreateOrder() {
     // POPUP
     const [showPopup, setShowPopup] = useState(false);
     const [showCloseButton, setShowCloseButton] = useState(false);
+
+    // VARIABLE
+    // FORMIK REF
+    const ref = useRef(null);
 
     // Formik variables
     const initialValues = {
@@ -139,7 +198,7 @@ function CreateOrder() {
     // PAGE LOADING
     useEffect(() => {
         if (loadingData === true) {
-            handleGetCart(setLoadingData, setData, setListBike);
+            handleGetCart(setLoadingData, setData, setListBike, setIsUsedService, setDepositType, setExpectedStartDate, setExpectedEndDate);
         }
     }, [loadingData])
 
@@ -155,7 +214,18 @@ function CreateOrder() {
     // USE EFFECT
     // Update initialValues
     if (Object.keys(data).length !== 0) {
-        // initialValues.bikeManualId = data.bikeManualId;
+        initialValues.customerName = data.customerName == null ? "" : data.customerName;
+        initialValues.phoneNumber = data.phoneNumber == null ? "" : data.phoneNumber;
+        initialValues.calculatedCost = data.calculatedCost == null ? 0 : data.calculatedCost;
+        initialValues.serviceDescription = data.serviceDescription == null ? "" : data.serviceDescription;
+        initialValues.serviceCost = data.serviceCost == null ? 0 : data.serviceCost;
+        initialValues.depositAmount = data.depositAmount == null ? 0 : data.depositAmount;
+        initialValues.depositIdentifyCard = data.depositIdentifyCard == null ? "" : data.depositIdentifyCard;
+        initialValues.depositHotel = data.depositHotel == null ? "" : data.depositHotel;
+        initialValues.totalAmount = data.totalAmount == null ? 0 : data.totalAmount;
+
+        initialValues.depositType = data.depositType == null ? "identifyCard" : data.depositType;
+        initialValues.isUsedService = data.isUsedService == null ? false : data.isUsedService;
     }
 
     let popup = <Popup showPopup={showPopup} setShowPopup={setShowPopup}
@@ -188,13 +258,21 @@ function CreateOrder() {
             <Fragment>
                 {popup}
                 <div className="container">
-                    <h1 className="text-center">UPDATE BIKE</h1>
+                    <h1 className="text-center">CREATE ORDER</h1>
+                    <Button variant="contained" color="success" onClick={() => handleSaveCart(ref, expectedStartDate, expectedEndDate, setAlert, setLoadingData)}>
+                        SAVE CART
+                    </Button>
+                    {isRunLinear && (
+                        <Box sx={{ width: '100%' }}>
+                            <LinearProgress />
+                        </Box>
+                    )}
                     <Formik
+                        innerRef={ref}
                         enableReinitialize
                         initialValues={initialValues}
                         validationSchema={OrderSchema}
                         onSubmit={(values) => {
-                            console.log("Test");
                             setIsSubmitting(true);
                         }}>
                         {({
@@ -286,8 +364,7 @@ function CreateOrder() {
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
                                             name="isUsedService"
-                                            defaultValue={false}
-                                            // value={values.isUsedService}
+                                            defaultValue={isUsedService}
                                             onChange={(e, value) => {
                                                 let result = false;
                                                 if (value === 'true') {
@@ -330,9 +407,8 @@ function CreateOrder() {
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
                                             name="depositType"
-                                            defaultValue={"identifyCard"}
+                                            defaultValue={depositType}
                                             onChange={(e, value) => {
-                                                console.log(value)
                                                 setDepositType(value)
                                                 setFieldValue("depositType", value);
                                             }}

@@ -52,7 +52,7 @@ export const OrderManagement = {
     cartGetByUsername: "/admin/order/cart/get",
     cartGetBikeNumber: "/admin/order/cart/get/bike-number",
     cartDeleteBike: "/admin/order/cart/delete-bike/",
-    saveCart: "/admin/order/save",
+    cartSave: "/admin/order/cart/save",
 }
 
 // Fire Base

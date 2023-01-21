@@ -188,11 +188,20 @@ public class OrderService {
 
                 /*--------------------------- COST LOGIC ------------------------*/
                 // Calculate default cost (1 day hiring)
-                if (currentCart.getCalculatedCost() == null && listRes.size() > 0) {
+                calculatedCost = currentCart.getCalculatedCost();
+                if ((calculatedCost == null || calculatedCost == 0.0) && listRes.size() > 0) {
                     calculatedCost = listRes.stream().filter(x -> x.getPrice() != null).mapToDouble(BikeResponse::getPrice).sum();
-                    cartResponse.setCalculatedCost(calculatedCost);
                 }
+                cartResponse.setCalculatedCost(calculatedCost);
 
+                // Calculate Total Amount
+                Double sumAmount  = 0.0;
+                if (currentCart.getIsUsedService() == Boolean.TRUE && currentCart.getServiceCost() > 0.0) {
+                    sumAmount = calculatedCost + currentCart.getServiceCost();
+                }else{
+                    sumAmount = calculatedCost;
+                }
+                cartResponse.setTotalAmount(sumAmount);
                 result.setMessage("Get successful");
                 result.setCode(Constant.SUCCESS_CODE);
             }
@@ -282,7 +291,7 @@ public class OrderService {
 
             // GET LIST BIKE IN ORDER
             List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, Boolean.FALSE);
-            if(listOrderDetail.size() > 0){
+            if (listOrderDetail.size() > 0) {
                 Map<String, Object> mapBike = bikeSpecification.getBikePriceListById(listOrderDetail);
                 List<Double> listBikePrice = (List<Double>) mapBike.get("data");
                 bikeCost = listBikePrice.stream().mapToDouble(f -> f.doubleValue()).sum();
@@ -348,7 +357,7 @@ public class OrderService {
             /*--------------------------- SERVICE COST LOGIC ------------------------*/
             String serviceDescription = null;
             Double serviceCost = null;
-            if (order.getIsUsedService()) {
+            if (order.getIsUsedService() != null && order.getIsUsedService() == true) {
                 serviceDescription = orderRequest.getServiceDescription();
                 serviceCost = orderRequest.getServiceCost();
             }
@@ -381,10 +390,9 @@ public class OrderService {
 
             /*--------------------------- UPDATE OTHER FIELD ------------------------*/
             order.setNote(orderRequest.getNote());
-            order.setTotalAmount(orderRequest.getTotalAmount());
-
             if (orderRequest.getIsCreateOrder() == Boolean.TRUE) {
                 order.setStatus("PENDING");
+                order.setTotalAmount(orderRequest.getTotalAmount());
                 message = "Create order successfully";
             }
 
