@@ -22,6 +22,7 @@ import dayjs, { Dayjs } from 'dayjs';
 // Component
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
+import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
 import { SelectField } from "../../components/Form/SelectField";
 import { OrderManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
@@ -81,7 +82,6 @@ const handleGetCart = async (
             setIsUsedService(res.data.data.isUsedService == null ? false : res.data.data.isUsedService)
             setDepositType(res.data.data.depositType == null ? "identifyCard" : res.data.data.depositType)
         }
-        console.log("Get Cart")
         setTimeout(() => {
             setLoadingData(false)
         }, 500);
@@ -92,8 +92,14 @@ const handleGetCart = async (
     });
 }
 
-const handleSaveCart = async (ref, expectedStartDate, expectedEndDate, setAlert, setLoadingData) => {
-
+const handleSaveCart = async (
+    ref,
+    expectedStartDate,
+    expectedEndDate,
+    setLoadingData,
+    setShowPopup,
+    setAlert
+) => {
     const body = {
         tempCustomerName: ref.current.values.customerName == "" ? null : ref.current.values.customerName,
         tempCustomerPhone: ref.current.values.phoneNumber == "" ? null : ref.current.values.phoneNumber,
@@ -110,14 +116,14 @@ const handleSaveCart = async (ref, expectedStartDate, expectedEndDate, setAlert,
         note: ref.current.values.note == "" ? null : ref.current.values.note,
         totalAmount: ref.current.values.totalAmount,
     };
-    console.log(body);
     await AxiosInstance.post(OrderManagement.cartSave, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     }).then((res) => {
-        if (res.data.data.code === 1) {
-            showAlert(setAlert, res.data.data.message, true)
+        if (res.data.code === 1) {
+            showAlert(setAlert, res.data.message, true)
         }
         setLoadingData(true)
+        setShowPopup(true)
     }).catch((error) => {
         showAlert(setAlert, error, false)
     });
@@ -172,7 +178,6 @@ function CreateOrder() {
     // VARIABLE
     // POPUP
     const [showPopup, setShowPopup] = useState(false);
-    const [showCloseButton, setShowCloseButton] = useState(false);
 
     // VARIABLE
     // FORMIK REF
@@ -206,7 +211,6 @@ function CreateOrder() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting == true) {
-            console.log("USE EFFECT")
             handleSubmit(setIsSubmitting);
         }
     }, [isSubmitting])
@@ -223,7 +227,6 @@ function CreateOrder() {
         initialValues.depositIdentifyCard = data.depositIdentifyCard == null ? "" : data.depositIdentifyCard;
         initialValues.depositHotel = data.depositHotel == null ? "" : data.depositHotel;
         initialValues.totalAmount = data.totalAmount == null ? 0 : data.totalAmount;
-
         initialValues.depositType = data.depositType == null ? "identifyCard" : data.depositType;
         initialValues.isUsedService = data.isUsedService == null ? false : data.isUsedService;
     }
@@ -237,17 +240,10 @@ function CreateOrder() {
                     status={alert.alertStatus}
                 />
                 <div className="popup-button">
-                    {alert.alertStatus === "success" ?
-                        <button className="btn btn-secondary btn-cancel"
-                            onClick={() => {
-                                setShowPopup(false);
-                                navigate('/order/create');
-                            }}>Close</button>
-                        :
-                        <button className="btn btn-secondary btn-cancel"
-                            onClick={() => {
-                                setShowPopup(false);
-                            }}>Close</button>}
+                    <button className="btn btn-secondary btn-cancel"
+                        onClick={() => {
+                            setShowPopup(false);
+                        }}>Close</button>
                 </div>
             </Fragment >
         }
@@ -259,7 +255,8 @@ function CreateOrder() {
                 {popup}
                 <div className="container">
                     <h1 className="text-center">CREATE ORDER</h1>
-                    <Button variant="contained" color="success" onClick={() => handleSaveCart(ref, expectedStartDate, expectedEndDate, setAlert, setLoadingData)}>
+                    <Button variant="contained" color="success"
+                        onClick={() => handleSaveCart(ref, expectedStartDate, expectedEndDate, setLoadingData, setShowPopup, setAlert)}>
                         SAVE CART
                     </Button>
                     {isRunLinear && (
@@ -453,7 +450,7 @@ function CreateOrder() {
                                 {/* Total info */}
                                 <Row className="mb-3">
                                     <Col xs={12} sm={12}>
-                                        <TextFieldCustom
+                                        <TextAreaCustom
                                             label={"Note"}
                                             name={"note"}
                                             type={"text"}

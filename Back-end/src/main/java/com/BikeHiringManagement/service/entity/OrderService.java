@@ -196,7 +196,7 @@ public class OrderService {
 
                 // Calculate Total Amount
                 Double sumAmount  = 0.0;
-                if (currentCart.getIsUsedService() == Boolean.TRUE && currentCart.getServiceCost() > 0.0) {
+                if (currentCart.getIsUsedService() != null && currentCart.getIsUsedService() == Boolean.TRUE && currentCart.getServiceCost() != null && currentCart.getServiceCost() > 0.0) {
                     sumAmount = calculatedCost + currentCart.getServiceCost();
                 }else{
                     sumAmount = calculatedCost;
