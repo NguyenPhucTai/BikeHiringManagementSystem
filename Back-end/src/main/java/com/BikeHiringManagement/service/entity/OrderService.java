@@ -270,25 +270,26 @@ public class OrderService {
         }
     }
 
-    public Result cartCalculateHiringCost(OrderRequest orderRequest){
+    public Result cartCalculateHiringCost(OrderRequest orderRequest) {
         try {
-            Double calculatedCost = 0.0;
-            Double bikeCost = 0.0;
             Long orderId = orderRequest.getId();
+            Double bikeCost = 0.0;
 
             // CHECK IF ORDER IS EXISTED
-            if(!checkEntityExistService.isEntityExisted(Constant.ORDER, "id",orderId)){
+            if (!checkEntityExistService.isEntityExisted(Constant.ORDER, "id", orderId)) {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The order id " + orderId + " has not been existed!!!");
             }
 
             // GET LIST BIKE IN ORDER
-            List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, false);
-            Map<String, Object> mapBike = bikeSpecification.getBikePriceListById(listOrderDetail);
-            List<Double> listBikePrice = (List<Double>) mapBike.get("data");
-            bikeCost = listBikePrice.stream().mapToDouble(f -> f.doubleValue()).sum();
+            List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, Boolean.FALSE);
+            if(listOrderDetail.size() > 0){
+                Map<String, Object> mapBike = bikeSpecification.getBikePriceListById(listOrderDetail);
+                List<Double> listBikePrice = (List<Double>) mapBike.get("data");
+                bikeCost = listBikePrice.stream().mapToDouble(f -> f.doubleValue()).sum();
+            }
 
             // CALCULATE COST
-            calculatedCost = calculateCostByFormula(Constant.FORMULA_BIKE_HIRING_CALCULATION, orderRequest.getExpectedStartDate(), orderRequest.getExpectedEndDate(), bikeCost);
+            Double calculatedCost = calculateCostByFormula(Constant.FORMULA_BIKE_HIRING_CALCULATION, orderRequest.getExpectedStartDate(), orderRequest.getExpectedEndDate(), bikeCost);
             if (calculatedCost < 0.0) {
                 return new Result(Constant.LOGIC_ERROR_CODE, "Error when calculating cost. Please contact IT!!!");
             }
@@ -306,27 +307,89 @@ public class OrderService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
             }
             Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
+            String message = "Save order successfully";
+            /*--------------------------- CUSTOMER LOGIC ------------------------*/
+            String tempCustomerName = orderRequest.getTempCustomerName();
+            String tempCustomerPhone = orderRequest.getTempCustomerPhone();
+            Long customerId = null;
 
-            order.setTempCustomerName(orderRequest.getTempCustomerName());
-            order.setTempCustomerPhone(orderRequest.getTempCustomerPhone());
+            // CREATE ORDER CASE
+            if (orderRequest.getIsCreateOrder() == Boolean.TRUE) {
+                // IF Customer EXIST By Phone
+                if (customerRepository.existsByPhoneNumberAndIsDeleted(tempCustomerPhone, Boolean.FALSE)) {
+                    Customer customer = customerRepository.findCustomerByPhoneNumberAndIsDeleted(tempCustomerPhone, Boolean.FALSE);
+                    customerId = customer.getId();
+                }
+                // IF Customer NOT EXIST By Phone
+                else {
+                    Customer customer = new Customer();
+                    customer.setCreatedDate(new Date());
+                    customer.setCreatedUser(username);
+                    customer.setPhoneNumber(tempCustomerPhone);
+                    customer.setName(tempCustomerName);
+                    Customer saveCustomer = customerRepository.save(customer);
+                    customerId = saveCustomer.getId();
+                }
+                tempCustomerName = null;
+                tempCustomerPhone = null;
+            }
+
+            order.setCustomerId(customerId);
+            order.setTempCustomerName(tempCustomerName);
+            order.setTempCustomerPhone(tempCustomerPhone);
+
+
+            /*--------------------------- CALCULATE COST ------------------------*/
             order.setExpectedStartDate(orderRequest.getExpectedStartDate());
             order.setExpectedEndDate(orderRequest.getExpectedEndDate());
-            order.setModifiedDate(new Date());
-            order.setModifiedUser(username);
-            //order.setActualStartDate(orderRequest.getActualStartDate());
-            //order.setActualEndDate(orderRequest.getActualEndDate());
+            order.setCalculatedCost(orderRequest.getCalculatedCost());
+
+
+            /*--------------------------- SERVICE COST LOGIC ------------------------*/
+            String serviceDescription = null;
+            Double serviceCost = null;
+            if (order.getIsUsedService()) {
+                serviceDescription = orderRequest.getServiceDescription();
+                serviceCost = orderRequest.getServiceCost();
+            }
             order.setIsUsedService(orderRequest.getIsUsedService());
-            order.setServiceCost(orderRequest.getServiceCost());
-            order.setServiceDescription(orderRequest.getServiceDescription());
-            order.setDepositType(orderRequest.getDepositType());
-            order.setDepositAmount(orderRequest.getDepositAmount());
-            order.setDepositIdentifyCard(orderRequest.getDepositIdentifyCard());
-            order.setDepositHotel(orderRequest.getDepositHotel());
-            order.setNote(order.getNote());
+            order.setServiceDescription(serviceDescription);
+            order.setServiceCost(serviceCost);
+
+            /*--------------------------- DEPOSIT COST LOGIC ------------------------*/
+            Double depositAmount = null;
+            String depositIdentifyCard = null;
+            String depositHotel = null;
+            String depositType = orderRequest.getDepositType();
+
+            switch (depositType.toUpperCase()) {
+                case "MONEY":
+                    depositAmount = orderRequest.getDepositAmount();
+                    break;
+                case "HOTEL":
+                    depositHotel = orderRequest.getDepositHotel();
+                    break;
+                case "IDENTIFYCARD":
+                    depositIdentifyCard = orderRequest.getDepositIdentifyCard();
+                    break;
+            }
+            order.setDepositType(depositType);
+            order.setDepositAmount(depositAmount);
+            order.setDepositHotel(depositHotel);
+            order.setDepositIdentifyCard(depositIdentifyCard);
+
+
+            /*--------------------------- UPDATE OTHER FIELD ------------------------*/
+            order.setNote(orderRequest.getNote());
+            order.setTotalAmount(orderRequest.getTotalAmount());
+
+            if (orderRequest.getIsCreateOrder() == Boolean.TRUE) {
+                order.setStatus("PENDING");
+                message = "Create order successfully";
+            }
 
             orderRepository.save(order);
-
-            return new Result(Constant.SUCCESS_CODE, "Save order successfully");
+            return new Result(Constant.SUCCESS_CODE, message);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
@@ -334,7 +397,7 @@ public class OrderService {
     }
 
 
-    /*--------------------------- RETURN FUNCTION ------------------------*/
+    /*--------------------------- NONE RETURN FUNCTION ------------------------*/
     public Integer getNumberOfBikeInCartById(Long orderId) {
         try {
             if (orderRepository.existsByIdAndStatus(orderId, "IN CART")) {
@@ -401,162 +464,6 @@ public class OrderService {
             return -1.0;
         }
     }
-
-
-    /*--------------------------- FIXING FUNCTION ------------------------*/
-    public Result createOrder(OrderRequest orderRequest, Long orderId, String username) {
-        try {
-            if (!orderRepository.existsByIdAndStatus(orderId, "IN CART")) {
-                return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
-            }
-            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
-            order.setCreatedDate(new Date());
-            order.setCreatedUser(username);
-            order.setModifiedUser(null);
-            order.setModifiedDate(null);
-
-            /*--------------------------- CUSTOMER LOGIC ------------------------*/
-            String phoneCustomer = orderRequest.getTempCustomerPhone();
-            Long customerId = null;
-            // IF Customer DO NOT exist By Phone
-            if (!customerRepository.existsByPhoneNumberAndIsDeleted(phoneCustomer, false)) {
-                Customer customer = new Customer();
-                customer.setCreatedDate(new Date());
-                customer.setCreatedUser(username);
-                customer.setPhoneNumber(phoneCustomer);
-                customer.setName(orderRequest.getTempCustomerName());
-                Customer saveCustomer = customerRepository.save(customer);
-                customerId = saveCustomer.getId();
-
-            }
-            // IF Customer exist By Phone
-            else {
-                Customer customer = customerRepository.findCustomerByPhoneNumberAndIsDeleted(phoneCustomer, false);
-                customerId = customer.getId();
-            }
-            order.setCustomerId(customerId);
-
-
-            /*--------------------------- CALCULATE COST LOGIC ------------------------*/
-            order.setExpectedStartDate(orderRequest.getExpectedStartDate());
-            order.setExpectedEndDate(orderRequest.getExpectedEndDate());
-
-            // CALCULATE TOTAL BIKE PRICE
-            double bikeCost = 0.0;
-            double calculatedCost = 0.0;
-            List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, false);
-            Map<String, Object> mapBike = bikeSpecification.getBikePriceListById(listOrderDetail);
-            List<Double> listBikePrice = (List<Double>) mapBike.get("data");
-            bikeCost = listBikePrice.stream().mapToDouble(f -> f.doubleValue()).sum();
-
-            calculatedCost = calculateCostByFormula(Constant.FORMULA_BIKE_HIRING_CALCULATION, orderRequest.getExpectedStartDate(), orderRequest.getExpectedEndDate(), bikeCost);
-            if (calculatedCost < 0.0) {
-                return new Result(Constant.LOGIC_ERROR_CODE, "Error when calculating cost. Please contact IT!!!");
-            }
-            order.setCalculatedCost(calculatedCost);
-
-
-            /*--------------------------- SERVICE COST LOGIC ------------------------*/
-            double totalAmount = 0.0;
-            double serviceCost = 0.0;
-
-            order.setIsUsedService(orderRequest.getIsUsedService());
-            if (order.getIsUsedService()) {
-                order.setServiceDescription(orderRequest.getServiceDescription());
-                order.setServiceCost(orderRequest.getServiceCost());
-                serviceCost = orderRequest.getServiceCost();
-            }
-            totalAmount = calculatedCost + serviceCost;
-            order.setTotalAmount(totalAmount);
-
-
-            /*--------------------------- DEPOSIT COST LOGIC ------------------------*/
-            String depositType = orderRequest.getDepositType();
-            order.setDepositType(depositType);
-            switch (depositType.toUpperCase()) {
-                case "MONEY":
-                    order.setDepositAmount(order.getDepositAmount());
-                    break;
-                case "HOTEL":
-                    order.setDepositHotel(order.getDepositHotel());
-                    break;
-                case "IDENTIFYCARD":
-                    order.setDepositIdentifyCard(order.getDepositIdentifyCard());
-                    break;
-            }
-
-            /*--------------------------- UPDATE OTHER FIELD ------------------------*/
-            order.setStatus("PENDING");
-            order.setTempCustomerPhone(null);
-            order.setTempCustomerName(null);
-            order.setNote(orderRequest.getNote());
-            orderRepository.save(order);
-
-            return new Result(Constant.SUCCESS_CODE, "Save order successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
-        }
-    }
-
-    public double calculateDaysHiring(Date startDate, Date endDate) {
-        try {
-            //String dateStart = "01/14/2012 07:29:58";
-            //String dateStop = "01/16/2012 19:31:48";
-            //SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-
-            Date d1 = null;
-            Date d2 = null;
-
-            //d1 = format.parse(dateStart);
-            //d2 = format.parse(dateStop);
-
-            SimpleDateFormat format = new SimpleDateFormat("E MMM dd hh:mm:ss Z yyyy");
-            d1 = format.parse(String.valueOf(startDate));
-            d2 = format.parse(String.valueOf(endDate));
-
-            double diff = d2.getTime() - d1.getTime();
-            //long diffSeconds = diff / 1000 % 60;
-            //long diffMinutes = diff / (60 * 1000) % 60;
-            double diffHours = diff / (60 * 60 * 1000) % 24;
-            double diffDays = diff / (24 * 60 * 60 * 1000);
-            double result = 0;
-
-            if (diffDays < 1)
-                result = 1;
-            else if (diffDays >= 1 && diffHours < 1)
-                result = (long) (diffDays);
-            else if (diffDays >= 1 && diffHours >= 1 && diffHours < 6)
-                result = (long) (diffDays) + 0.5;
-            else if (diffDays >= 1 && diffHours >= 6)
-                result = (long) (diffDays) + 1;
-            else
-                result = -1;
-            return result;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    public Double calculateCostHiring(Double dayHiring, List<Double> listBikePrice) {
-        try {
-            double amount = 0.0;
-            if (!listBikePrice.isEmpty()) {
-                for (Double i : listBikePrice) {
-                    amount += i;
-                }
-                return amount * dayHiring;
-            }
-            return -1.0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1.0;
-        }
-    }
-
-
 
 }
 

@@ -17,6 +17,7 @@ public class OrderRequest {
     private Date expectedEndDate;
     private Date actualStartDate;
     private Date actualEndDate;
+    private Double calculatedCost;
 
     private Boolean isUsedService;
     private String serviceDescription;
@@ -28,7 +29,9 @@ public class OrderRequest {
     private String depositHotel;
 
     private String note;
+    private Double totalAmount;
 
     private Long bikeId;
+    private Boolean isCreateOrder;
 
 }

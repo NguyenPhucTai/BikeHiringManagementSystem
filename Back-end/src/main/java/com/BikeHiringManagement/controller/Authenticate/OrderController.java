@@ -135,24 +135,4 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/create-order/orderId={orderId}")
-    public ResponseEntity<?> createOrder (@RequestBody OrderRequest orderRequest,
-                                          HttpServletRequest request,
-                                          @PathVariable Long orderId) {
-
-        try {
-            String jwt = jwtUtils.getJwtFromRequest(request);
-            String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = orderService.createOrder(orderRequest, orderId, username);
-            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
-                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
-            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
-                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
-        }catch (Exception e) {
-            e.printStackTrace();
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }
