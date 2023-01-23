@@ -27,20 +27,37 @@ export const PaginationCustom = props => {
 
     return (
         <Fragment>
-            <Row>
-                <Col lg={9} xs={12} style={{ paddingTop: "10px" }}>
-                    <Pagination
-                        onChange={handleChangePage}
-                        count={totalPages}
-                        page={reduxPage}
-                        color='primary'
-                        variant='outlined'
-                        shape='rounded'
-                        showFirstButton={true}
-                        showLastButton={true}
-                    />
-                </Col>
-                {props.isShowRowPerPage !== false &&
+            {props.isShowRowPerPage === false &&
+                <Row>
+                    <Col lg={12} xs={12} style={{ paddingTop: "10px" }}>
+                        <Pagination
+                            onChange={handleChangePage}
+                            count={totalPages}
+                            page={reduxPage}
+                            color='primary'
+                            variant='outlined'
+                            shape='rounded'
+                            showFirstButton={true}
+                            showLastButton={true}
+                        />
+                    </Col>
+                </Row>
+            }
+            {props.isShowRowPerPage !== false &&
+                <Row>
+                    <Col lg={9} xs={12} style={{ paddingTop: "10px" }}>
+                        <Pagination
+                            onChange={handleChangePage}
+                            count={totalPages}
+                            page={reduxPage}
+                            color='primary'
+                            variant='outlined'
+                            shape='rounded'
+                            showFirstButton={true}
+                            showLastButton={true}
+                        />
+                    </Col>
+
                     <Col lg={3} xs={12}>
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
@@ -58,8 +75,8 @@ export const PaginationCustom = props => {
                             }}
                         />
                     </Col>
-                }
-            </Row>
+                </Row>
+            }
         </Fragment>
     );
 } 

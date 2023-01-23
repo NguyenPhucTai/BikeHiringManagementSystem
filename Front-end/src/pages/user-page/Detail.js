@@ -8,6 +8,7 @@ import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
 import ImageGallery from "react-image-gallery";
 import Badge from 'react-bootstrap/Badge';
 import { PageLoad } from "../../components/Base/PageLoad";
+import { GetFormattedCurrency } from "../../function/CurrencyFormat";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -90,25 +91,25 @@ const Detail = props => {
                             <Col lg={6} xs={12} className="public">
                                 <div className="detail-header">
                                     <h2 className="bikeName">{bikeDetail.name}</h2>
-                                    <Badge>{bikeDetail.bikeCategoryName}</Badge>
+                                    <Badge className="bikeCategory">{bikeDetail.bikeCategoryName}</Badge>
                                 </div>
                                 <div className="detail-body">
                                     <Row>
-                                        <Col lg={3} xs={6}><label className="body-title">Bike No:</label></Col>
-                                        <Col lg={9} xs={6}><label>{bikeDetail.bikeNo}</label></Col>
-                                        <Col lg={3} xs={6}><label className="body-title">Bike Color:</label></Col>
-                                        <Col lg={9} xs={6}><label>{bikeDetail.bikeColor}</label></Col>
-                                        <Col lg={3} xs={6}><label className="body-title">Bike Manufacturer:</label></Col>
-                                        <Col lg={9} xs={6}><label>{bikeDetail.bikeManufacturerName}</label></Col>
-                                        <Col lg={3} xs={6}><label className="body-title">Status:</label></Col>
-                                        <Col lg={9} xs={6}>{bikeDetail.status === "AVAILABLE" ?
-                                            <label style={{ color: 'green' }}>{bikeDetail.status}</label> :
-                                            <label style={{ color: 'red' }}>{bikeDetail.status}</label>}
+                                        <Col lg={5} xs={6}><label className="body body-title">Bike No:</label></Col>
+                                        <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeNo}</label></Col>
+                                        <Col lg={5} xs={6}><label className="body body-title">Bike Color:</label></Col>
+                                        <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeColor}</label></Col>
+                                        <Col lg={5} xs={6}><label className="body body-title">Bike Manufacturer:</label></Col>
+                                        <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeManufacturerName}</label></Col>
+                                        <Col lg={5} xs={6}><label className="body body-title">Status:</label></Col>
+                                        <Col lg={7} xs={6}>{bikeDetail.status === "AVAILABLE" ?
+                                            <label className="body body-info" style={{ color: 'green' }}>{bikeDetail.status}</label> :
+                                            <label className="body body-info" style={{ color: 'red' }}>{bikeDetail.status}</label>}
                                         </Col>
                                     </Row>
                                 </div>
                                 <div className="detail-footer">
-                                    <h3 className="bikePrice">{bikeDetail.price}</h3>
+                                    <h3 className="bikePrice">{GetFormattedCurrency(bikeDetail.price)}</h3>
                                 </div>
                                 {/* <label className="bikeName">{bikeDetail.name}</label>
                             <div className="bikeTag">

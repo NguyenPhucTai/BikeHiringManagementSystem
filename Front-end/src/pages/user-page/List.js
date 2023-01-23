@@ -21,6 +21,7 @@ import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthentica
 //Component
 import { PageLoad } from "../../components/Base/PageLoad";
 import { PaginationCustom } from "../../components/Table/Pagination";
+import { GetFormattedCurrency } from "../../function/CurrencyFormat";
 
 const SortBy = [
     { value: "name", label: "Sort by name", key: "1" },
@@ -161,35 +162,34 @@ const List = props => {
                 <div className="container">
                     <Row>
                         <Col lg={12}>
-                            <div className="container">
-                                <h2 className="text-center">List Motorcycle</h2>
-                                <SortBarManagement SortBy={SortBy} />
-                                {loadingData ?
-                                    <div className="circular_progress">
-                                        <CircularProgress />
-                                    </div> :
-                                    <Row>
-                                        {listData.map((data, index) => {
-                                            return (
-                                                <Col key={index} className="column" xs={12} sm={6} md={4} lg={3}>
-                                                    <Link className="card-item" to={`/bike/${data.id}`}>
-                                                        <img src={Firebase_URL + data.filePath} alt={data.fileName} />
-                                                        <label className="bikeName">{data.name}</label>
-                                                        <div className="bikeTag">
-                                                            <Badge bg="success">{data.bikeCategory}</Badge>
-                                                        </div>
-                                                        <p className="bikePrice">Price: <span>{data.price}</span></p>
-                                                    </Link>
-                                                </Col>
-                                            )
-                                        })}
-                                    </Row>
-                                }
-                                <PaginationCustom
-                                    totalPages={totalPages}
-                                    isShowRowPerPage={false}
-                                />
-                            </div>
+
+                            <h2 className="text-center">List Motorcycle</h2>
+                            <SortBarManagement SortBy={SortBy} />
+                            {loadingData ?
+                                <div className="circular_progress">
+                                    <CircularProgress />
+                                </div> :
+                                <Row>
+                                    {listData.map((data, index) => {
+                                        return (
+                                            <Col key={index} className="column" xs={12} sm={6} md={4} lg={3}>
+                                                <Link className="card-item" to={`/bike/${data.id}`}>
+                                                    <img src={Firebase_URL + data.filePath} alt={data.fileName} />
+                                                    <label className="bikeName">{data.name}</label>
+                                                    <div className="bikeTag">
+                                                        <Badge bg="success">{data.bikeCategory}</Badge>
+                                                    </div>
+                                                    <p className="bikePrice">Price: <span>{GetFormattedCurrency(data.price)}</span></p>
+                                                </Link>
+                                            </Col>
+                                        )
+                                    })}
+                                </Row>
+                            }
+                            <PaginationCustom
+                                totalPages={totalPages}
+                                isShowRowPerPage={false}
+                            />
                         </Col>
                     </Row>
                 </div>

@@ -1,16 +1,38 @@
 .public {
-    .detail{
-        &-header{
-            .bikeName{
+    .detail {
+        &-header {
+            .bikeName {
                 margin-top: 0;
-                margin-bottom: 0;
+                margin-bottom: 1rem;
+            }
+
+            .bikeCategory {
+                font-size: 15px;
+                letter-spacing: 2px;
             }
         }
 
-        &-body{
-            .body-title{
-                color: $color-gray-75;
-                text-transform: capitalize;
+        &-body {
+            margin-top: 0.5rem;
+
+            .body {
+                font-size: 20px;
+                padding-top: 0.3rem;
+                padding-bottom: 0.3rem;
+
+                &-title {
+                    color: $color-gray-75;
+                    text-transform: capitalize;
+                }
+            }
+        }
+
+        &-footer {
+            margin-top: 1rem;
+
+            .bikePrice {
+                color: $color-orange;
+                text-align-last: center;
             }
         }
     }

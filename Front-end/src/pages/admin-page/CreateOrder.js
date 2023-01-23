@@ -494,7 +494,7 @@ function CreateOrder() {
                                             <TextFieldCustom
                                                 label={"Cost"}
                                                 name={"calculatedCost"}
-                                                type={"number"}
+                                                type={"number"} onWheel={(e) => e.target.blur()}
                                                 placeholder={"Enter the cost"}
                                                 value={calculatedCost}
                                                 disabled={true}
@@ -541,6 +541,7 @@ function CreateOrder() {
                                                     label={"Service Cost"}
                                                     name={"serviceCost"}
                                                     type={"number"}
+                                                    onWheel={(e) => e.target.blur()}
                                                     placeholder={"Enter the service cost"}
                                                     value={serviceCost}
                                                     onChange={(event) => {
@@ -590,7 +591,7 @@ function CreateOrder() {
                                             <TextFieldCustom
                                                 label={"Despoit Amount"}
                                                 name={"depositAmount"}
-                                                type={"number"}
+                                                type={"number"} onWheel={(e) => e.target.blur()}
                                                 placeholder={"Enter the deposit amount"}
                                             />
                                         </Col>
@@ -622,6 +623,7 @@ function CreateOrder() {
                                             label={"Total Cost"}
                                             name={"totalAmount"}
                                             type={"number"}
+                                            onWheel={(e) => e.target.blur()}
                                             placeholder={"Total Cost"}
                                             value={totalAmount}
                                             onChange={(event) => {

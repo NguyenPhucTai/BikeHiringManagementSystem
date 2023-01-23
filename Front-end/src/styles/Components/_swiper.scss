@@ -31,3 +31,8 @@
 .swiper-autoheight .swiper-slide {
     height: 355px !important;
 }
+
+.swiper-pagination-bullet {
+    width: var(--swiper-pagination-bullet-width, var(--swiper-pagination-bullet-size, 16px)) !important;
+    height: var(--swiper-pagination-bullet-height, var(--swiper-pagination-bullet-size, 16px)) !important;
+}

@@ -21,6 +21,7 @@ import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { GetFormattedDate } from "../../function/DateTimeFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
+import { GetFormattedCurrency } from '../../function/CurrencyFormat';
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -73,7 +74,7 @@ const handleGetDataPagination = async (
             return {
                 id: data.id,
                 name: data.name,
-                price: data.price
+                price: GetFormattedCurrency(data.price)
             }
         })
         setListData(listData)
@@ -365,7 +366,7 @@ function ManageBikeCategory() {
                                 <TextFieldCustom
                                     label={"Price"}
                                     name={"price"}
-                                    type={"number"}
+                                    type={"number"} onWheel={(e) => e.target.blur()}
                                     placeholder={"Enter the category price"}
                                 />
                                 <div className="popup-button">
@@ -444,7 +445,7 @@ function ManageBikeCategory() {
                                 <TextFieldCustom
                                     label={"Price"}
                                     name={"price"}
-                                    type={"number"}
+                                    type={"number"} onWheel={(e) => e.target.blur()}
                                     placeholder={"Enter the category price"}
                                 />
                                 <div className="popup-button">
