@@ -30,7 +30,7 @@ export const TableOrder = props => {
                                     })
                                 }
                                 <td key={'buttonRow'}>
-                                    <button className="btn btn-danger" onClick={() => { setDataID(element.id); setIsDelete(true) }}>Delete</button>
+                                    <button className="btn btn-danger" type="button" onClick={() => { setDataID(element.id); setIsDelete(true) }}>Delete</button>
                                 </td>
                             </tr>
                         )

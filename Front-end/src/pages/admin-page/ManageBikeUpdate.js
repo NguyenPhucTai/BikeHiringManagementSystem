@@ -52,10 +52,13 @@ const showAlert = (setAlert, message, isSuccess) => {
     }
 }
 
+const handleRemoveImageFromList = (imageID, imageList, setImageList) => {
+    setImageList(imageList.filter(data => data.id !== imageID));
+}
+
 // FUNCTION
 // CALL API
-const handleGetBikeById = async (id, setData, setDefaultCategory, setDefaultManufacturer, setDefaultColor) => {
-
+const handleGetBikeById = async (id, setData, setDefaultCategory, setDefaultManufacturer, setDefaultColor, setImageList) => {
     await AxiosInstance.get(BikeManagement.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
@@ -73,7 +76,7 @@ const handleGetBikeById = async (id, setData, setDefaultCategory, setDefaultManu
                 value: res.data.data.bikeColorId,
                 label: res.data.data.bikeColor,
             })
-            console.log(res.data.data);
+            setImageList(res.data.data.imageList)
         }
     }).catch((error) => {
         if (error && error.response) {
@@ -264,6 +267,7 @@ function ManageBikeUpdate() {
     const [listColor, setListColor] = useState([]);
     const [listManufacturer, setListManufacturer] = useState([]);
     const [data, setData] = useState({});
+    const [imageList, setImageList] = useState([]);
 
     // VARIABLE
     // ALERT MESSAGE
@@ -392,7 +396,7 @@ function ManageBikeUpdate() {
             handleGetCategoryList(setListCategory);
             handleGetColorList(setListColor);
             handleGetManufacturerList(setListManufacturer)
-            handleGetBikeById(id, setData, setDefaultCategory, setDefaultManufacturer, setDefaultColor);
+            handleGetBikeById(id, setData, setDefaultCategory, setDefaultManufacturer, setDefaultColor, setImageList);
             setLoadingData(false)
         }
     }, [loadingData])
@@ -435,7 +439,7 @@ function ManageBikeUpdate() {
                                     setAlert({ alertShow: false });
                                     setImageID(0);
                                     setIsImageDelete(false);
-                                    setLoadingData(true);
+                                    handleRemoveImageFromList(imageID, imageList, setImageList);
                                 }}>Close</button>
                         </div>
                     </ Fragment>
@@ -610,8 +614,8 @@ function ManageBikeUpdate() {
                                         />
                                     </Col>
                                     <label className='form-label'>Bike Images</label>
-                                    {Object.keys(data).length !== 0 ?
-                                        data.imageList.map((value, index) => {
+                                    {Object.keys(imageList).length !== 0 ?
+                                        imageList.map((value, index) => {
                                             return (
                                                 <Col key={index} xs={12} sm={6} md={4} lg={3}>
                                                     <div className="card-item">

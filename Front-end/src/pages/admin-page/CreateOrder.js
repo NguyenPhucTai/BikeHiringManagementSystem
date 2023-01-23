@@ -16,14 +16,13 @@ import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 
 // Component
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
-import { SelectField } from "../../components/Form/SelectField";
 import { OrderManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
@@ -55,12 +54,16 @@ const showAlert = (setAlert, message, isSuccess) => {
 
 const handleGetCart = async (
     setLoadingData,
-    setData,
+    setOrderID,
     setListBike,
     setIsUsedService,
     setDepositType,
     setExpectedStartDate,
-    setExpectedEndDate
+    setExpectedEndDate,
+    setInitialValues,
+    setCalculatedCost,
+    setServiceCost,
+    setTotalAmount
 ) => {
     await AxiosInstance.get(OrderManagement.cartGetByUsername, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
@@ -75,12 +78,29 @@ const handleGetCart = async (
                     hiredNumber: data.hiredNumber
                 }
             })
+            setInitialValues({
+                customerName: res.data.data.customerName === null ? "" : res.data.data.customerName,
+                phoneNumber: res.data.data.phoneNumber === null ? "" : res.data.data.phoneNumber,
+
+                isUsedService: res.data.data.isUsedService === null ? false : res.data.data.isUsedService,
+                serviceDescription: res.data.data.serviceDescription === null ? "" : res.data.data.serviceDescription,
+
+                depositType: res.data.data.depositType === null ? "" : res.data.data.depositType,
+                depositAmount: res.data.data.depositAmount === null ? 0 : res.data.data.depositAmount,
+                depositIdentifyCard: res.data.data.depositIdentifyCard === null ? "" : res.data.data.depositIdentifyCard,
+                depositHotel: res.data.data.depositHotel === null ? "" : res.data.data.depositHotel,
+
+                note: res.data.data.note === null ? "" : res.data.data.note,
+            })
+            setOrderID(res.data.data.id)
             setListBike(listBike)
-            setData(res.data.data)
             setExpectedStartDate(dayjs(res.data.data.expectedStartDate))
             setExpectedEndDate(dayjs(res.data.data.expectedEndDate))
-            setIsUsedService(res.data.data.isUsedService == null ? false : res.data.data.isUsedService)
-            setDepositType(res.data.data.depositType == null ? "identifyCard" : res.data.data.depositType)
+            setIsUsedService(res.data.data.isUsedService === null ? false : res.data.data.isUsedService)
+            setDepositType(res.data.data.depositType === null ? "identifyCard" : res.data.data.depositType)
+            setCalculatedCost(res.data.data.calculatedCost === null ? 0 : res.data.data.calculatedCost)
+            setServiceCost(res.data.data.serviceCost === null ? 0 : res.data.data.serviceCost)
+            setTotalAmount(res.data.data.totalAmount === null ? 0 : res.data.data.totalAmount)
         }
         setTimeout(() => {
             setLoadingData(false)
@@ -92,29 +112,96 @@ const handleGetCart = async (
     });
 }
 
+const handleDeleteBike = async (
+    dataID,
+    setDataID,
+    setIsDelete,
+    listBike,
+    setListBike,
+    orderID,
+    setIsCalculateCost
+) => {
+    await AxiosInstance.post(OrderManagement.cartDeleteBike + "orderId=" + orderID + "&bikeId=" + dataID, null, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            setListBike(listBike.filter(data => data.id !== dataID));
+            setIsCalculateCost(true);
+        }
+        setIsDelete(false)
+        setDataID(0)
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
+
+}
+
+const handleCalculateCost = async (
+    orderID,
+    expectedStartDate,
+    expectedEndDate,
+    setIsCalculateCost,
+    initialValues,
+    serviceCost,
+    setTotalAmount,
+    setCalculatedCost,
+) => {
+    if (expectedEndDate.isAfter(expectedStartDate)) {
+        const body = {
+            id: orderID,
+            expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+            expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+        };
+        await AxiosInstance.post(OrderManagement.cartCalculateCost, body, {
+            headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+        }).then((res) => {
+            if (res.data.code === 1) {
+                setCalculatedCost(res.data.data)
+                setTotalAmount(res.data.data + serviceCost)
+            }
+            setIsCalculateCost(false)
+        }).catch((error) => {
+            if (error && error.response) {
+                console.log("Error: ", error);
+            }
+        });
+    } else {
+        initialValues.calculatedCost = 0;
+        setIsCalculateCost(false)
+    }
+}
+
 const handleSaveCart = async (
-    ref,
+    formikRef,
     expectedStartDate,
     expectedEndDate,
     setLoadingData,
     setShowPopup,
-    setAlert
+    setAlert,
+    calculatedCost,
+    serviceCost,
+    totalAmount
 ) => {
+    if (serviceCost === undefined || serviceCost < 0) {
+        serviceCost = 0;
+    }
     const body = {
-        tempCustomerName: ref.current.values.customerName == "" ? null : ref.current.values.customerName,
-        tempCustomerPhone: ref.current.values.phoneNumber == "" ? null : ref.current.values.phoneNumber,
+        tempCustomerName: formikRef.current.values.customerName === "" ? null : formikRef.current.values.customerName,
+        tempCustomerPhone: formikRef.current.values.phoneNumber === "" ? null : formikRef.current.values.phoneNumber,
         expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
         expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
-        calculatedCost: ref.current.values.calculatedCost,
-        isUsedService: ref.current.values.isUsedService,
-        serviceDescription: ref.current.values.serviceDescription == "" ? null : ref.current.values.serviceDescription,
-        serviceCost: ref.current.values.serviceCost,
-        depositType: ref.current.values.depositType,
-        depositAmount: ref.current.values.depositAmount,
-        depositIdentifyCard: ref.current.values.depositIdentifyCard == "" ? null : ref.current.values.depositIdentifyCard,
-        depositHotel: ref.current.values.depositHotel == "" ? null : ref.current.values.depositHotel,
-        note: ref.current.values.note == "" ? null : ref.current.values.note,
-        totalAmount: ref.current.values.totalAmount,
+        isUsedService: formikRef.current.values.isUsedService,
+        serviceDescription: formikRef.current.values.serviceDescription === "" ? null : formikRef.current.values.serviceDescription,
+        depositType: formikRef.current.values.depositType,
+        depositAmount: formikRef.current.values.depositAmount,
+        depositIdentifyCard: formikRef.current.values.depositIdentifyCard === "" ? null : formikRef.current.values.depositIdentifyCard,
+        depositHotel: formikRef.current.values.depositHotel === "" ? null : formikRef.current.values.depositHotel,
+        note: formikRef.current.values.note === "" ? null : formikRef.current.values.note,
+        calculatedCost: calculatedCost,
+        serviceCost: serviceCost,
+        totalAmount: totalAmount,
     };
     await AxiosInstance.post(OrderManagement.cartSave, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
@@ -127,10 +214,9 @@ const handleSaveCart = async (
     }).catch((error) => {
         showAlert(setAlert, error, false)
     });
-
 };
 
-const handleSubmit = async (setIsSubmitting, ref) => {
+const handleSubmit = async (setIsSubmitting, formikRef) => {
     console.log("submit")
     setIsSubmitting(false);
 };
@@ -148,24 +234,33 @@ function CreateOrder() {
     }
 
     // Render page
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
-    const tableTitleList = ['NAME', 'MANUAL ID', 'CATEGORY', 'HIRED NUMBER']
+    // TABLE TITLE
+    const tableTitleList = ["ID", 'NAME', 'MANUAL ID', 'CATEGORY', 'HIRED NUMBER']
 
     // VARIABLE
     // CART
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [data, setData] = useState({});
+    const [isCalculateCost, setIsCalculateCost] = useState(false);
+    const [listBike, setListBike] = useState([])
+
+    const [orderID, setOrderID] = useState(0);
     const [expectedStartDate, setExpectedStartDate] = useState(null);
     const [expectedEndDate, setExpectedEndDate] = useState(null);
     const [isUsedService, setIsUsedService] = useState(false);
     const [depositType, setDepositType] = useState("identifyCard");
-    const [listBike, setListBike] = useState([])
+
+    const [calculatedCost, setCalculatedCost] = useState(0);
+    const [serviceCost, setServiceCost] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+
+
 
     // VARIABLE
     // PAGE LOADING
     const [loadingData, setLoadingData] = useState(true);
-    const [isRunLinear, setIsRunLinear] = useState(false);
+    // const [isRunLinear, setIsRunLinear] = useState(false);
 
     // VARIABLE
     // ALERT MESSAGE
@@ -179,12 +274,16 @@ function CreateOrder() {
     // POPUP
     const [showPopup, setShowPopup] = useState(false);
 
-    // VARIABLE
-    // FORMIK REF
-    const ref = useRef(null);
+    // VARIABLE 
+    // DELETE
+    const [dataID, setDataID] = useState(0);
+    const [isDelete, setIsDelete] = useState(false);
 
-    // Formik variables
-    const initialValues = {
+
+    // VARIABLE
+    // FORMIK
+    const formikRef = useRef(null);
+    const [initialValues, setInitialValues] = useState({
         customerName: "",
         phoneNumber: "",
         calculatedCost: 0,
@@ -196,40 +295,66 @@ function CreateOrder() {
         depositIdentifyCard: "",
         depositHotel: "",
         note: "",
-        totalAmount: 0
-    };
+    })
 
     // USE EFFECT
     // PAGE LOADING
     useEffect(() => {
         if (loadingData === true) {
-            handleGetCart(setLoadingData, setData, setListBike, setIsUsedService, setDepositType, setExpectedStartDate, setExpectedEndDate);
+            handleGetCart(
+                setLoadingData,
+                setOrderID,
+                setListBike,
+                setIsUsedService,
+                setDepositType,
+                setExpectedStartDate,
+                setExpectedEndDate,
+                setInitialValues,
+                setCalculatedCost,
+                setServiceCost,
+                setTotalAmount
+            );
         }
     }, [loadingData])
+
+    console.log(totalAmount)
+
+
+    // USE EFFECT
+    // CALCULATE COST
+    useEffect(() => {
+        if (serviceCost > 0) {
+            setTotalAmount(serviceCost + calculatedCost)
+        } else {
+            setTotalAmount(calculatedCost)
+        }
+    }, [serviceCost])
+
+    // USE EFFECT
+    // SERVICE COST CHANGE
+    useEffect(() => {
+        if (isCalculateCost === true) {
+            handleCalculateCost(orderID, expectedStartDate, expectedEndDate, setIsCalculateCost, initialValues, serviceCost, setTotalAmount, setCalculatedCost)
+        }
+    }, [isCalculateCost])
+
+    // USE EFFECT
+    // DELETE BIKE
+    useEffect(() => {
+        if (isDelete === true) {
+            handleDeleteBike(dataID, setDataID, setIsDelete, listBike, setListBike, orderID, setIsCalculateCost);
+        }
+    }, [isDelete])
 
     // USE EFFECT
     // HANDLING SUBMIT FORM
     useEffect(() => {
-        if (isSubmitting == true) {
+        if (isSubmitting === true) {
             handleSubmit(setIsSubmitting);
         }
     }, [isSubmitting])
 
-    // USE EFFECT
-    // Update initialValues
-    if (Object.keys(data).length !== 0) {
-        initialValues.customerName = data.customerName == null ? "" : data.customerName;
-        initialValues.phoneNumber = data.phoneNumber == null ? "" : data.phoneNumber;
-        initialValues.calculatedCost = data.calculatedCost == null ? 0 : data.calculatedCost;
-        initialValues.serviceDescription = data.serviceDescription == null ? "" : data.serviceDescription;
-        initialValues.serviceCost = data.serviceCost == null ? 0 : data.serviceCost;
-        initialValues.depositAmount = data.depositAmount == null ? 0 : data.depositAmount;
-        initialValues.depositIdentifyCard = data.depositIdentifyCard == null ? "" : data.depositIdentifyCard;
-        initialValues.depositHotel = data.depositHotel == null ? "" : data.depositHotel;
-        initialValues.totalAmount = data.totalAmount == null ? 0 : data.totalAmount;
-        initialValues.depositType = data.depositType == null ? "identifyCard" : data.depositType;
-        initialValues.isUsedService = data.isUsedService == null ? false : data.isUsedService;
-    }
+
 
     let popup = <Popup showPopup={showPopup} setShowPopup={setShowPopup}
         child={
@@ -256,16 +381,26 @@ function CreateOrder() {
                 <div className="container">
                     <h1 className="text-center">CREATE ORDER</h1>
                     <Button variant="contained" color="success"
-                        onClick={() => handleSaveCart(ref, expectedStartDate, expectedEndDate, setLoadingData, setShowPopup, setAlert)}>
+                        onClick={() =>
+                            handleSaveCart(
+                                formikRef,
+                                expectedStartDate,
+                                expectedEndDate,
+                                setLoadingData,
+                                setShowPopup,
+                                setAlert,
+                                serviceCost,
+                                totalAmount)
+                        }>
                         SAVE CART
                     </Button>
-                    {isRunLinear && (
+                    {/* {isRunLinear && (
                         <Box sx={{ width: '100%' }}>
                             <LinearProgress />
                         </Box>
-                    )}
+                    )} */}
                     <Formik
-                        innerRef={ref}
+                        innerRef={formikRef}
                         enableReinitialize
                         initialValues={initialValues}
                         validationSchema={OrderSchema}
@@ -310,7 +445,10 @@ function CreateOrder() {
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
                                                         value={expectedStartDate}
-                                                        onChange={(newValue) => setExpectedStartDate(newValue)}
+                                                        onChange={(newValue) => {
+                                                            setExpectedStartDate(newValue);
+                                                        }}
+                                                        onAccept={() => setIsCalculateCost(true)}
                                                         renderInput={(params) => (
                                                             <TextField {...params} />
                                                         )}
@@ -326,7 +464,10 @@ function CreateOrder() {
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
                                                         value={expectedEndDate}
-                                                        onChange={(newValue) => setExpectedEndDate(newValue)}
+                                                        onChange={(newValue) => {
+                                                            setExpectedEndDate(newValue)
+                                                        }}
+                                                        onAccept={() => setIsCalculateCost(true)}
                                                         renderInput={(params) => (
                                                             <TextField {...params} />
                                                         )}
@@ -338,10 +479,16 @@ function CreateOrder() {
                                     <Row>
                                         <Col xs={12} sm={12}>
                                             <label className='form-label'>Bike List</label>
-                                            <TableOrder
-                                                tableTitleList={tableTitleList}
-                                                listData={listBike}
-                                            />
+                                            {Object.keys(listBike).length !== 0 ?
+                                                <TableOrder
+                                                    tableTitleList={tableTitleList}
+                                                    listData={listBike}
+                                                    setDataID={setDataID}
+                                                    setIsDelete={setIsDelete}
+                                                />
+                                                :
+                                                <div>No bike found</div>
+                                            }
                                         </Col>
                                         <Col xs={12} sm={12}>
                                             <TextFieldCustom
@@ -349,6 +496,8 @@ function CreateOrder() {
                                                 name={"calculatedCost"}
                                                 type={"number"}
                                                 placeholder={"Enter the cost"}
+                                                value={calculatedCost}
+                                                disabled={true}
                                             />
                                         </Col>
                                     </Row>
@@ -366,6 +515,8 @@ function CreateOrder() {
                                                 let result = false;
                                                 if (value === 'true') {
                                                     result = true;
+                                                } else {
+                                                    setServiceCost(0);
                                                 }
                                                 setIsUsedService(result)
                                                 setFieldValue("isUsedService", result);
@@ -391,6 +542,15 @@ function CreateOrder() {
                                                     name={"serviceCost"}
                                                     type={"number"}
                                                     placeholder={"Enter the service cost"}
+                                                    value={serviceCost}
+                                                    onChange={(event) => {
+                                                        let value = event.target.value;
+                                                        if (value === "") {
+                                                            setServiceCost("")
+                                                        } else {
+                                                            setServiceCost(parseFloat(value))
+                                                        }
+                                                    }}
                                                 />
                                             </Col>
                                         </Row>
@@ -463,6 +623,16 @@ function CreateOrder() {
                                             name={"totalAmount"}
                                             type={"number"}
                                             placeholder={"Total Cost"}
+                                            value={totalAmount}
+                                            onChange={(event) => {
+                                                let value = event.target.value;
+                                                console.log(value)
+                                                if (value === "") {
+                                                    setTotalAmount("")
+                                                } else {
+                                                    setTotalAmount(parseFloat(value))
+                                                }
+                                            }}
                                         />
                                     </Col>
                                 </Row>

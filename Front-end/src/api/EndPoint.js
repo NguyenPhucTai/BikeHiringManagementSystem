@@ -53,6 +53,7 @@ export const OrderManagement = {
     cartGetBikeNumber: "/admin/order/cart/get/bike-number",
     cartDeleteBike: "/admin/order/cart/delete-bike/",
     cartSave: "/admin/order/cart/save",
+    cartCalculateCost: "/admin/order/cart/calculate-hiring-cost"
 }
 
 // Fire Base

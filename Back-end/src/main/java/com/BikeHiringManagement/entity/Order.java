@@ -33,7 +33,7 @@ public class Order extends BaseEntity{
     @Column(name = "calculated_cost")
     private Double calculatedCost;
 
-    @Column(name = "is_used_serivce")
+    @Column(name = "is_used_service")
     private Boolean isUsedService;
 
     @Column(name = "service_description")

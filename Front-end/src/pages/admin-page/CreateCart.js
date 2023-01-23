@@ -104,7 +104,6 @@ const handleBikeNumberInCart = async (setCarNumber) => {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
-            console.log(res.data.data);
             setCarNumber(res.data.data)
         }
     }).catch((error) => {

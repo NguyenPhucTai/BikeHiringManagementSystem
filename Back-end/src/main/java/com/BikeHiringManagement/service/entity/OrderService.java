@@ -187,12 +187,19 @@ public class OrderService {
                 }
 
                 /*--------------------------- COST LOGIC ------------------------*/
-                // Calculate default cost (1 day hiring)
-                calculatedCost = currentCart.getCalculatedCost();
-                if ((calculatedCost == null || calculatedCost == 0.0) && listRes.size() > 0) {
-                    calculatedCost = listRes.stream().filter(x -> x.getPrice() != null).mapToDouble(BikeResponse::getPrice).sum();
+                if(listRes.size() > 0){
+                    Double bikeCost = listRes.stream().filter(x -> x.getPrice() != null).mapToDouble(BikeResponse::getPrice).sum();
+                    // IF BIKE LIST > 1 AND NO CALCULATED COST
+                    if(currentCart.getCalculatedCost() == null || currentCart.getCalculatedCost() == 0.0){
+                        calculatedCost = bikeCost;
+                    }
+                    // IF THERE IS AVAILABLE CALCULATED COST
+                    else{
+                        calculatedCost = calculateCostByFormula(Constant.FORMULA_BIKE_HIRING_CALCULATION, currentCart.getExpectedStartDate(), currentCart.getExpectedEndDate(), bikeCost);
+                    }
                 }
                 cartResponse.setCalculatedCost(calculatedCost);
+
 
                 // Calculate Total Amount
                 Double sumAmount  = 0.0;
@@ -357,7 +364,7 @@ public class OrderService {
             /*--------------------------- SERVICE COST LOGIC ------------------------*/
             String serviceDescription = null;
             Double serviceCost = null;
-            if (order.getIsUsedService() != null && order.getIsUsedService() == true) {
+            if (orderRequest.getIsUsedService() != null && orderRequest.getIsUsedService() == true) {
                 serviceDescription = orderRequest.getServiceDescription();
                 serviceCost = orderRequest.getServiceCost();
             }
