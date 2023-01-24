@@ -40,22 +40,16 @@ public class CartResponse {
 
     }
 
-    public CartResponse(Long id, Long customerId, String customerName, String phoneNumber, Date expectedStartDate, Date expectedEndDate, String status) {
+    public CartResponse(Long id, Long customerId, String customerName, String phoneNumber, Date expectedStartDate, Date expectedEndDate, Date actualStartDate, Date actualEndDate, String status, Double totalAmount) {
         this.id = id;
         this.customerId = customerId;
         this.customerName = customerName;
         this.phoneNumber = phoneNumber;
         this.expectedStartDate = expectedStartDate;
         this.expectedEndDate = expectedEndDate;
+        this.actualStartDate = actualStartDate;
+        this.actualEndDate = actualEndDate;
         this.status = status;
-    }
-
-    public CartResponse(Long id,  String customerName, String phoneNumber, Date expectedStartDate, Date expectedEndDate, String status) {
-        this.id = id;
-        this.customerName = customerName;
-        this.phoneNumber = phoneNumber;
-        this.expectedStartDate = expectedStartDate;
-        this.expectedEndDate = expectedEndDate;
-        this.status = status;
+        this.totalAmount = totalAmount;
     }
 }

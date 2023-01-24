@@ -5,6 +5,7 @@ import Cookies from 'universal-cookie';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 // Source
 // API
@@ -12,10 +13,12 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import { OrderManagement } from '../../api/EndPoint';
 
 //Component
-import { TableView } from '../../components/Table/TableView';
+import { TableOrder } from '../../components/Table/TableOrder';
 import SortBarManagement from "../../components/Navbar/SortBarManagement";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
+import { GetFormattedCurrency } from '../../function/CurrencyFormat';
+import { GetFormattedDatetTime } from '../../function/DateTimeFormat';
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -67,13 +70,32 @@ const handleGetDataPagination = async (
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
-            return {
-                id: data.id,
-                expectedStartDate: data.expectedStartDate,
-                expectedEndDate: data.expectedEndDate,
-                bikeNumber: 0,
-                status: data.status
+            var expectedStartDate = dayjs(data.expectedStartDate)
+            var expectedEndDate = dayjs(data.expectedEndDate)
+            var totalHours = expectedEndDate.diff(expectedStartDate, 'hour');
+            console.log(totalHours)
+            if (data.status === "CLOSED") {
+                return {
+                    id: data.id,
+                    actualStartDate: data.actualStartDate === null ? "N/A" : GetFormattedDatetTime(data.actualStartDate),
+                    actualEndDate: data.actualEndDate === null ? "N/A" : GetFormattedDatetTime(data.actualEndDate),
+                    totalHours: totalHours,
+                    bikeNumber: data.bikeNumber,
+                    totalAmount: GetFormattedCurrency(data.totalAmount),
+                    status: data.status
+                }
+            } else {
+                return {
+                    id: data.id,
+                    expectedStartDate: GetFormattedDatetTime(data.expectedStartDate),
+                    expectedEndDate: GetFormattedDatetTime(data.expectedEndDate),
+                    totalHours: totalHours,
+                    bikeNumber: data.bikeNumber,
+                    totalAmount: GetFormattedCurrency(data.totalAmount),
+                    status: data.status
+                }
             }
+
         })
         setListData(listData)
         setTotalPages(res.data.data.totalPages)
@@ -99,7 +121,7 @@ function ManageOrderList() {
 
     // USE STATE
     // Table variables
-    const tableTitleList = ['ID', 'EXPECTED START DATE', 'EXPECTED END DATE', 'NUMBER OF BIKE', 'STATUS']
+    const tableTitleList = ['ID', '*START DATE', '*END DATE', "HIRING HOURS", 'NUMBER OF BIKES', 'TOTAL AMOUNT', 'STATUS']
 
     // Redux - Filter form
     let reduxFilter = {
@@ -171,7 +193,7 @@ function ManageOrderList() {
     let tablePagination;
     if (listData.length > 0) {
         tablePagination = <div className='table-pagination'>
-            <TableView
+            <TableOrder
                 tableTitleList={tableTitleList}
                 listData={listData}
                 setDataID={setDataID}
@@ -197,6 +219,9 @@ function ManageOrderList() {
                             <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }}
                                 onClick={() => navigate('/manage/cart/create')} >Create Order</button></Col>
                         </Row>
+                    </div>
+                    <div className='table-note'>
+                        <label className='form-label' style={{ color: "red", fontStyle: "italic" }}>* PENDING order will show EXPECTED DATE - CLOSED order will show ACTUAL DATE</label>
                     </div>
                     {tablePagination}
                 </div>

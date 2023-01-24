@@ -215,7 +215,7 @@ const handleSaveCart = async (
 };
 
 
-function CreateOrder() {
+function ManageOrderDetail() {
 
     // Show Public Navigation
     const dispatch = useDispatch();
@@ -243,6 +243,8 @@ function CreateOrder() {
     const [orderID, setOrderID] = useState(0);
     const [expectedStartDate, setExpectedStartDate] = useState(null);
     const [expectedEndDate, setExpectedEndDate] = useState(null);
+    const [actualStartDate, setActualStartDate] = useState(null);
+    const [actualEndDate, setActualEndDate] = useState(null);
 
     const [isUsedService, setIsUsedService] = useState(false);
     const [depositType, setDepositType] = useState("identifyCard");
@@ -269,12 +271,6 @@ function CreateOrder() {
     // POPUP
     const [showPopup, setShowPopup] = useState(false);
 
-    // VARIABLE 
-    // DELETE BIKE
-    const [dataID, setDataID] = useState(0);
-    const [isDelete, setIsDelete] = useState(false);
-
-
     // VARIABLE
     // FORMIK
     const formikRef = useRef(null);
@@ -290,25 +286,12 @@ function CreateOrder() {
         note: "",
     }
 
-
-
     // USE EFFECT
     // PAGE LOADING
     useEffect(() => {
         if (loadingData === true) {
-            handleGetCart(
-                setLoadingData,
-                setData,
-                setOrderID,
-                setListBike,
-                setIsUsedService,
-                setDepositType,
-                setExpectedStartDate,
-                setExpectedEndDate,
-                setCalculatedCost,
-                setServiceCost,
-                setTotalAmount
-            );
+            console.log("handle get order")
+            setLoadingData(false);
         }
     }, [loadingData])
 
@@ -326,36 +309,16 @@ function CreateOrder() {
     // TRIGGER API CALCULATE COST
     useEffect(() => {
         if (isCalculateCost === true) {
-            handleCalculateCost(orderID, expectedStartDate, expectedEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
+            handleCalculateCost(orderID, actualStartDate, actualEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
         }
     }, [isCalculateCost])
-
-    // USE EFFECT
-    // DELETE BIKE
-    useEffect(() => {
-        if (isDelete === true) {
-            handleDeleteBike(dataID, setDataID, setIsDelete, listBike, setListBike, orderID, setIsCalculateCost);
-        }
-    }, [isDelete])
 
     // USE EFFECT
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting === true) {
-            setIsRunLinear(true);
-            handleSaveCart(
-                true,
-                formikRef,
-                expectedStartDate,
-                expectedEndDate,
-                calculatedCost,
-                serviceCost,
-                totalAmount,
-                setLoadingData,
-                setShowPopup,
-                setAlert,
-                setIsRunLinear,
-            )
+            console.log("handle submit")
+            setIsSubmitting(false);
         }
     }, [isSubmitting])
 
@@ -410,22 +373,10 @@ function CreateOrder() {
                 <div className="container">
                     <h1 className="text-center">CREATE ORDER</h1>
                     <Button variant="contained" color="success"
-                        onClick={() =>
-                            handleSaveCart(
-                                false,
-                                formikRef,
-                                expectedStartDate,
-                                expectedEndDate,
-                                calculatedCost,
-                                serviceCost,
-                                totalAmount,
-                                setLoadingData,
-                                setShowPopup,
-                                setAlert,
-                                setIsRunLinear,
-                            )
-                        }>
-                        SAVE CART
+                        onClick={() => {
+                            console.log("UPDATE")
+                        }}>
+                        UPDATE
                     </Button>
                     {isRunLinear && (
                         <Box sx={{ width: '100%' }}>
@@ -451,6 +402,7 @@ function CreateOrder() {
                             setFieldValue,
                         }) => (
                             <Form className="d-flex flex-column">
+
                                 {/* Customer info */}
                                 <Row className="mb-3">
                                     <Row className="mb-3">
@@ -477,6 +429,7 @@ function CreateOrder() {
                                             <Row style={{ width: "25%" }}>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
+                                                        disabled={true}
                                                         value={expectedStartDate}
                                                         onChange={(newValue) => {
                                                             setExpectedStartDate(newValue);
@@ -496,9 +449,48 @@ function CreateOrder() {
                                             <Row style={{ width: "25%" }}>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
+                                                        disabled={true}
                                                         value={expectedEndDate}
                                                         onChange={(newValue) => {
                                                             setExpectedEndDate(newValue)
+                                                        }}
+                                                        onAccept={() => setIsCalculateCost(true)}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} />
+                                                        )}
+                                                    />
+                                                </LocalizationProvider>
+                                            </Row>
+                                        </Col>
+                                        <Col xs={12} sm={12}>
+                                            <Row >
+                                                <label className='form-label'>Actual Start Date</label>
+                                            </Row>
+                                            <Row style={{ width: "25%" }}>
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DateTimePicker
+                                                        value={actualStartDate}
+                                                        onChange={(newValue) => {
+                                                            setActualStartDate(newValue);
+                                                        }}
+                                                        onAccept={() => setIsCalculateCost(true)}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} />
+                                                        )}
+                                                    />
+                                                </LocalizationProvider>
+                                            </Row>
+                                        </Col>
+                                        <Col xs={12} sm={12}>
+                                            <Row>
+                                                <label className='form-label'>Actual End Date</label>
+                                            </Row>
+                                            <Row style={{ width: "25%" }}>
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DateTimePicker
+                                                        value={actualStartDate}
+                                                        onChange={(newValue) => {
+                                                            setActualEndDate(newValue)
                                                         }}
                                                         onAccept={() => setIsCalculateCost(true)}
                                                         renderInput={(params) => (
@@ -516,8 +508,6 @@ function CreateOrder() {
                                                 <TableCart
                                                     tableTitleList={tableTitleList}
                                                     listData={listBike}
-                                                    setDataID={setDataID}
-                                                    setIsDelete={setIsDelete}
                                                 />
                                                 :
                                                 <div>No bike found</div>
@@ -686,4 +676,4 @@ function CreateOrder() {
     )
 }
 
-export default CreateOrder;
+export default ManageOrderDetail;

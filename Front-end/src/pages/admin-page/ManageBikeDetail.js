@@ -15,7 +15,7 @@ import { Firebase_URL, BikeManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
-import { GetFormattedDate } from "../../function/DateTimeFormat";
+import { GetFormattedDate } from "../../function/DateFormat";
 
 // Redux
 import { useDispatch } from "react-redux";

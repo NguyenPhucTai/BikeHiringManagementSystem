@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 
 export const TableOrder = props => {
 
-    const { tableTitleList, listData, setDataID, setIsDelete } = props;
+    const { tableTitleList, listData, setDataID } = props;
 
     return (
         <Fragment>
@@ -24,13 +24,23 @@ export const TableOrder = props => {
                             <tr key={element.id}>
                                 {
                                     Object.keys(element).map(function (propertyName, index) {
-                                        return (
-                                            <td key={index}>{element[propertyName]}</td>
-                                        )
+                                        if (element[propertyName] === "CLOSED") {
+                                            return (
+                                                <td key={index}><span style={{ color: '#006442', fontWeight: "bold" }}>{element[propertyName]}</span></td>
+                                            )
+                                        } else if (element[propertyName] === "PENDING") {
+                                            return (
+                                                <td key={index}><span style={{ color: '#FF8C00', fontWeight: "bold" }}>{element[propertyName]}</span></td>
+                                            )
+                                        } else {
+                                            return (
+                                                <td key={index}>{element[propertyName]}</td>
+                                            )
+                                        }
                                     })
                                 }
                                 <td key={'buttonRow'}>
-                                    <button className="btn btn-danger" type="button" onClick={() => { setDataID(element.id); setIsDelete(true) }}>Delete</button>
+                                    <button className="btn btn-success" onClick={() => { setDataID(element.id); }}>View Details</button>
                                 </td>
                             </tr>
                         )

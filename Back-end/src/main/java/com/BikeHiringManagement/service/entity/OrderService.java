@@ -436,6 +436,11 @@ public class OrderService {
             Long totalItems = (Long) mapOrder.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);
 
+            for(CartResponse order : listRes){
+                Integer bikeNumber = orderDetailRepository.countAllByOrderIdAndIsDeleted(order.getId(), Boolean.FALSE);
+                order.setBikeNumber(bikeNumber);
+            }
+
             return PageDto.builder()
                     .content(listRes)
                     .numberOfElements(Math.toIntExact(totalItems))

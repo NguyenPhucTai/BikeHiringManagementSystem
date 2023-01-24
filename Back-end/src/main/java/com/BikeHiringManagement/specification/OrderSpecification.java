@@ -148,7 +148,10 @@ public class OrderSpecification {
                     rootCustomer.get("phoneNumber"),
                     root.get("expectedStartDate"),
                     root.get("expectedEndDate"),
-                    root.get("status")
+                    root.get("actualStartDate"),
+                    root.get("actualEndDate"),
+                    root.get("status"),
+                    root.get("totalAmount")
             ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
             List<CartResponse> listResult = entityManager.createQuery(query) != null ? entityManager.createQuery(query).
                     setFirstResult((page - 1) * limit)

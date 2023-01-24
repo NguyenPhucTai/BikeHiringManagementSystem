@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 import Table from 'react-bootstrap/Table';
 
-export const TableView = props => {
+export const TableCart = props => {
 
-    const { tableTitleList, listData, setDataID } = props;
+    const { tableTitleList, listData, setDataID, setIsDelete } = props;
 
     return (
         <Fragment>
@@ -30,7 +30,7 @@ export const TableView = props => {
                                     })
                                 }
                                 <td key={'buttonRow'}>
-                                    <button className="btn btn-success" onClick={() => { setDataID(element.id); }}>View Details</button>
+                                    <button className="btn btn-danger" type="button" onClick={() => { setDataID(element.id); setIsDelete(true) }}>Delete</button>
                                 </td>
                             </tr>
                         )

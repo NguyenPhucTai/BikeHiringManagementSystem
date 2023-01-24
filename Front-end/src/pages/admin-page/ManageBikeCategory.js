@@ -18,7 +18,7 @@ import SortBarManagement from "../../components/Navbar/SortBarManagement";
 import { Popup } from '../../components/Modal/Popup';
 import { TextFieldCustom } from '../../components/Form/TextFieldCustom';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
-import { GetFormattedDate } from "../../function/DateTimeFormat";
+import { GetFormattedDate } from "../../function/DateFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
 import { GetFormattedCurrency } from '../../function/CurrencyFormat';
