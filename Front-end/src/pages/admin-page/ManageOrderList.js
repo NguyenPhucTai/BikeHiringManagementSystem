@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { BikeManagement } from '../../api/EndPoint';
+import { OrderManagement } from '../../api/EndPoint';
 
 //Component
 import { TableView } from '../../components/Table/TableView';
@@ -28,13 +28,9 @@ const cookies = new Cookies();
 
 const SortBy = [
     { value: "id", label: "Sort by ID", key: "1" },
-    { value: "name", label: "Sort by name", key: "2" },
-    { value: "bikeManualId", label: "Sort by manual ID", key: "3" },
-    { value: "hiredNumber", label: "Sort by hired number", key: "5" },
-    { value: "bikeCategoryId", label: "Sort by category", key: "6" },
-    { value: "bikeColorId", label: "Sort by color", key: "7" },
-    { value: "bikeManufacturerId", label: "Sort by manufacturer", key: "8" },
-    { value: "status", label: "Sort by status", key: "9" },
+    { value: "status", label: "Sort by status", key: "2" },
+    { value: "expectedStartDate", label: "Sort by start date", key: "3" },
+    { value: "expectedEndDate", label: "Sort by end date", key: "4" }
 ];
 
 const showAlert = (setAlert, message, isSuccess) => {
@@ -67,15 +63,15 @@ const handleGetDataPagination = async (
         sortBy: reduxFilter.reduxSortBy,
         sortType: reduxFilter.reduxSortType
     };
-    await AxiosInstance.post(BikeManagement.getBikePagination, body, {
+    await AxiosInstance.post(OrderManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
             return {
                 id: data.id,
-                name: data.name,
-                bikeCategoryName: data.bikeCategoryName,
-                hiredNumber: data.hiredNumber,
+                expectedStartDate: data.expectedStartDate,
+                expectedEndDate: data.expectedEndDate,
+                bikeNumber: 0,
                 status: data.status
             }
         })
@@ -91,7 +87,7 @@ const handleGetDataPagination = async (
     });
 };
 
-function ManageBikeList() {
+function ManageOrderList() {
 
     // Show Public Navigation
     const dispatch = useDispatch();
@@ -103,7 +99,7 @@ function ManageBikeList() {
 
     // USE STATE
     // Table variables
-    const tableTitleList = ['ID', 'NAME', 'CATEGORY', 'HIRED NUMBER', 'STATUS']
+    const tableTitleList = ['ID', 'EXPECTED START DATE', 'EXPECTED END DATE', 'NUMBER OF BIKE', 'STATUS']
 
     // Redux - Filter form
     let reduxFilter = {
@@ -140,6 +136,7 @@ function ManageBikeList() {
 
     // Table loading filter submit
     useEffect(() => {
+        setLoadingData(true);
         if (reduxIsSubmitting === true) {
             if (reduxPagination.reduxPage === 1) {
                 handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
@@ -151,13 +148,14 @@ function ManageBikeList() {
     }, [reduxIsSubmitting])
 
     // Table loading pagination - change page
-
     useEffect(() => {
+        setLoadingData(true);
         handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
     }, [reduxPagination.reduxPage])
 
     // Table loading pagination - change row per page -> call above useEffect
     useEffect(() => {
+        setLoadingData(true);
         if (reduxPagination.reduxPage === 1) {
             handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
         } else {
@@ -167,7 +165,7 @@ function ManageBikeList() {
 
     useEffect(() => {
         if (dataID !== 0) {
-            navigate('/manage/bike/' + dataID);
+            navigate('/manage/order/' + dataID);
         }
     }, [dataID])
 
@@ -198,9 +196,9 @@ function ManageBikeList() {
                     <SortBarManagement SortBy={SortBy} />
                     <div className='table-header'>
                         <Row>
-                            <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike List</label></Col>
+                            <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Order List</label></Col>
                             <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }}
-                                onClick={() => navigate('/manage/bike/create')} >Create</button></Col>
+                                onClick={() => navigate('/manage/cart/create')} >Create Order</button></Col>
                         </Row>
                     </div>
                     {tablePagination}
@@ -212,4 +210,4 @@ function ManageBikeList() {
             </Fragment>
     )
 }
-export default ManageBikeList;
+export default ManageOrderList;

@@ -78,10 +78,10 @@ const handleGetListBike = async (
 // FUNCTION
 // INTERNAL
 const callGetListBikeByCategoryId = (categoryId, setCategoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination) => {
-    if (categoryId == 1) {
+    if (categoryId === 1) {
         setCategoryId(1);
         handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
-    } else if (categoryId == 2) {
+    } else if (categoryId === 2) {
         setCategoryId(2);
         handleGetListBike(categoryId, setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
     } else {

@@ -6,8 +6,12 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 import com.BikeHiringManagement.constant.Constant;
+import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.*;
 import com.BikeHiringManagement.model.request.OrderRequest;
+import com.BikeHiringManagement.model.request.PaginationBikeRequest;
+import com.BikeHiringManagement.model.request.PaginationRequest;
+import com.BikeHiringManagement.model.response.AttachmentResponse;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.model.response.CartResponse;
 import com.BikeHiringManagement.model.temp.Result;
@@ -15,9 +19,13 @@ import com.BikeHiringManagement.repository.*;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeSpecification;
+import com.BikeHiringManagement.specification.OrderSpecification;
 import com.udojava.evalex.Expression;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.lang.Math;
@@ -55,6 +63,9 @@ public class OrderService {
 
     @Autowired
     BikeSpecification bikeSpecification;
+
+    @Autowired
+    OrderSpecification orderSpecification;
 
     @Autowired
     ModelMapper modelMapper;
@@ -398,6 +409,7 @@ public class OrderService {
             /*--------------------------- UPDATE OTHER FIELD ------------------------*/
             order.setNote(orderRequest.getNote());
             if (orderRequest.getIsCreateOrder() == Boolean.TRUE) {
+                updateHiredNumberOfBike(order.getId());
                 order.setStatus("PENDING");
                 order.setTotalAmount(orderRequest.getTotalAmount());
                 message = "Create order successfully";
@@ -411,6 +423,25 @@ public class OrderService {
         }
     }
 
+    public PageDto getOrderPagination(PaginationRequest paginationRequest, String username) {
+        try {
+            Sort sort = responseUtils.getSort(paginationRequest.getSortBy(), paginationRequest.getSortType());
+            Integer pageNum = paginationRequest.getPage() - 1;
+
+            Page<Order> pageResult = orderRepository.findAll(orderSpecification.filterOrder(paginationRequest.getSearchKey()), PageRequest.of(pageNum, paginationRequest.getLimit(), sort));
+            return PageDto.builder()
+                    .content(pageResult.getContent())
+                    .numberOfElements(pageResult.getNumberOfElements())
+                    .page(paginationRequest.getPage())
+                    .size(pageResult.getSize())
+                    .totalPages(pageResult.getTotalPages())
+                    .totalElements(pageResult.getTotalElements())
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /*--------------------------- NONE RETURN FUNCTION ------------------------*/
     public Integer getNumberOfBikeInCartById(Long orderId) {
@@ -480,6 +511,21 @@ public class OrderService {
         }
     }
 
+    public void updateHiredNumberOfBike(Long orderID){
+        try{
+            List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderID, Boolean.FALSE);
+            List<Bike> listBike = new ArrayList<>();
+            for(OrderDetail item : listOrderDetail){
+                Bike bike = bikeRepository.findBikeById(item.getBikeId());
+                bike.setHiredNumber(bike.getHiredNumber() + 1);
+                listBike.add(bike);
+            }
+            bikeRepository.saveAll(listBike);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 

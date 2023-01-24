@@ -54,13 +54,13 @@ const showAlert = (setAlert, message, isSuccess) => {
 
 const handleGetCart = async (
     setLoadingData,
+    setData,
     setOrderID,
     setListBike,
     setIsUsedService,
     setDepositType,
     setExpectedStartDate,
     setExpectedEndDate,
-    setInitialValues,
     setCalculatedCost,
     setServiceCost,
     setTotalAmount
@@ -75,29 +75,19 @@ const handleGetCart = async (
                     name: data.name,
                     bikeManualId: data.bikeManualId,
                     bikeCategoryName: data.bikeCategoryName,
+                    price: data.price,
                     hiredNumber: data.hiredNumber
                 }
             })
-            setInitialValues({
-                customerName: res.data.data.customerName === null ? "" : res.data.data.customerName,
-                phoneNumber: res.data.data.phoneNumber === null ? "" : res.data.data.phoneNumber,
-
-                isUsedService: res.data.data.isUsedService === null ? false : res.data.data.isUsedService,
-                serviceDescription: res.data.data.serviceDescription === null ? "" : res.data.data.serviceDescription,
-
-                depositType: res.data.data.depositType === null ? "" : res.data.data.depositType,
-                depositAmount: res.data.data.depositAmount === null ? 0 : res.data.data.depositAmount,
-                depositIdentifyCard: res.data.data.depositIdentifyCard === null ? "" : res.data.data.depositIdentifyCard,
-                depositHotel: res.data.data.depositHotel === null ? "" : res.data.data.depositHotel,
-
-                note: res.data.data.note === null ? "" : res.data.data.note,
-            })
+            setData(res.data.data);
             setOrderID(res.data.data.id)
             setListBike(listBike)
             setExpectedStartDate(dayjs(res.data.data.expectedStartDate))
             setExpectedEndDate(dayjs(res.data.data.expectedEndDate))
+
             setIsUsedService(res.data.data.isUsedService === null ? false : res.data.data.isUsedService)
             setDepositType(res.data.data.depositType === null ? "identifyCard" : res.data.data.depositType)
+
             setCalculatedCost(res.data.data.calculatedCost === null ? 0 : res.data.data.calculatedCost)
             setServiceCost(res.data.data.serviceCost === null ? 0 : res.data.data.serviceCost)
             setTotalAmount(res.data.data.totalAmount === null ? 0 : res.data.data.totalAmount)
@@ -143,7 +133,6 @@ const handleCalculateCost = async (
     expectedStartDate,
     expectedEndDate,
     setIsCalculateCost,
-    initialValues,
     serviceCost,
     setTotalAmount,
     setCalculatedCost,
@@ -168,21 +157,23 @@ const handleCalculateCost = async (
             }
         });
     } else {
-        initialValues.calculatedCost = 0;
+        setCalculatedCost(0)
         setIsCalculateCost(false)
     }
 }
 
 const handleSaveCart = async (
+    isCreateOrder,
     formikRef,
     expectedStartDate,
     expectedEndDate,
+    calculatedCost,
+    serviceCost,
+    totalAmount,
     setLoadingData,
     setShowPopup,
     setAlert,
-    calculatedCost,
-    serviceCost,
-    totalAmount
+    setIsRunLinear,
 ) => {
     if (serviceCost === undefined || serviceCost < 0) {
         serviceCost = 0;
@@ -192,16 +183,20 @@ const handleSaveCart = async (
         tempCustomerPhone: formikRef.current.values.phoneNumber === "" ? null : formikRef.current.values.phoneNumber,
         expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
         expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
-        isUsedService: formikRef.current.values.isUsedService,
+
         serviceDescription: formikRef.current.values.serviceDescription === "" ? null : formikRef.current.values.serviceDescription,
-        depositType: formikRef.current.values.depositType,
         depositAmount: formikRef.current.values.depositAmount,
         depositIdentifyCard: formikRef.current.values.depositIdentifyCard === "" ? null : formikRef.current.values.depositIdentifyCard,
         depositHotel: formikRef.current.values.depositHotel === "" ? null : formikRef.current.values.depositHotel,
         note: formikRef.current.values.note === "" ? null : formikRef.current.values.note,
+
+        isUsedService: formikRef.current.values.isUsedService,
+        depositType: formikRef.current.values.depositType,
+
         calculatedCost: calculatedCost,
         serviceCost: serviceCost,
         totalAmount: totalAmount,
+        isCreateOrder: isCreateOrder
     };
     await AxiosInstance.post(OrderManagement.cartSave, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
@@ -209,18 +204,15 @@ const handleSaveCart = async (
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true)
         }
-        setLoadingData(true)
+        if (isCreateOrder === false) {
+            setLoadingData(true)
+        }
+        setIsRunLinear(false);
         setShowPopup(true)
     }).catch((error) => {
         showAlert(setAlert, error, false)
     });
 };
-
-const handleSubmit = async (setIsSubmitting, formikRef) => {
-    console.log("submit")
-    setIsSubmitting(false);
-};
-
 
 
 function CreateOrder() {
@@ -234,20 +226,24 @@ function CreateOrder() {
     }
 
     // Render page
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     // TABLE TITLE
-    const tableTitleList = ["ID", 'NAME', 'MANUAL ID', 'CATEGORY', 'HIRED NUMBER']
+    const tableTitleList = ["ID", 'NAME', 'MANUAL ID', 'CATEGORY', 'PRICE', 'HIRED NUMBER']
 
     // VARIABLE
     // CART
+    // TRIGGER
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCalculateCost, setIsCalculateCost] = useState(false);
-    const [listBike, setListBike] = useState([])
 
+    // DATA
+    const [data, setData] = useState({})
+    const [listBike, setListBike] = useState([])
     const [orderID, setOrderID] = useState(0);
     const [expectedStartDate, setExpectedStartDate] = useState(null);
     const [expectedEndDate, setExpectedEndDate] = useState(null);
+
     const [isUsedService, setIsUsedService] = useState(false);
     const [depositType, setDepositType] = useState("identifyCard");
 
@@ -256,11 +252,10 @@ function CreateOrder() {
     const [totalAmount, setTotalAmount] = useState(0);
 
 
-
     // VARIABLE
     // PAGE LOADING
     const [loadingData, setLoadingData] = useState(true);
-    // const [isRunLinear, setIsRunLinear] = useState(false);
+    const [isRunLinear, setIsRunLinear] = useState(false);
 
     // VARIABLE
     // ALERT MESSAGE
@@ -275,7 +270,7 @@ function CreateOrder() {
     const [showPopup, setShowPopup] = useState(false);
 
     // VARIABLE 
-    // DELETE
+    // DELETE BIKE
     const [dataID, setDataID] = useState(0);
     const [isDelete, setIsDelete] = useState(false);
 
@@ -283,19 +278,19 @@ function CreateOrder() {
     // VARIABLE
     // FORMIK
     const formikRef = useRef(null);
-    const [initialValues, setInitialValues] = useState({
+    const initialValues = {
         customerName: "",
         phoneNumber: "",
-        calculatedCost: 0,
         isUsedService: false,
         serviceDescription: "",
-        serviceCost: 0,
         depositType: "identifyCard",
         depositAmount: "",
         depositIdentifyCard: "",
         depositHotel: "",
         note: "",
-    })
+    }
+
+
 
     // USE EFFECT
     // PAGE LOADING
@@ -303,13 +298,13 @@ function CreateOrder() {
         if (loadingData === true) {
             handleGetCart(
                 setLoadingData,
+                setData,
                 setOrderID,
                 setListBike,
                 setIsUsedService,
                 setDepositType,
                 setExpectedStartDate,
                 setExpectedEndDate,
-                setInitialValues,
                 setCalculatedCost,
                 setServiceCost,
                 setTotalAmount
@@ -317,11 +312,8 @@ function CreateOrder() {
         }
     }, [loadingData])
 
-    console.log(totalAmount)
-
-
     // USE EFFECT
-    // CALCULATE COST
+    // CHANGE SERVICE CODE -> UPDATE TOTAL AMOUNT
     useEffect(() => {
         if (serviceCost > 0) {
             setTotalAmount(serviceCost + calculatedCost)
@@ -331,10 +323,10 @@ function CreateOrder() {
     }, [serviceCost])
 
     // USE EFFECT
-    // SERVICE COST CHANGE
+    // TRIGGER API CALCULATE COST
     useEffect(() => {
         if (isCalculateCost === true) {
-            handleCalculateCost(orderID, expectedStartDate, expectedEndDate, setIsCalculateCost, initialValues, serviceCost, setTotalAmount, setCalculatedCost)
+            handleCalculateCost(orderID, expectedStartDate, expectedEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
         }
     }, [isCalculateCost])
 
@@ -350,11 +342,39 @@ function CreateOrder() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting === true) {
-            handleSubmit(setIsSubmitting);
+            setIsRunLinear(true);
+            handleSaveCart(
+                true,
+                formikRef,
+                expectedStartDate,
+                expectedEndDate,
+                calculatedCost,
+                serviceCost,
+                totalAmount,
+                setLoadingData,
+                setShowPopup,
+                setAlert,
+                setIsRunLinear,
+            )
         }
     }, [isSubmitting])
 
 
+    // Update initialValues
+    if (Object.keys(data).length !== 0) {
+        initialValues.customerName = data.customerName === null ? "" : data.customerName;
+        initialValues.phoneNumber = data.phoneNumber === null ? "" : data.phoneNumber;
+
+        initialValues.isUsedService = data.isUsedService === null ? false : data.isUsedService;
+        initialValues.serviceDescription = data.serviceDescription === null ? "" : data.serviceDescription;
+
+        initialValues.depositType = data.depositType === null ? "identifyCard" : data.depositType;
+        initialValues.depositAmount = data.depositAmount === null ? 0 : data.depositAmount;
+        initialValues.depositIdentifyCard = data.depositIdentifyCard === null ? "" : data.depositIdentifyCard;
+        initialValues.depositHotel = data.depositHotel === null ? "" : data.depositHotel;
+
+        initialValues.note = data.note === null ? "" : data.note;
+    }
 
     let popup = <Popup showPopup={showPopup} setShowPopup={setShowPopup}
         child={
@@ -364,12 +384,21 @@ function CreateOrder() {
                     message={alert.alertMessage}
                     status={alert.alertStatus}
                 />
-                <div className="popup-button">
-                    <button className="btn btn-secondary btn-cancel"
-                        onClick={() => {
-                            setShowPopup(false);
-                        }}>Close</button>
-                </div>
+                {isSubmitting === false ?
+                    <div className="popup-button">
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                            }}>Close</button>
+                    </div>
+                    :
+                    <div className="popup-button">
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                navigate('/manage/order')
+                            }}>Close</button>
+                    </div>
+                }
             </Fragment >
         }
     />
@@ -383,22 +412,26 @@ function CreateOrder() {
                     <Button variant="contained" color="success"
                         onClick={() =>
                             handleSaveCart(
+                                false,
                                 formikRef,
                                 expectedStartDate,
                                 expectedEndDate,
+                                calculatedCost,
+                                serviceCost,
+                                totalAmount,
                                 setLoadingData,
                                 setShowPopup,
                                 setAlert,
-                                serviceCost,
-                                totalAmount)
+                                setIsRunLinear,
+                            )
                         }>
                         SAVE CART
                     </Button>
-                    {/* {isRunLinear && (
+                    {isRunLinear && (
                         <Box sx={{ width: '100%' }}>
                             <LinearProgress />
                         </Box>
-                    )} */}
+                    )}
                     <Formik
                         innerRef={formikRef}
                         enableReinitialize
@@ -591,7 +624,8 @@ function CreateOrder() {
                                             <TextFieldCustom
                                                 label={"Despoit Amount"}
                                                 name={"depositAmount"}
-                                                type={"number"} onWheel={(e) => e.target.blur()}
+                                                type={"number"}
+                                                onWheel={(e) => e.target.blur()}
                                                 placeholder={"Enter the deposit amount"}
                                             />
                                         </Col>
@@ -628,7 +662,6 @@ function CreateOrder() {
                                             value={totalAmount}
                                             onChange={(event) => {
                                                 let value = event.target.value;
-                                                console.log(value)
                                                 if (value === "") {
                                                     setTotalAmount("")
                                                 } else {

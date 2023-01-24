@@ -12,7 +12,7 @@ export const BikeSchema = Yup.object().shape({
 export const OrderSchema = Yup.object().shape({
     customerName: Yup.string().required("Customer Name is required"),
     phoneNumber: Yup.string().required("Phone Number is required"),
-    calculatedCost: Yup.number().min(1, "Calculated Cost is required").required("Calculated Cost is required"),
+    calculatedCost: Yup.number().min(1, "Calculated Cost must be greater than 0"),
     serviceDescription: Yup.string()
         .when('isUsedService', {
             is: (isUsedService) => isUsedService === true,
@@ -31,14 +31,14 @@ export const OrderSchema = Yup.object().shape({
     depositAmount: Yup.number()
         .when('depositType', {
             is: (depositType) => depositType === 'money',
-            then: Yup.number().min(1, "Deposit Amount must be greater than 0").required("Deposit Amount is required"),
+            then: Yup.number().min(1, "Deposit Amount must be greater than 0")
         }),
     depositHotel: Yup.string()
         .when('depositType', {
             is: (depositType) => depositType === 'hotel',
             then: Yup.string().required("Hotel address is required"),
         }),
-    totalAmount: Yup.number().min(1, "Total amount required").required("Total amount is required"),
+    totalAmount: Yup.number().min(1, "Total amount required")
 });
 
 export const UserSchema = Yup.object().shape({

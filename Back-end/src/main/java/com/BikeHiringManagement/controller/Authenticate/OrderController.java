@@ -1,9 +1,9 @@
 package com.BikeHiringManagement.controller.Authenticate;
 
 import com.BikeHiringManagement.constant.Constant;
-import com.BikeHiringManagement.model.request.BikeRequest;
+import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.request.OrderRequest;
-import com.BikeHiringManagement.model.response.BikeResponse;
+import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.service.entity.OrderService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
@@ -135,4 +135,19 @@ public class OrderController {
         }
     }
 
+    @PostMapping("/get")
+    public ResponseEntity<?> getOrderPagination(@RequestBody PaginationRequest reqBody, HttpServletRequest request){
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            PageDto result = orderService.getOrderPagination(reqBody, username);
+            if (result != null) {
+                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
+            }
+            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+        }
+        catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
