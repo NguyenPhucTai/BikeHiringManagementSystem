@@ -30,8 +30,32 @@ public class CartResponse {
     private String depositHotel;
 
     public String note;
-
     public Double totalAmount;
 
+    public String status;
     private Boolean isUsedMonthHiring;
+    private Integer bikeNumber;
+
+    public CartResponse(){
+
+    }
+
+    public CartResponse(Long id, Long customerId, String customerName, String phoneNumber, Date expectedStartDate, Date expectedEndDate, String status) {
+        this.id = id;
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.phoneNumber = phoneNumber;
+        this.expectedStartDate = expectedStartDate;
+        this.expectedEndDate = expectedEndDate;
+        this.status = status;
+    }
+
+    public CartResponse(Long id,  String customerName, String phoneNumber, Date expectedStartDate, Date expectedEndDate, String status) {
+        this.id = id;
+        this.customerName = customerName;
+        this.phoneNumber = phoneNumber;
+        this.expectedStartDate = expectedStartDate;
+        this.expectedEndDate = expectedEndDate;
+        this.status = status;
+    }
 }

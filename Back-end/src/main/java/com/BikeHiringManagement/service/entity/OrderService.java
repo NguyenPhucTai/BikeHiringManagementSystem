@@ -425,17 +425,24 @@ public class OrderService {
 
     public PageDto getOrderPagination(PaginationRequest paginationRequest, String username) {
         try {
-            Sort sort = responseUtils.getSort(paginationRequest.getSortBy(), paginationRequest.getSortType());
-            Integer pageNum = paginationRequest.getPage() - 1;
+            String searchKey = paginationRequest.getSearchKey();
+            Integer page = paginationRequest.getPage();
+            Integer limit = paginationRequest.getLimit();
+            String sortBy = paginationRequest.getSortBy();
+            String sortType = paginationRequest.getSortType();
 
-            Page<Order> pageResult = orderRepository.findAll(orderSpecification.filterOrder(paginationRequest.getSearchKey()), PageRequest.of(pageNum, paginationRequest.getLimit(), sort));
+            Map<String, Object> mapOrder = orderSpecification.getOrderPagination(searchKey, page, limit, sortBy, sortType);
+            List<CartResponse> listRes = (List<CartResponse>) mapOrder.get("data");
+            Long totalItems = (Long) mapOrder.get("count");
+            Integer totalPage = responseUtils.getPageCount(totalItems, limit);
+
             return PageDto.builder()
-                    .content(pageResult.getContent())
-                    .numberOfElements(pageResult.getNumberOfElements())
-                    .page(paginationRequest.getPage())
-                    .size(pageResult.getSize())
-                    .totalPages(pageResult.getTotalPages())
-                    .totalElements(pageResult.getTotalElements())
+                    .content(listRes)
+                    .numberOfElements(Math.toIntExact(totalItems))
+                    .page(page)
+                    .size(limit)
+                    .totalPages(totalPage)
+                    .totalElements(totalItems)
                     .build();
         } catch (Exception e) {
             e.printStackTrace();

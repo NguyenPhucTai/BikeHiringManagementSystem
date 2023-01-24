@@ -24,9 +24,21 @@ export const TableView = props => {
                             <tr key={element.id}>
                                 {
                                     Object.keys(element).map(function (propertyName, index) {
-                                        return (
-                                            <td key={index}>{element[propertyName]}</td>
-                                        )
+                                        if (element[propertyName] === "CLOSED") {
+                                            return (
+                                                <td key={index}><span style={{ color: '#006442', fontWeight: "bold" }}>{element[propertyName]}</span></td>
+                                            )
+                                        } else if (element[propertyName] === "PENDING") {
+                                            return (
+                                                <td key={index}><span style={{ color: '#FF8C00', fontWeight: "bold" }}>{element[propertyName]}</span></td>
+                                            )
+                                        } else {
+                                            return (
+                                                <td key={index}>{element[propertyName]}</td>
+                                            )
+                                        }
+
+
                                     })
                                 }
                                 <td key={'buttonRow'}>

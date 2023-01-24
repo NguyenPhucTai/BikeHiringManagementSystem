@@ -1,16 +1,24 @@
 package com.BikeHiringManagement.specification;
 
 
-import com.BikeHiringManagement.entity.Order;
+import com.BikeHiringManagement.constant.Constant;
+import com.BikeHiringManagement.entity.*;
+import com.BikeHiringManagement.model.response.BikeResponse;
+import com.BikeHiringManagement.model.response.CartResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderSpecification {
@@ -38,5 +46,122 @@ public class OrderSpecification {
             predicates.add(cb.isFalse(root.get("isDeleted")));
             return cb.and(predicates.stream().toArray(Predicate[]::new));
         };
+    }
+
+    public Map<String, Object> getOrderPagination(String searchKey, Integer page, Integer limit, String sortBy, String sortType){
+        try{
+            Map<String, Object> mapFinal = new HashMap<>();
+
+            //----------------------CREATE QUERY -----------------------------//
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+            // ROOT
+            CriteriaQuery<CartResponse> query = cb.createQuery(CartResponse.class);
+            Root<Order> root = query.from(Order.class);
+            Root<Customer> rootCustomer = query.from(Customer.class);
+
+            // ROOT COUNT
+            CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+            Root<Order> rootCount = countQuery.from(Order.class);
+            Root<Customer> rootCustomerCount = countQuery.from(Customer.class);
+
+            //---------------------- CONDITION -----------------------------//
+
+            // CONDITION
+            // ROOT
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("customerId"), rootCustomer.get("id")));
+
+            predicates.add(cb.isFalse(root.get("isDeleted")));
+            predicates.add(cb.isFalse(rootCustomer.get("isDeleted")));
+            predicates.add(cb.or(
+                    cb.like(cb.upper(root.get("status")) , "%" + "PENDING" + "%"),
+                    cb.like(cb.upper(root.get("status")) , "%" + "CLOSED" + "%")
+            ));
+
+            if (!StringUtils.isEmpty(searchKey)) {
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("id")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootCustomer.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootCustomer.get("phoneNumber")) , "%" + searchKey.toLowerCase() + "%")
+                ));
+            }
+
+            // CONDITION
+            // ROOT COUNT
+            List<Predicate> predicatesCount = new ArrayList<>();
+            predicatesCount.add(cb.equal(rootCount.get("customerId"), rootCustomerCount.get("id")));
+
+            predicatesCount.add(cb.isFalse(rootCount.get("isDeleted")));
+            predicatesCount.add(cb.isFalse(rootCustomerCount.get("isDeleted")));
+            predicatesCount.add(cb.or(
+                    cb.like(cb.upper(rootCount.get("status")) , "%" + "PENDING" + "%"),
+                    cb.like(cb.upper(rootCount.get("status")) , "%" + "CLOSED" + "%")
+            ));
+
+            if (!StringUtils.isEmpty(searchKey)) {
+                predicatesCount.add(cb.or(
+                        cb.like(cb.lower(rootCount.get("id")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootCustomerCount.get("name")) , "%" + searchKey.toLowerCase() + "%"),
+                        cb.like(cb.lower(rootCustomerCount.get("phoneNumber")) , "%" + searchKey.toLowerCase() + "%")
+                ));
+            }
+
+            //------------------------CREATE SORT-----------------------------//
+            if (sortType.equalsIgnoreCase("asc")) {
+                switch (sortBy) {
+                    case "id":
+                        query.orderBy(cb.asc(root.get("id")));
+                        break;
+                    case "status":
+                        query.orderBy(cb.asc(root.get("status")));
+                        break;
+                    case "expectedStartDate":
+                        query.orderBy(cb.asc(root.get("expectedStartDate")));
+                        break;
+                    case "expectedEndDate":
+                        query.orderBy(cb.asc(root.get("expectedEndDate")));
+                        break;
+                }
+            } else {
+                switch (sortBy) {
+                    case "id":
+                        query.orderBy(cb.desc(root.get("id")));
+                        break;
+                    case "status":
+                        query.orderBy(cb.desc(root.get("status")));
+                        break;
+                    case "expectedStartDate":
+                        query.orderBy(cb.desc(root.get("expectedStartDate")));
+                        break;
+                    case "expectedEndDate":
+                        query.orderBy(cb.desc(root.get("expectedEndDate")));
+                        break;
+                }
+            }
+
+            //----------------------END SORT-----------------------------//
+            query.multiselect(
+                    root.get("id"),
+                    root.get("customerId"),
+                    rootCustomer.get("name"),
+                    rootCustomer.get("phoneNumber"),
+                    root.get("expectedStartDate"),
+                    root.get("expectedEndDate"),
+                    root.get("status")
+            ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
+            List<CartResponse> listResult = entityManager.createQuery(query) != null ? entityManager.createQuery(query).
+                    setFirstResult((page - 1) * limit)
+                    .setMaxResults(limit).getResultList() : new ArrayList<>();
+
+            countQuery.select(cb.count(rootCount)).where(cb.and(predicatesCount.stream().toArray(Predicate[]::new)));
+            Long count = entityManager.createQuery(countQuery).getSingleResult();
+            mapFinal.put("data", listResult);
+            mapFinal.put("count", count);
+            return mapFinal;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HashMap<>();
+        }
     }
 }
