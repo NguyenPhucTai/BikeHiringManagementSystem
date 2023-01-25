@@ -8,10 +8,15 @@ import Col from 'react-bootstrap/Col';
 import { useDispatch } from "react-redux";
 import { reduxAction } from "../../redux-store/redux/redux.slice";
 
+// Library - date time
+import TextField from '@mui/material/TextField';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+
 const initialValues = {
-    searchKey: "",
-    sortBy: "id",
-    sortType: "ASC"
+    searchKey: ""
 };
 
 
@@ -22,14 +27,47 @@ const SortByStatus = [
 ];
 
 const SortBarOrder = (props) => {
+
+    const { startDate, setStartDate, endDate, setEndDate, SortBy } = props;
+
     const dispatch = useDispatch();
     return (
         <Fragment>
             <Row className="sort-bar mb-3">
                 <Col lg={2} xs={12}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                            label="From"
+                            value={startDate}
+                            onChange={(newValue) => {
+                                setStartDate(newValue);
+                            }}
+                            renderInput={(params) => (
+                                <TextField {...params} />
+                            )}
+                        />
+                    </LocalizationProvider>
+                </Col>
+                <Col lg={2} xs={12}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                            label="To"
+                            value={endDate}
+                            onChange={(newValue) => {
+                                setEndDate(newValue);
+                            }}
+                            renderInput={(params) => (
+                                <TextField {...params} />
+                            )}
+                        />
+                    </LocalizationProvider>
+                </Col>
+            </Row>
+            <Row className="sort-bar mb-3">
+                <Col lg={2} xs={12}>
                     <SortSelect
                         options={SortByStatus}
-                        placeholder={"Sort by Status"}
+                        defaultValue={{ label: "PENDING", value: "PENDING" }}
                         onChange={(value) => {
                             dispatch(reduxAction.sortByStatus(value.value))
                         }}
@@ -37,8 +75,8 @@ const SortBarOrder = (props) => {
                 </Col>
                 <Col lg={3} xs={12}>
                     <SortSelect
-                        options={props.SortBy}
-                        placeholder={"Sort by ID"}
+                        options={SortBy}
+                        defaultValue={{ label: "Sort by ID", value: "id" }}
                         onChange={(value) => {
                             dispatch(reduxAction.sortByBike(value.value))
                         }}
@@ -47,7 +85,7 @@ const SortBarOrder = (props) => {
                 <Col lg={3} xs={12}>
                     <SortSelect
                         options={SortType}
-                        placeholder={"Newest to Oldest"}
+                        defaultValue={{ label: "Newest to Oldest", value: "DESC" }}
                         onChange={(value) => {
                             dispatch(reduxAction.sortTypeBike(value.value))
                         }}
@@ -76,7 +114,7 @@ const SortBarOrder = (props) => {
                                         <SearchField
                                             name={"searchKey"}
                                             type={"text"}
-                                            placeholder={"Search..."}
+                                            placeholder={"Search by id, total amount"}
                                         />
                                     </Col>
                                     <Col lg={3} xs={12}>

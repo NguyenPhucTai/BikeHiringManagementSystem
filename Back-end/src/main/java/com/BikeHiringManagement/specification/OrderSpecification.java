@@ -15,10 +15,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.xml.crypto.Data;
+import java.util.*;
 
 @Service
 public class OrderSpecification {
@@ -48,7 +46,8 @@ public class OrderSpecification {
         };
     }
 
-    public Map<String, Object> getOrderPagination(String searchKey, Integer page, Integer limit, String sortBy, String sortType, String status){
+    public Map<String, Object> getOrderPagination(String searchKey, Integer page, Integer limit, String sortBy, String sortType,
+                                                  String status, Date startDate, Date endDate){
         try{
             Map<String, Object> mapFinal = new HashMap<>();
 
@@ -76,6 +75,24 @@ public class OrderSpecification {
             predicates.add(cb.isFalse(rootCustomer.get("isDeleted")));
             predicates.add(cb.like(cb.upper(root.get("status")), status.toUpperCase() ));
 
+            // DATE
+            if(status.toUpperCase().equalsIgnoreCase("CLOSED")){
+                if(startDate != null){
+                    predicates.add(cb.greaterThanOrEqualTo(root.get("actualStartDate"), startDate));
+                }
+                if(endDate != null){
+                    predicates.add(cb.lessThanOrEqualTo(root.get("actualEndDate"), endDate));
+                }
+            }else{
+                if(startDate != null){
+                    predicates.add(cb.greaterThanOrEqualTo(root.get("expectedStartDate"), startDate));
+                }
+                if(endDate != null){
+                    predicates.add(cb.lessThanOrEqualTo(root.get("expectedEndDate"), endDate));
+                }
+            }
+
+            // SEARCH
             if (!StringUtils.isEmpty(searchKey)) {
                 predicates.add(cb.or(
                         cb.like(cb.lower(root.get("id")) , "%" + searchKey.toLowerCase() + "%"),
@@ -93,6 +110,24 @@ public class OrderSpecification {
             predicatesCount.add(cb.isFalse(rootCustomerCount.get("isDeleted")));
             predicatesCount.add(cb.like(cb.upper(root.get("status")), status.toUpperCase() ));
 
+            // DATE
+            if(status.toUpperCase().equalsIgnoreCase("CLOSED")){
+                if(startDate != null){
+                    predicatesCount.add(cb.greaterThanOrEqualTo(root.get("actualStartDate"), startDate));
+                }
+                if(endDate != null){
+                    predicatesCount.add(cb.lessThanOrEqualTo(root.get("actualEndDate"), endDate));
+                }
+            }else{
+                if(startDate != null){
+                    predicatesCount.add(cb.greaterThanOrEqualTo(root.get("expectedStartDate"), startDate));
+                }
+                if(endDate != null){
+                    predicatesCount.add(cb.lessThanOrEqualTo(root.get("expectedEndDate"), endDate));
+                }
+            }
+
+            // SEARCH
             if (!StringUtils.isEmpty(searchKey)) {
                 predicatesCount.add(cb.or(
                         cb.like(cb.lower(rootCount.get("id")) , "%" + searchKey.toLowerCase() + "%"),

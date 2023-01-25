@@ -63,7 +63,9 @@ const handleGetDataPagination = async (
     setLoadingData,
     setTotalPages,
     reduxFilter,
-    reduxPagination
+    reduxPagination,
+    startDate,
+    endDate,
 ) => {
     const body = {
         searchKey: reduxFilter.reduxSearchKey,
@@ -71,12 +73,16 @@ const handleGetDataPagination = async (
         limit: reduxPagination.reduxRowsPerPage,
         sortBy: reduxFilter.reduxSortBy,
         sortType: reduxFilter.reduxSortType,
-        status: reduxFilter.reduxSortByStatus
+        status: reduxFilter.reduxSortByStatus,
+        startDate: startDate,
+        endDate: endDate
     };
+    console.log(body);
     await AxiosInstance.post(OrderManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
+            console.log(res.data.data);
             var expectedStartDate = dayjs(data.expectedStartDate)
             var expectedEndDate = dayjs(data.expectedEndDate)
             var totalHours = expectedEndDate.diff(expectedStartDate, 'hour');
@@ -137,9 +143,6 @@ function ManageOrderList() {
         reduxSortByStatus: useSelector((state) => state.redux.status),
     }
     const reduxIsSubmitting = useSelector((state) => state.redux.isSubmitting);
-    console.log(reduxFilter);
-
-
 
     // Redux - Pagination
     const [totalPages, setTotalPages] = useState(1);
@@ -148,22 +151,25 @@ function ManageOrderList() {
         reduxRowsPerPage: useSelector((state) => state.reduxPagination.rowsPerPage)
     }
 
-
     // Table useState
     const [loadingData, setLoadingData] = useState(true);
     const [listData, setListData] = useState([]);
     const [dataID, setDataID] = useState(0);
 
-
     // Render page
     const navigate = useNavigate();
+
+    // Search By Date
+    var now = dayjs()
+    const [startDate, setStartDate] = useState(now.startOf('month'));
+    const [endDate, setEndDate] = useState(now.endOf('month'));
 
 
     // USE EFFECT
     // Table loading - page load
     useEffect(() => {
         if (loadingData === true) {
-            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination, startDate, endDate);
         }
     }, [loadingData])
 
@@ -171,7 +177,7 @@ function ManageOrderList() {
     useEffect(() => {
         if (reduxIsSubmitting === true) {
             if (reduxPagination.reduxPage === 1) {
-                handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+                handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination, startDate, endDate);
             } else {
                 dispatch(reduxPaginationAction.updatePage(1));
             }
@@ -181,13 +187,13 @@ function ManageOrderList() {
 
     // Table loading pagination - change page
     useEffect(() => {
-        handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination, startDate, endDate);
     }, [reduxPagination.reduxPage])
 
     // Table loading pagination - change row per page -> call above useEffect
     useEffect(() => {
         if (reduxPagination.reduxPage === 1) {
-            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination, startDate, endDate);
         } else {
             dispatch(reduxPaginationAction.updatePage(1));
         }
@@ -224,9 +230,21 @@ function ManageOrderList() {
             <Fragment>
                 <div className='container'>
                     {reduxFilter.reduxSortByStatus === "CLOSED" ?
-                        <SortBarOrder SortBy={SortByActual} />
+                        <SortBarOrder
+                            SortBy={SortByActual}
+                            startDate={startDate}
+                            endDate={endDate}
+                            setStartDate={setStartDate}
+                            setEndDate={setEndDate}
+                        />
                         :
-                        <SortBarOrder SortBy={SortByExpected} />
+                        <SortBarOrder
+                            SortBy={SortByExpected}
+                            startDate={startDate}
+                            endDate={endDate}
+                            setStartDate={setStartDate}
+                            setEndDate={setEndDate}
+                        />
                     }
                     <div className='table-header'>
                         <Row>
@@ -236,7 +254,7 @@ function ManageOrderList() {
                         </Row>
                     </div>
                     <div className='table-note'>
-                        <label className='form-label' style={{ color: "red", fontStyle: "italic" }}>* PENDING order will show EXPECTED DATE - CLOSED order will show ACTUAL DATE</label>
+                        <label className='form-label' style={{ color: "red", fontStyle: "italic" }}>* CLOSED order will show ACTUAL DATE - OTHER STATUS order will show EXPECTED DATE</label>
                     </div>
                     {tablePagination}
                 </div>

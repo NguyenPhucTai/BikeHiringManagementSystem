@@ -430,8 +430,10 @@ public class OrderService {
             String sortBy = paginationRequest.getSortBy();
             String sortType = paginationRequest.getSortType();
             String status = paginationRequest.getStatus();
+            Date startDate = paginationRequest.getStartDate();
+            Date endDate = paginationRequest.getEndDate();
 
-            Map<String, Object> mapOrder = orderSpecification.getOrderPagination(searchKey, page, limit, sortBy, sortType, status);
+            Map<String, Object> mapOrder = orderSpecification.getOrderPagination(searchKey, page, limit, sortBy, sortType, status, startDate, endDate);
             List<CartResponse> listRes = (List<CartResponse>) mapOrder.get("data");
             Long totalItems = (Long) mapOrder.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);

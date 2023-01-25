@@ -181,8 +181,8 @@ const handleSaveCart = async (
     const body = {
         tempCustomerName: formikRef.current.values.customerName === "" ? null : formikRef.current.values.customerName,
         tempCustomerPhone: formikRef.current.values.phoneNumber === "" ? null : formikRef.current.values.phoneNumber,
-        expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
-        expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+        expectedStartDate: expectedStartDate,
+        expectedEndDate: expectedEndDate,
 
         serviceDescription: formikRef.current.values.serviceDescription === "" ? null : formikRef.current.values.serviceDescription,
         depositAmount: formikRef.current.values.depositAmount,
