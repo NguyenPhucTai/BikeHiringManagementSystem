@@ -4,8 +4,8 @@ export const BikeCategories = [
 ];
 
 export const SortType = [
-    { value: "ASC", label: "From oldest to newest", key: "1" },
-    { value: "DESC", label: "From newest to oldest", key: "2" },
+    { value: "ASC", label: "Oldest to Newest", key: "1" },
+    { value: "DESC", label: "Newest to Oldest", key: "2" },
 ];
 
 export const SortBy = [

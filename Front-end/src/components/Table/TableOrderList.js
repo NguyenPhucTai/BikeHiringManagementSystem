@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Table from 'react-bootstrap/Table';
 
-export const TableOrder = props => {
+export const TableOrderList = props => {
 
     const { tableTitleList, listData, setDataID } = props;
 

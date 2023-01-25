@@ -13,8 +13,8 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import { OrderManagement } from '../../api/EndPoint';
 
 //Component
-import { TableOrder } from '../../components/Table/TableOrder';
-import SortBarManagement from "../../components/Navbar/SortBarManagement";
+import { TableOrderList } from '../../components/Table/TableOrderList';
+import SortBarOrder from "../../components/Navbar/SortBarOrder";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
 import { GetFormattedCurrency } from '../../function/CurrencyFormat';
@@ -29,12 +29,18 @@ import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthentica
 
 const cookies = new Cookies();
 
-const SortBy = [
+const SortByExpected = [
     { value: "id", label: "Sort by ID", key: "1" },
-    { value: "status", label: "Sort by status", key: "2" },
-    { value: "expectedStartDate", label: "Sort by start date", key: "3" },
-    { value: "expectedEndDate", label: "Sort by end date", key: "4" }
+    { value: "expectedStartDate", label: "Sort by expected start date", key: "2" },
+    { value: "expectedEndDate", label: "Sort by expected end date", key: "3" }
 ];
+
+const SortByActual = [
+    { value: "id", label: "Sort by ID", key: "1" },
+    { value: "actualStartDate", label: "Sort by actual start date", key: "2" },
+    { value: "actualEndDate", label: "Sort by actual end date", key: "3" }
+];
+
 
 const showAlert = (setAlert, message, isSuccess) => {
     if (isSuccess) {
@@ -64,7 +70,8 @@ const handleGetDataPagination = async (
         page: reduxPagination.reduxPage,
         limit: reduxPagination.reduxRowsPerPage,
         sortBy: reduxFilter.reduxSortBy,
-        sortType: reduxFilter.reduxSortType
+        sortType: reduxFilter.reduxSortType,
+        status: reduxFilter.reduxSortByStatus
     };
     await AxiosInstance.post(OrderManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
@@ -73,7 +80,6 @@ const handleGetDataPagination = async (
             var expectedStartDate = dayjs(data.expectedStartDate)
             var expectedEndDate = dayjs(data.expectedEndDate)
             var totalHours = expectedEndDate.diff(expectedStartDate, 'hour');
-            console.log(totalHours)
             if (data.status === "CLOSED") {
                 return {
                     id: data.id,
@@ -128,8 +134,12 @@ function ManageOrderList() {
         reduxSearchKey: useSelector((state) => state.redux.searchKey),
         reduxSortBy: useSelector((state) => state.redux.sortBy),
         reduxSortType: useSelector((state) => state.redux.sortType),
+        reduxSortByStatus: useSelector((state) => state.redux.status),
     }
     const reduxIsSubmitting = useSelector((state) => state.redux.isSubmitting);
+    console.log(reduxFilter);
+
+
 
     // Redux - Pagination
     const [totalPages, setTotalPages] = useState(1);
@@ -137,6 +147,7 @@ function ManageOrderList() {
         reduxPage: useSelector((state) => state.reduxPagination.page),
         reduxRowsPerPage: useSelector((state) => state.reduxPagination.rowsPerPage)
     }
+
 
     // Table useState
     const [loadingData, setLoadingData] = useState(true);
@@ -193,7 +204,7 @@ function ManageOrderList() {
     let tablePagination;
     if (listData.length > 0) {
         tablePagination = <div className='table-pagination'>
-            <TableOrder
+            <TableOrderList
                 tableTitleList={tableTitleList}
                 listData={listData}
                 setDataID={setDataID}
@@ -212,7 +223,11 @@ function ManageOrderList() {
         !loadingData ?
             <Fragment>
                 <div className='container'>
-                    <SortBarManagement SortBy={SortBy} />
+                    {reduxFilter.reduxSortByStatus === "CLOSED" ?
+                        <SortBarOrder SortBy={SortByActual} />
+                        :
+                        <SortBarOrder SortBy={SortByExpected} />
+                    }
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Order List</label></Col>

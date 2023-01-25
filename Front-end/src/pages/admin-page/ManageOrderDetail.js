@@ -17,6 +17,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
+import { useParams } from "react-router-dom";
 
 
 // Component
@@ -26,7 +27,7 @@ import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
 import { OrderManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
-import { TableCart } from "../../components/Table/TableCart";
+import { TableCartBikeList } from "../../components/Table/TableCartBikeList";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -52,10 +53,10 @@ const showAlert = (setAlert, message, isSuccess) => {
     }
 }
 
-const handleGetCart = async (
+const handleGetOrder = async (
+    id,
     setLoadingData,
     setData,
-    setOrderID,
     setListBike,
     setIsUsedService,
     setDepositType,
@@ -65,7 +66,7 @@ const handleGetCart = async (
     setServiceCost,
     setTotalAmount
 ) => {
-    await AxiosInstance.get(OrderManagement.cartGetByUsername, {
+    await AxiosInstance.get(OrderManagement.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -80,17 +81,16 @@ const handleGetCart = async (
                 }
             })
             setData(res.data.data);
-            setOrderID(res.data.data.id)
             setListBike(listBike)
             setExpectedStartDate(dayjs(res.data.data.expectedStartDate))
             setExpectedEndDate(dayjs(res.data.data.expectedEndDate))
 
-            setIsUsedService(res.data.data.isUsedService === null ? false : res.data.data.isUsedService)
-            setDepositType(res.data.data.depositType === null ? "identifyCard" : res.data.data.depositType)
+            setIsUsedService(res.data.data.isUsedService)
+            setDepositType(res.data.data.depositType)
 
-            setCalculatedCost(res.data.data.calculatedCost === null ? 0 : res.data.data.calculatedCost)
-            setServiceCost(res.data.data.serviceCost === null ? 0 : res.data.data.serviceCost)
-            setTotalAmount(res.data.data.totalAmount === null ? 0 : res.data.data.totalAmount)
+            setCalculatedCost(res.data.data.calculatedCost)
+            setServiceCost(res.data.data.serviceCost)
+            setTotalAmount(res.data.data.totalAmount)
         }
         setTimeout(() => {
             setLoadingData(false)
@@ -108,10 +108,10 @@ const handleDeleteBike = async (
     setIsDelete,
     listBike,
     setListBike,
-    orderID,
+    id,
     setIsCalculateCost
 ) => {
-    await AxiosInstance.post(OrderManagement.cartDeleteBike + "orderId=" + orderID + "&bikeId=" + dataID, null, {
+    await AxiosInstance.post(OrderManagement.cartDeleteBike + "orderId=" + id + "&bikeId=" + dataID, null, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -129,7 +129,7 @@ const handleDeleteBike = async (
 }
 
 const handleCalculateCost = async (
-    orderID,
+    id,
     expectedStartDate,
     expectedEndDate,
     setIsCalculateCost,
@@ -139,7 +139,7 @@ const handleCalculateCost = async (
 ) => {
     if (expectedEndDate.isAfter(expectedStartDate)) {
         const body = {
-            id: orderID,
+            id: id,
             expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
             expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
         };
@@ -228,6 +228,9 @@ function ManageOrderDetail() {
     // Render page
     const navigate = useNavigate();
 
+    // GET ID FROM URL
+    let { id } = useParams();
+
     // TABLE TITLE
     const tableTitleList = ["ID", 'NAME', 'MANUAL ID', 'CATEGORY', 'PRICE', 'HIRED NUMBER']
 
@@ -240,7 +243,6 @@ function ManageOrderDetail() {
     // DATA
     const [data, setData] = useState({})
     const [listBike, setListBike] = useState([])
-    const [orderID, setOrderID] = useState(0);
     const [expectedStartDate, setExpectedStartDate] = useState(null);
     const [expectedEndDate, setExpectedEndDate] = useState(null);
     const [actualStartDate, setActualStartDate] = useState(null);
@@ -290,8 +292,19 @@ function ManageOrderDetail() {
     // PAGE LOADING
     useEffect(() => {
         if (loadingData === true) {
-            console.log("handle get order")
-            setLoadingData(false);
+            handleGetOrder(
+                id,
+                setLoadingData,
+                setData,
+                setListBike,
+                setIsUsedService,
+                setDepositType,
+                setExpectedStartDate,
+                setExpectedEndDate,
+                setCalculatedCost,
+                setServiceCost,
+                setTotalAmount
+            )
         }
     }, [loadingData])
 
@@ -309,7 +322,7 @@ function ManageOrderDetail() {
     // TRIGGER API CALCULATE COST
     useEffect(() => {
         if (isCalculateCost === true) {
-            handleCalculateCost(orderID, actualStartDate, actualEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
+            handleCalculateCost(id, actualStartDate, actualEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
         }
     }, [isCalculateCost])
 
@@ -505,9 +518,10 @@ function ManageOrderDetail() {
                                         <Col xs={12} sm={12}>
                                             <label className='form-label'>Bike List</label>
                                             {Object.keys(listBike).length !== 0 ?
-                                                <TableCart
+                                                <TableCartBikeList
                                                     tableTitleList={tableTitleList}
                                                     listData={listBike}
+                                                    isShowButtonDelete={false}
                                                 />
                                                 :
                                                 <div>No bike found</div>

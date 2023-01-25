@@ -4,10 +4,10 @@ const initialState = {
     searchKey: null,
     color: [],
     manufacturer: [],
-    status: null,
     sortBy: "id",
     sortType: "DESC",
-    isSubmitting: false
+    isSubmitting: false,
+    status: "PENDING"
 };
 
 const reduxSlice = createSlice({
@@ -29,6 +29,9 @@ const reduxSlice = createSlice({
         },
         setIsSubmitting(state, action) {
             state.isSubmitting = action.payload.isSubmitting;
+        },
+        sortByStatus(state, action) {
+            state.status = action.payload;
         }
     }
 });

@@ -13,7 +13,7 @@ import { BikeManagement } from '../../api/EndPoint';
 
 //Component
 import { TableView } from '../../components/Table/TableView';
-import SortBarManagement from "../../components/Navbar/SortBarManagement";
+import SortBar from "../../components/Navbar/SortBar";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
 
@@ -195,7 +195,7 @@ function ManageBikeList() {
         !loadingData ?
             <Fragment>
                 <div className='container'>
-                    <SortBarManagement SortBy={SortBy} />
+                    <SortBar SortBy={SortBy} />
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike List</label></Col>

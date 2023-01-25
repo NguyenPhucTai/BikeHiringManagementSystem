@@ -14,12 +14,28 @@ const initialValues = {
     sortType: "ASC"
 };
 
-const SortBarManagement = (props) => {
+
+const SortByStatus = [
+    { value: "PENDING", label: "PENDING", key: "1" },
+    { value: "CLOSED", label: "CLOSED", key: "2" },
+    { value: "CANCEL", label: "CANCEL", key: "3" }
+];
+
+const SortBarOrder = (props) => {
     const dispatch = useDispatch();
     return (
         <Fragment>
             <Row className="sort-bar mb-3">
-                <Col lg={3} xs={6}>
+                <Col lg={2} xs={12}>
+                    <SortSelect
+                        options={SortByStatus}
+                        placeholder={"Sort by Status"}
+                        onChange={(value) => {
+                            dispatch(reduxAction.sortByStatus(value.value))
+                        }}
+                    />
+                </Col>
+                <Col lg={3} xs={12}>
                     <SortSelect
                         options={props.SortBy}
                         placeholder={"Sort by ID"}
@@ -28,16 +44,16 @@ const SortBarManagement = (props) => {
                         }}
                     />
                 </Col>
-                <Col lg={3} xs={6}>
+                <Col lg={3} xs={12}>
                     <SortSelect
                         options={SortType}
-                        placeholder={"Z to A"}
+                        placeholder={"Newest to Oldest"}
                         onChange={(value) => {
                             dispatch(reduxAction.sortTypeBike(value.value))
                         }}
                     />
                 </Col>
-                <Col lg={6} xs={12}>
+                <Col lg={4} xs={12}>
                     <Formik
                         initialValues={initialValues}
                         onSubmit={(values) => {
@@ -78,5 +94,5 @@ const SortBarManagement = (props) => {
     )
 }
 
-export default SortBarManagement;
+export default SortBarOrder;
 

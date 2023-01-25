@@ -54,7 +54,8 @@ export const OrderManagement = {
     cartDeleteBike: "/admin/order/cart/delete-bike/",
     cartSave: "/admin/order/cart/save",
     cartCalculateCost: "/admin/order/cart/calculate-hiring-cost",
-    getPagination: "/admin/order/get"
+    getPagination: "/admin/order/get",
+    getById: "/admin/order/get?id="
 }
 
 // Fire Base

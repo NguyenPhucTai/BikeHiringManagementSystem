@@ -48,7 +48,7 @@ public class OrderSpecification {
         };
     }
 
-    public Map<String, Object> getOrderPagination(String searchKey, Integer page, Integer limit, String sortBy, String sortType){
+    public Map<String, Object> getOrderPagination(String searchKey, Integer page, Integer limit, String sortBy, String sortType, String status){
         try{
             Map<String, Object> mapFinal = new HashMap<>();
 
@@ -74,10 +74,7 @@ public class OrderSpecification {
 
             predicates.add(cb.isFalse(root.get("isDeleted")));
             predicates.add(cb.isFalse(rootCustomer.get("isDeleted")));
-            predicates.add(cb.or(
-                    cb.like(cb.upper(root.get("status")) , "%" + "PENDING" + "%"),
-                    cb.like(cb.upper(root.get("status")) , "%" + "CLOSED" + "%")
-            ));
+            predicates.add(cb.like(cb.upper(root.get("status")), status.toUpperCase() ));
 
             if (!StringUtils.isEmpty(searchKey)) {
                 predicates.add(cb.or(
@@ -94,10 +91,7 @@ public class OrderSpecification {
 
             predicatesCount.add(cb.isFalse(rootCount.get("isDeleted")));
             predicatesCount.add(cb.isFalse(rootCustomerCount.get("isDeleted")));
-            predicatesCount.add(cb.or(
-                    cb.like(cb.upper(rootCount.get("status")) , "%" + "PENDING" + "%"),
-                    cb.like(cb.upper(rootCount.get("status")) , "%" + "CLOSED" + "%")
-            ));
+            predicatesCount.add(cb.like(cb.upper(root.get("status")), status.toUpperCase() ));
 
             if (!StringUtils.isEmpty(searchKey)) {
                 predicatesCount.add(cb.or(
@@ -163,6 +157,60 @@ public class OrderSpecification {
             mapFinal.put("count", count);
             return mapFinal;
         } catch (Exception e) {
+            e.printStackTrace();
+            return new HashMap<>();
+        }
+    }
+
+    public Map<String, Object> getOrderById(Long orderId){
+        try{
+            Map<String, Object> mapFinal = new HashMap<>();
+
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<CartResponse> query = cb.createQuery(CartResponse.class);
+            Root<Order> root = query.from(Order.class);
+            Root<Customer> rootCustomer = query.from(Customer.class);
+
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("customerId"), rootCustomer.get("id")));
+
+            predicates.add(cb.isFalse(root.get("isDeleted")));
+            predicates.add(cb.isFalse(rootCustomer.get("isDeleted")));
+
+            if(orderId != null){
+                predicates.add(cb.equal(root.get("id"), orderId));
+            }
+
+            query.multiselect(
+                    root.get("id"),
+                    root.get("customerId"),
+                    rootCustomer.get("name"),
+                    rootCustomer.get("phoneNumber"),
+                    root.get("expectedStartDate"),
+                    root.get("expectedEndDate"),
+                    root.get("actualStartDate"),
+                    root.get("actualEndDate"),
+                    root.get("calculatedCost"),
+                    root.get("isUsedService"),
+                    root.get("serviceDescription"),
+                    root.get("serviceCost"),
+                    root.get("depositType"),
+                    root.get("depositAmount"),
+                    root.get("depositIdentifyCard"),
+                    root.get("depositHotel"),
+                    root.get("note"),
+                    root.get("totalAmount"),
+                    root.get("status")
+            ).where(cb.and(predicates.stream().toArray(Predicate[]::new)));
+
+            List<CartResponse> result = entityManager.createQuery(query) != null ? entityManager.createQuery(query).getResultList() : new ArrayList<>();
+            if(result.size() == 0) {
+                return new HashMap<>();
+            }else{
+                mapFinal.put("data", result.get(0));
+                return mapFinal;
+            }
+        }catch (Exception e) {
             e.printStackTrace();
             return new HashMap<>();
         }

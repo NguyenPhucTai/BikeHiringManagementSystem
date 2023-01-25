@@ -9,9 +9,8 @@ import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.entity.*;
 import com.BikeHiringManagement.model.request.OrderRequest;
-import com.BikeHiringManagement.model.request.PaginationBikeRequest;
+import com.BikeHiringManagement.model.request.PaginationOrderRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
-import com.BikeHiringManagement.model.response.AttachmentResponse;
 import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.model.response.CartResponse;
 import com.BikeHiringManagement.model.temp.Result;
@@ -423,15 +422,16 @@ public class OrderService {
         }
     }
 
-    public PageDto getOrderPagination(PaginationRequest paginationRequest, String username) {
+    public PageDto getOrderPagination(PaginationOrderRequest paginationRequest, String username) {
         try {
             String searchKey = paginationRequest.getSearchKey();
             Integer page = paginationRequest.getPage();
             Integer limit = paginationRequest.getLimit();
             String sortBy = paginationRequest.getSortBy();
             String sortType = paginationRequest.getSortType();
+            String status = paginationRequest.getStatus();
 
-            Map<String, Object> mapOrder = orderSpecification.getOrderPagination(searchKey, page, limit, sortBy, sortType);
+            Map<String, Object> mapOrder = orderSpecification.getOrderPagination(searchKey, page, limit, sortBy, sortType, status);
             List<CartResponse> listRes = (List<CartResponse>) mapOrder.get("data");
             Long totalItems = (Long) mapOrder.get("count");
             Integer totalPage = responseUtils.getPageCount(totalItems, limit);
@@ -452,6 +452,36 @@ public class OrderService {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public Result getOrderById(Long orderId){
+        try{
+            Result result = new Result();
+            Map<String, Object> mapOrder = orderSpecification.getOrderById(orderId);
+            if(mapOrder.size() == 0){
+                result.setMessage("No Order found");
+                result.setCode(Constant.LOGIC_ERROR_CODE);
+                return  result;
+            }
+
+            CartResponse cartResponse = (CartResponse) mapOrder.get("data");
+
+            // GET BIKE LIST IN CART
+            List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderId, Boolean.FALSE);
+            List<Long> listBikeID = listOrderDetail.stream().map(x -> x.getBikeId()).collect(Collectors.toList());
+            Map<String, Object> mapBike = bikeSpecification.getBikeListById(listBikeID);
+            List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
+            cartResponse.setListBike(listRes);
+
+            result.setMessage("Get successful");
+            result.setCode(Constant.SUCCESS_CODE);
+            result.setObject(cartResponse);
+            return  result;
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);
         }
     }
 

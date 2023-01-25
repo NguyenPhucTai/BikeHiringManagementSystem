@@ -3,7 +3,9 @@ package com.BikeHiringManagement.controller.Authenticate;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.request.OrderRequest;
+import com.BikeHiringManagement.model.request.PaginationOrderRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
+import com.BikeHiringManagement.model.response.CartResponse;
 import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.service.entity.OrderService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
@@ -136,7 +138,7 @@ public class OrderController {
     }
 
     @PostMapping("/get")
-    public ResponseEntity<?> getOrderPagination(@RequestBody PaginationRequest reqBody, HttpServletRequest request){
+    public ResponseEntity<?> getOrderPagination(@RequestBody PaginationOrderRequest reqBody, HttpServletRequest request){
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -150,4 +152,22 @@ public class OrderController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getOrderById(@RequestParam Long id){
+        try{
+            Result result = orderService.getOrderById(id);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return  responseUtils.getResponseEntity((CartResponse) result.getObject(), 1, "Get Successfully", HttpStatus.OK);
+        }catch(Exception e){
+            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
 }

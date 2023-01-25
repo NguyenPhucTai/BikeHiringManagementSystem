@@ -52,4 +52,26 @@ public class CartResponse {
         this.status = status;
         this.totalAmount = totalAmount;
     }
+
+    public CartResponse(Long id, Long customerId, String customerName, String phoneNumber, Date expectedStartDate, Date expectedEndDate, Date actualStartDate, Date actualEndDate, Double calculatedCost, Boolean isUsedService, String serviceDescription, Double serviceCost, String depositType, Double depositAmount, String depositIdentifyCard, String depositHotel, String note, Double totalAmount, String status) {
+        this.id = id;
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.phoneNumber = phoneNumber;
+        this.expectedStartDate = expectedStartDate;
+        this.expectedEndDate = expectedEndDate;
+        this.actualStartDate = actualStartDate;
+        this.actualEndDate = actualEndDate;
+        this.calculatedCost = calculatedCost;
+        this.isUsedService = isUsedService;
+        this.serviceDescription = serviceDescription;
+        this.serviceCost = serviceCost;
+        this.depositType = depositType;
+        this.depositAmount = depositAmount;
+        this.depositIdentifyCard = depositIdentifyCard;
+        this.depositHotel = depositHotel;
+        this.note = note;
+        this.totalAmount = totalAmount;
+        this.status = status;
+    }
 }

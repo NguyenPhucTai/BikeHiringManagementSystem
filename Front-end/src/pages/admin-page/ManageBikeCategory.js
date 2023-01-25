@@ -14,7 +14,7 @@ import { CategoryManagement } from '../../api/EndPoint';
 
 //Component
 import { TableCRUD } from '../../components/Table/TableCRUD';
-import SortBarManagement from "../../components/Navbar/SortBarManagement";
+import SortBar from "../../components/Navbar/SortBar";
 import { Popup } from '../../components/Modal/Popup';
 import { TextFieldCustom } from '../../components/Form/TextFieldCustom';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
@@ -595,7 +595,7 @@ function ManageBikeCategory() {
             <Fragment>
                 <div className='container'>
                     {popupTitle}
-                    <SortBarManagement SortBy={SortBy} />
+                    <SortBar SortBy={SortBy} />
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike Category List</label></Col>

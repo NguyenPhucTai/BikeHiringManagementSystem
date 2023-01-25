@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 // Fire base
 import { AxiosInstance } from "../../api/AxiosClient";
-import SortBarManagement from "../../components/Navbar/SortBarManagement";
+import SortBar from "../../components/Navbar/SortBar";
 import { Firebase_URL, PublicAPI } from "../../api/EndPoint";
 
 // Redux
@@ -164,7 +164,7 @@ const List = props => {
                         <Col lg={12}>
 
                             <h2 className="text-center">List Motorcycle</h2>
-                            <SortBarManagement SortBy={SortBy} />
+                            <SortBar SortBy={SortBy} />
                             {loadingData ?
                                 <div className="circular_progress">
                                     <CircularProgress />
