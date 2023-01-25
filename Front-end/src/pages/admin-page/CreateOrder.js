@@ -453,30 +453,31 @@ function CreateOrder() {
                             <Form className="d-flex flex-column">
                                 {/* Customer info */}
                                 <Row className="mb-3">
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Customer Name"}
+                                            name={"customerName"}
+                                            type={"text"}
+                                            placeholder={"Enter the customer name"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Phone Number"}
+                                            name={"phoneNumber"}
+                                            type={"text"}
+                                            placeholder={"Enter the phone number"}
+                                        />
+                                    </Col>
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
-                                            <TextFieldCustom
-                                                label={"Customer Name"}
-                                                name={"customerName"}
-                                                type={"text"}
-                                                placeholder={"Enter the customer name"}
-                                            />
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <TextFieldCustom
-                                                label={"Phone Number"}
-                                                name={"phoneNumber"}
-                                                type={"text"}
-                                                placeholder={"Enter the phone number"}
-                                            />
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <Row >
-                                                <label className='form-label'>Expected Start Date</label>
-                                            </Row>
-                                            <Row style={{ width: "25%" }}>
+                                        <Row className="mb-3">
+                                            <label className='form-label'>Expect Date</label>
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <Col xs={12} sm={2}>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
+                                                        label="Expected Start Date"
                                                         value={expectedStartDate}
                                                         onChange={(newValue) => {
                                                             setExpectedStartDate(newValue);
@@ -487,18 +488,14 @@ function CreateOrder() {
                                                         )}
                                                     />
                                                 </LocalizationProvider>
-                                            </Row>
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <Row>
-                                                <label className='form-label'>Expected End Date</label>
-                                            </Row>
-                                            <Row style={{ width: "25%" }}>
+                                            </Col>
+                                            <Col xs={12} sm={2}>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
+                                                        label="Expected End Date"
                                                         value={expectedEndDate}
                                                         onChange={(newValue) => {
-                                                            setExpectedEndDate(newValue)
+                                                            setExpectedEndDate(newValue);
                                                         }}
                                                         onAccept={() => setIsCalculateCost(true)}
                                                         renderInput={(params) => (
@@ -506,8 +503,8 @@ function CreateOrder() {
                                                         )}
                                                     />
                                                 </LocalizationProvider>
-                                            </Row>
-                                        </Col>
+                                            </Col>
+                                        </Row>
                                     </Row>
                                     <Row>
                                         <Col xs={12} sm={12}>

@@ -62,6 +62,8 @@ const handleGetOrder = async (
     setDepositType,
     setExpectedStartDate,
     setExpectedEndDate,
+    setActualStartDate,
+    setActualEndDate,
     setCalculatedCost,
     setServiceCost,
     setTotalAmount
@@ -84,6 +86,8 @@ const handleGetOrder = async (
             setListBike(listBike)
             setExpectedStartDate(dayjs(res.data.data.expectedStartDate))
             setExpectedEndDate(dayjs(res.data.data.expectedEndDate))
+            setActualStartDate(res.data.data.actualStartDate === null ? dayjs(res.data.data.expectedStartDate) : dayjs(res.data.data.actualStartDate));
+            setActualEndDate(dayjs())
 
             setIsUsedService(res.data.data.isUsedService)
             setDepositType(res.data.data.depositType)
@@ -102,31 +106,6 @@ const handleGetOrder = async (
     });
 }
 
-const handleDeleteBike = async (
-    dataID,
-    setDataID,
-    setIsDelete,
-    listBike,
-    setListBike,
-    id,
-    setIsCalculateCost
-) => {
-    await AxiosInstance.post(OrderManagement.cartDeleteBike + "orderId=" + id + "&bikeId=" + dataID, null, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
-    }).then((res) => {
-        if (res.data.code === 1) {
-            setListBike(listBike.filter(data => data.id !== dataID));
-            setIsCalculateCost(true);
-        }
-        setIsDelete(false)
-        setDataID(0)
-    }).catch((error) => {
-        if (error && error.response) {
-            console.log("Error: ", error);
-        }
-    });
-
-}
 
 const handleCalculateCost = async (
     id,
@@ -301,6 +280,8 @@ function ManageOrderDetail() {
                 setDepositType,
                 setExpectedStartDate,
                 setExpectedEndDate,
+                setActualStartDate,
+                setActualEndDate,
                 setCalculatedCost,
                 setServiceCost,
                 setTotalAmount
@@ -322,7 +303,7 @@ function ManageOrderDetail() {
     // TRIGGER API CALCULATE COST
     useEffect(() => {
         if (isCalculateCost === true) {
-            handleCalculateCost(id, actualStartDate, actualEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
+            handleCalculateCost(id, expectedStartDate, expectedEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
         }
     }, [isCalculateCost])
 
@@ -418,30 +399,31 @@ function ManageOrderDetail() {
 
                                 {/* Customer info */}
                                 <Row className="mb-3">
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Customer Name"}
+                                            name={"customerName"}
+                                            type={"text"}
+                                            placeholder={"Enter the customer name"}
+                                        />
+                                    </Col>
+                                    <Col xs={12} sm={12}>
+                                        <TextFieldCustom
+                                            label={"Phone Number"}
+                                            name={"phoneNumber"}
+                                            type={"text"}
+                                            placeholder={"Enter the phone number"}
+                                        />
+                                    </Col>
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
-                                            <TextFieldCustom
-                                                label={"Customer Name"}
-                                                name={"customerName"}
-                                                type={"text"}
-                                                placeholder={"Enter the customer name"}
-                                            />
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <TextFieldCustom
-                                                label={"Phone Number"}
-                                                name={"phoneNumber"}
-                                                type={"text"}
-                                                placeholder={"Enter the phone number"}
-                                            />
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <Row >
-                                                <label className='form-label'>Expected Start Date</label>
-                                            </Row>
-                                            <Row style={{ width: "25%" }}>
+                                        <Row className="mb-3">
+                                            <label className='form-label'>Expect Date</label>
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <Col xs={12} sm={2}>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
+                                                        label="Expected Start Date"
                                                         disabled={true}
                                                         value={expectedStartDate}
                                                         onChange={(newValue) => {
@@ -453,19 +435,14 @@ function ManageOrderDetail() {
                                                         )}
                                                     />
                                                 </LocalizationProvider>
-                                            </Row>
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <Row>
-                                                <label className='form-label'>Expected End Date</label>
-                                            </Row>
-                                            <Row style={{ width: "25%" }}>
+                                            </Col>
+                                            <Col xs={12} sm={2}>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
-                                                        disabled={true}
+                                                        label="Expected End Date"
                                                         value={expectedEndDate}
                                                         onChange={(newValue) => {
-                                                            setExpectedEndDate(newValue)
+                                                            setExpectedEndDate(newValue);
                                                         }}
                                                         onAccept={() => setIsCalculateCost(true)}
                                                         renderInput={(params) => (
@@ -473,15 +450,16 @@ function ManageOrderDetail() {
                                                         )}
                                                     />
                                                 </LocalizationProvider>
-                                            </Row>
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <Row >
-                                                <label className='form-label'>Actual Start Date</label>
-                                            </Row>
-                                            <Row style={{ width: "25%" }}>
+                                            </Col>
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <label className='form-label'>Actual Date</label>
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <Col xs={12} sm={2}>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
+                                                        label="Actual Start Date"
                                                         value={actualStartDate}
                                                         onChange={(newValue) => {
                                                             setActualStartDate(newValue);
@@ -492,16 +470,12 @@ function ManageOrderDetail() {
                                                         )}
                                                     />
                                                 </LocalizationProvider>
-                                            </Row>
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <Row>
-                                                <label className='form-label'>Actual End Date</label>
-                                            </Row>
-                                            <Row style={{ width: "25%" }}>
+                                            </Col>
+                                            <Col xs={12} sm={2}>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DateTimePicker
-                                                        value={actualStartDate}
+                                                        label="Actual End Date"
+                                                        value={actualEndDate}
                                                         onChange={(newValue) => {
                                                             setActualEndDate(newValue)
                                                         }}
@@ -511,10 +485,12 @@ function ManageOrderDetail() {
                                                         )}
                                                     />
                                                 </LocalizationProvider>
-                                            </Row>
-                                        </Col>
+                                            </Col>
+                                        </Row>
+
                                     </Row>
-                                    <Row>
+                                    <Row className="mb-3">
+
                                         <Col xs={12} sm={12}>
                                             <label className='form-label'>Bike List</label>
                                             {Object.keys(listBike).length !== 0 ?
@@ -531,7 +507,8 @@ function ManageOrderDetail() {
                                             <TextFieldCustom
                                                 label={"Cost"}
                                                 name={"calculatedCost"}
-                                                type={"number"} onWheel={(e) => e.target.blur()}
+                                                type={"number"}
+                                                onWheel={(e) => e.target.blur()}
                                                 placeholder={"Enter the cost"}
                                                 value={calculatedCost}
                                                 disabled={true}
@@ -676,7 +653,7 @@ function ManageOrderDetail() {
                                     </Col>
                                 </Row>
                                 <button type="submit" className="btn btn-dark btn-md mt-3">
-                                    Submit
+                                    CLOSED
                                 </button>
                             </Form>
                         )}
