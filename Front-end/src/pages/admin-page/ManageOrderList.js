@@ -32,13 +32,15 @@ const cookies = new Cookies();
 const SortByExpected = [
     { value: "id", label: "Sort by ID", key: "1" },
     { value: "expectedStartDate", label: "Sort by expected start date", key: "2" },
-    { value: "expectedEndDate", label: "Sort by expected end date", key: "3" }
+    { value: "expectedEndDate", label: "Sort by expected end date", key: "3" },
+    { value: "totalAmount", label: "Sort by total amount", key: "4" }
 ];
 
 const SortByActual = [
     { value: "id", label: "Sort by ID", key: "1" },
     { value: "actualStartDate", label: "Sort by actual start date", key: "2" },
-    { value: "actualEndDate", label: "Sort by actual end date", key: "3" }
+    { value: "actualEndDate", label: "Sort by actual end date", key: "3" },
+    { value: "totalAmount", label: "Sort by total amount", key: "4" }
 ];
 
 

@@ -151,6 +151,9 @@ public class OrderSpecification {
                     case "expectedEndDate":
                         query.orderBy(cb.asc(root.get("expectedEndDate")));
                         break;
+                    case "totalAmount":
+                        query.orderBy(cb.asc(root.get("totalAmount")));
+                        break;
                 }
             } else {
                 switch (sortBy) {
@@ -165,6 +168,9 @@ public class OrderSpecification {
                         break;
                     case "expectedEndDate":
                         query.orderBy(cb.desc(root.get("expectedEndDate")));
+                        break;
+                    case "totalAmount":
+                        query.orderBy(cb.desc(root.get("totalAmount")));
                         break;
                 }
             }
