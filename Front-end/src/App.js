@@ -70,7 +70,7 @@ function App() {
 					<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
 
 					<Route element={<ProtectedRoute token={reduxToken} />}>
-						<Route path='/dashboard' element={<Dashboard />} />
+						<Route path='/dashboard' exact element={<Dashboard />} />
 						<Route path='/manage/category' exact element={<ManageBikeCategory />} />
 						<Route path='/manage/color' exact element={<ManageBikeColor />} />
 						<Route path='/manage/manufacturer' exact element={<ManageBikeManufacturer />} />

@@ -88,7 +88,7 @@ const handleGetOrder = async (
             setExpectedStartDate(dayjs(res.data.data.expectedStartDate))
             setExpectedEndDate(dayjs(res.data.data.expectedEndDate))
             setActualStartDate(res.data.data.actualStartDate === null ? dayjs(res.data.data.expectedStartDate) : dayjs(res.data.data.actualStartDate));
-            setActualEndDate(dayjs())
+            setActualEndDate(res.data.data.actualEndDate === null ? dayjs(res.data.data.expectedEndDate) : dayjs(res.data.data.actualEndDate))
 
             setIsUsedService(res.data.data.isUsedService)
             setDepositType(res.data.data.depositType)
@@ -147,6 +147,8 @@ const handleSaveOrder = async (
     formikRef,
     expectedStartDate,
     expectedEndDate,
+    actualStartDate,
+    actualEndDate,
     calculatedCost,
     serviceCost,
     totalAmount,
@@ -154,8 +156,13 @@ const handleSaveOrder = async (
     setLoadingData,
     setShowCloseButton,
     setAlert,
-    setIsRunLinear
+    setIsRunLinear,
+    isClose
 ) => {
+    let isCloseOrder = false;
+    if (isClose === true) {
+        isCloseOrder = true;
+    }
     if (serviceCost === undefined || serviceCost < 0) {
         serviceCost = 0;
     }
@@ -165,6 +172,8 @@ const handleSaveOrder = async (
         tempCustomerPhone: formikRef.current.values.phoneNumber === "" ? null : formikRef.current.values.phoneNumber,
         expectedStartDate: expectedStartDate,
         expectedEndDate: expectedEndDate,
+        actualStartDate: actualStartDate,
+        actualEndDate: actualEndDate,
 
         serviceDescription: formikRef.current.values.serviceDescription === "" ? null : formikRef.current.values.serviceDescription,
         depositAmount: formikRef.current.values.depositAmount,
@@ -178,7 +187,8 @@ const handleSaveOrder = async (
         calculatedCost: calculatedCost,
         serviceCost: serviceCost,
         totalAmount: totalAmount,
-        status: status
+        status: status,
+        isCloseOrder: isCloseOrder
     };
     await AxiosInstance.post(OrderManagement.saveOrder, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
@@ -330,15 +340,6 @@ function ManageOrderDetail() {
         }
     }, [isCalculateCost])
 
-    // USE EFFECT
-    // HANDLING SUBMIT FORM
-    useEffect(() => {
-        if (isSubmitting === true) {
-            console.log("handle submit")
-            setIsSubmitting(false);
-        }
-    }, [isSubmitting])
-
 
     // Update initialValues
     if (Object.keys(data).length !== 0) {
@@ -370,6 +371,7 @@ function ManageOrderDetail() {
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
                                 setShowPopup(false);
+                                setShowCloseButton(false);
                             }}>Back</button>
                     </div>
                 </ Fragment>
@@ -387,6 +389,8 @@ function ManageOrderDetail() {
                                     formikRef,
                                     expectedStartDate,
                                     expectedEndDate,
+                                    actualStartDate,
+                                    actualEndDate,
                                     calculatedCost,
                                     serviceCost,
                                     totalAmount,
@@ -394,7 +398,8 @@ function ManageOrderDetail() {
                                     setLoadingData,
                                     setShowCloseButton,
                                     setAlert,
-                                    setIsRunLinear
+                                    setIsRunLinear,
+                                    false
                                 );
                             }}>{titlePopup}</button>
                         <button className="btn btn-secondary btn-cancel"
@@ -418,7 +423,7 @@ function ManageOrderDetail() {
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
                                 navigate('/manage/order')
-                            }}>Close</button>
+                            }}>Go to order page</button>
                     </div>
                 </ Fragment>
                 :
@@ -440,8 +445,57 @@ function ManageOrderDetail() {
                 </Fragment >
         }
         />
-    } else if (titlePopup === "Closed") {
-        console.log("Closed")
+    } else if (titlePopup === "Close") {
+        popupConfirm = <Popup showPopup={showPopup} setShowPopup={setShowPopup} child={
+            showCloseButton ?
+                < Fragment >
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
+                    <div className="popup-button">
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                navigate('/manage/order');
+                            }}>Go to order page</button>
+                    </div>
+                </ Fragment>
+                :
+                <Fragment>
+                    <div className='popup-message text-center mb-3'>
+                        <label>Do you really want to save new information</label>
+                        <p>This process cannot be undone</p>
+                    </div>
+                    <div className="popup-button">
+                        <button className="btn btn-success btn-action"
+                            onClick={() => {
+                                handleSaveOrder(
+                                    id,
+                                    formikRef,
+                                    expectedStartDate,
+                                    expectedEndDate,
+                                    actualStartDate,
+                                    actualEndDate,
+                                    calculatedCost,
+                                    serviceCost,
+                                    totalAmount,
+                                    status,
+                                    setLoadingData,
+                                    setShowCloseButton,
+                                    setAlert,
+                                    setIsRunLinear,
+                                    true,
+                                );
+                            }}>{titlePopup}</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                            }}>Back</button>
+                    </div>
+                </Fragment >
+        }
+        />
     }
 
 
@@ -478,7 +532,8 @@ function ManageOrderDetail() {
                         initialValues={initialValues}
                         validationSchema={OrderSchema}
                         onSubmit={(values) => {
-                            setIsSubmitting(true);
+                            setShowPopup(true);
+                            setTitlePopup("Close")
                         }}>
                         {({
                             isSubmitting,

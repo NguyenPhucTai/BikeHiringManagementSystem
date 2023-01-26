@@ -89,9 +89,9 @@ public class OrderService {
 
             /*--------------------------- ORDER LOGIC ------------------------*/
             // IF Cart exist -> Just Add Bike ID to Order Detail
-            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE)) {
+            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, Constant.STATUS_ORDER_IN_CART, Boolean.FALSE)) {
 
-                Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE);
+                Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, Constant.STATUS_ORDER_IN_CART, Boolean.FALSE);
                 orderId = currentCart.getId();
 
                 if (bikeId != null) {
@@ -163,9 +163,9 @@ public class OrderService {
 
             /*--------------------------- CART EXISTS ------------------------*/
             // RETURN ALL INFO OF CART
-            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE)) {
+            if (orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, Constant.STATUS_ORDER_IN_CART, Boolean.FALSE)) {
                 // GET CURRENT CART
-                Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE);
+                Order currentCart = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, Constant.STATUS_ORDER_IN_CART, Boolean.FALSE);
                 orderId = currentCart.getId();
 
                 // CREATE CART TO RESPONSE
@@ -251,10 +251,10 @@ public class OrderService {
     public Result cartGetBikeNumber(String username) {
         try {
             int bikeNum = 0;
-            if (!orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE)) {
-                return new Result(Constant.LOGIC_ERROR_CODE, "User is not having cart!");
+            if (!orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, Constant.STATUS_ORDER_IN_CART, Boolean.FALSE)) {
+                return new Result(Constant.SUCCESS_CODE, "User is not having cart!", bikeNum);
             }
-            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", Boolean.FALSE);
+            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, Constant.STATUS_ORDER_IN_CART, Boolean.FALSE);
             bikeNum = orderDetailRepository.countAllByOrderIdAndIsDeleted(order.getId(), false);
             return new Result(Constant.SUCCESS_CODE, "Get successfully", bikeNum);
         } catch (Exception e) {
@@ -329,10 +329,10 @@ public class OrderService {
 
     public Result cartSave(OrderRequest orderRequest, String username) {
         try {
-            if (!orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false)) {
+            if (!orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, Constant.STATUS_ORDER_IN_CART, false)) {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
             }
-            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
+            Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, Constant.STATUS_ORDER_IN_CART, false);
             String message = "Save order successfully";
             /*--------------------------- CUSTOMER LOGIC ------------------------*/
             String tempCustomerName = orderRequest.getTempCustomerName();
@@ -344,6 +344,7 @@ public class OrderService {
                 // IF Customer EXIST By Phone
                 if (customerRepository.existsByPhoneNumberAndIsDeleted(tempCustomerPhone, Boolean.FALSE)) {
                     Customer customer = customerRepository.findCustomerByPhoneNumberAndIsDeleted(tempCustomerPhone, Boolean.FALSE);
+                    customer.setName(tempCustomerName);
                     customerId = customer.getId();
                 }
                 // IF Customer NOT EXIST By Phone
@@ -408,8 +409,8 @@ public class OrderService {
             /*--------------------------- UPDATE OTHER FIELD ------------------------*/
             order.setNote(orderRequest.getNote());
             if (orderRequest.getIsCreateOrder() == Boolean.TRUE) {
-                updateStatusOfBike(order.getId(), Constant.STATUS_BIKE_HIRED);
-                order.setStatus("PENDING");
+                updateStatusOfBike(order.getId(), Constant.STATUS_BIKE_HIRED, Boolean.FALSE);
+                order.setStatus(Constant.STATUS_ORDER_PENDING);
                 order.setTotalAmount(orderRequest.getTotalAmount());
                 message = "Create order successfully";
             }
@@ -490,6 +491,7 @@ public class OrderService {
     public Result saveOrder(OrderRequest orderRequest, String username) {
         try {
             Long orderId = orderRequest.getId();
+            boolean isCloseOrder = orderRequest.getIsCloseOrder();
             if(!checkEntityExistService.isEntityExisted(Constant.ORDER, "id", orderId)){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
             }
@@ -556,7 +558,13 @@ public class OrderService {
 
             /*--------------------------- UPDATE OTHER FIELD ------------------------*/
             order.setNote(orderRequest.getNote());
-            order.setStatus(orderRequest.getStatus());
+            if(isCloseOrder){
+                updateStatusOfBike(orderId, Constant.STATUS_BIKE_AVAILABLE, Boolean.FALSE);
+                order.setStatus(Constant.STATUS_ORDER_CLOSED);
+                order.setActualStartDate(orderRequest.getActualStartDate());
+                order.setActualEndDate(orderRequest.getActualEndDate());
+                message = "Close order successfully!!!";
+            }
             order.setTotalAmount(orderRequest.getTotalAmount());
             order.setModifiedUser(username);
             order.setModifiedDate(new Date());
@@ -576,6 +584,7 @@ public class OrderService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
             }
             Order order = orderRepository.findOrderByIdAndIsDeleted(orderId, Boolean.FALSE);
+            updateStatusOfBike(orderId, Constant.STATUS_BIKE_AVAILABLE, Boolean.TRUE);
             order.setStatus("CANCEL");
             order.setModifiedUser(username);
             order.setModifiedDate(new Date());
@@ -655,14 +664,14 @@ public class OrderService {
         }
     }
 
-    public void updateStatusOfBike(Long orderID, String status){
+    public void updateStatusOfBike(Long orderID, String status, Boolean isCancel){
         try{
             List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderID, Boolean.FALSE);
             List<Bike> listBike = new ArrayList<>();
             for(OrderDetail item : listOrderDetail){
                 Bike bike = bikeRepository.findBikeById(item.getBikeId());
                 bike.setStatus(status);
-                if(status.equalsIgnoreCase("AVAILABLE")){
+                if(status.equalsIgnoreCase(Constant.STATUS_BIKE_AVAILABLE) && isCancel == Boolean.FALSE){
                     bike.setHiredNumber(bike.getHiredNumber() + 1);
                 }
                 listBike.add(bike);

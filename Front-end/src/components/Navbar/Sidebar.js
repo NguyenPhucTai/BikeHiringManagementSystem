@@ -69,8 +69,8 @@ const Sidebar = () => {
                         style={{ width: '100%', maxWidth: 500, minWidth: 400 }}
                         component="nav"
                         aria-labelledby="nested-list-subheader">
-                        <ListItem key={'dashoard'} disableGutters={true}>
-                            <ListItemButton className="item-button" component="a" href="/dashoard">
+                        <ListItem key={'dashboard'} disableGutters={true}>
+                            <ListItemButton className="item-button" component="a" href="/dashboard">
                                 <ListItemIcon>
                                     <EditIcon className="item-icon" />
                                 </ListItemIcon>

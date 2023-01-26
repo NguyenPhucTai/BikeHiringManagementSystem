@@ -39,4 +39,10 @@ public class Constant {
     public static final String STATUS_BIKE_HIRED = "HIRED";
     public static final String STATUS_BIKE_AVAILABLE = "AVAILABLE";
 
+    // Order status
+    public static final String STATUS_ORDER_IN_CART = "IN CART";
+    public static final String STATUS_ORDER_PENDING = "PENDING";
+    public static final String STATUS_ORDER_CANCEL = "CANCEL";
+    public static final String STATUS_ORDER_CLOSED = "CLOSED";
+
 }

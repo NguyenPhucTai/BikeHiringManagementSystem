@@ -1,9 +1,7 @@
 package com.BikeHiringManagement.specification;
 
 
-import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.entity.*;
-import com.BikeHiringManagement.model.response.BikeResponse;
 import com.BikeHiringManagement.model.response.CartResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,7 +13,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.xml.crypto.Data;
 import java.util.*;
 
 @Service
@@ -92,14 +89,7 @@ public class OrderSpecification {
                 }
             }
 
-            // SEARCH
-            if (!StringUtils.isEmpty(searchKey)) {
-                predicates.add(cb.or(
-                        cb.like(cb.lower(root.get("id")) , "%" + searchKey.toLowerCase() + "%"),
-                        cb.like(cb.lower(rootCustomer.get("name")) , "%" + searchKey.toLowerCase() + "%"),
-                        cb.like(cb.lower(rootCustomer.get("phoneNumber")) , "%" + searchKey.toLowerCase() + "%")
-                ));
-            }
+
 
             // CONDITION
             // ROOT COUNT
@@ -127,14 +117,29 @@ public class OrderSpecification {
                 }
             }
 
-            // SEARCH
+
+            //------------------------SEARCH LOGIC-----------------------------//
             if (!StringUtils.isEmpty(searchKey)) {
-                predicatesCount.add(cb.or(
-                        cb.like(cb.lower(rootCount.get("id")) , "%" + searchKey.toLowerCase() + "%"),
-                        cb.like(cb.lower(rootCustomerCount.get("name")) , "%" + searchKey.toLowerCase() + "%"),
-                        cb.like(cb.lower(rootCustomerCount.get("phoneNumber")) , "%" + searchKey.toLowerCase() + "%")
-                ));
+                try {
+                    Long parseLong = Long.parseLong(searchKey);
+                    Double parseDouble = Double.parseDouble(searchKey);
+                    predicates.add(cb.or(
+                            cb.equal(root.get("id"), parseLong),
+                            cb.equal(root.get("totalAmount"), parseDouble)
+                    ));
+
+                    predicatesCount.add(cb.or(
+                            cb.equal(rootCount.get("id"), parseLong),
+                            cb.equal(rootCount.get("totalAmount"), parseDouble)
+                    ));
+                }catch (Exception e){
+                    List<CartResponse> emptyList = new ArrayList<>();
+                    mapFinal.put("data", emptyList );
+                    mapFinal.put("count", (long) 0);
+                    return mapFinal;
+                }
             }
+
 
             //------------------------CREATE SORT-----------------------------//
             if (sortType.equalsIgnoreCase("asc")) {
@@ -150,6 +155,12 @@ public class OrderSpecification {
                         break;
                     case "expectedEndDate":
                         query.orderBy(cb.asc(root.get("expectedEndDate")));
+                        break;
+                    case "actualStartDate":
+                        query.orderBy(cb.asc(root.get("actualStartDate")));
+                        break;
+                    case "actualEndDate":
+                        query.orderBy(cb.asc(root.get("actualEndDate")));
                         break;
                     case "totalAmount":
                         query.orderBy(cb.asc(root.get("totalAmount")));
@@ -168,6 +179,12 @@ public class OrderSpecification {
                         break;
                     case "expectedEndDate":
                         query.orderBy(cb.desc(root.get("expectedEndDate")));
+                        break;
+                    case "actualStartDate":
+                        query.orderBy(cb.desc(root.get("actualStartDate")));
+                        break;
+                    case "actualEndDate":
+                        query.orderBy(cb.desc(root.get("actualEndDate")));
                         break;
                     case "totalAmount":
                         query.orderBy(cb.desc(root.get("totalAmount")));

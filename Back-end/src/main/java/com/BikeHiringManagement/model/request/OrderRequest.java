@@ -34,5 +34,6 @@ public class OrderRequest {
 
     private Long bikeId;
     private Boolean isCreateOrder;
+    private Boolean isCloseOrder;
 
 }
