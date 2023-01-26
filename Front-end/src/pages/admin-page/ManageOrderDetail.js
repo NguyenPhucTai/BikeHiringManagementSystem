@@ -503,312 +503,625 @@ function ManageOrderDetail() {
         !loadingData ?
             <Fragment>
                 {popupConfirm}
-                <div className="container">
-                    <h1 className="text-center">ORDER NO. {id}</h1>
-                    <div className="button-header" style={{ textAlign: "end" }}>
-                        <Button variant="contained" color="success" style={{ marginRight: "8px" }}
-                            onClick={() => {
+                {status === "PENDING" ?
+                    <div className="container">
+                        <h1 className="text-center">ORDER NO. {id}</h1>
+
+                        < div className="button-header" style={{ textAlign: "end" }}>
+                            <Button variant="contained" color="success" style={{ marginRight: "8px" }}
+                                onClick={() => {
+                                    setShowPopup(true);
+                                    setTitlePopup("Save");
+                                }}>
+                                SAVE INFORMATION
+                            </Button>
+                            <Button variant="contained" color="error"
+                                onClick={() => {
+                                    setShowPopup(true);
+                                    setTitlePopup("Cancel")
+                                }}>
+                                CANCEL ORDER
+                            </Button>
+                        </div>
+
+                        {isRunLinear && (
+                            <Box sx={{ width: '100%' }}>
+                                <LinearProgress />
+                            </Box>
+                        )}
+                        <Formik
+                            innerRef={formikRef}
+                            enableReinitialize
+                            initialValues={initialValues}
+                            validationSchema={OrderSchema}
+                            onSubmit={(values) => {
                                 setShowPopup(true);
-                                setTitlePopup("Save");
+                                setTitlePopup("Close")
                             }}>
-                            SAVE INFORMATION
-                        </Button>
-                        <Button variant="contained" color="error"
-                            onClick={() => {
-                                setShowPopup(true);
-                                setTitlePopup("Cancel")
-                            }}>
-                            CANCEL ORDER
-                        </Button>
-                    </div>
-                    {isRunLinear && (
-                        <Box sx={{ width: '100%' }}>
-                            <LinearProgress />
-                        </Box>
-                    )}
-                    <Formik
-                        innerRef={formikRef}
-                        enableReinitialize
-                        initialValues={initialValues}
-                        validationSchema={OrderSchema}
-                        onSubmit={(values) => {
-                            setShowPopup(true);
-                            setTitlePopup("Close")
-                        }}>
-                        {({
-                            isSubmitting,
-                            handleChange,
-                            handleBlur,
-                            handleSubmit,
-                            values,
-                            errors,
-                            touched,
-                            setFieldValue,
-                        }) => (
-                            <Form className="d-flex flex-column">
+                            {({
+                                isSubmitting,
+                                handleChange,
+                                handleBlur,
+                                handleSubmit,
+                                values,
+                                errors,
+                                touched,
+                                setFieldValue,
+                            }) => (
+                                <Form className="d-flex flex-column">
 
-                                {/* Customer info */}
-                                <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
-                                        <TextFieldCustom
-                                            label={"Customer Name"}
-                                            name={"customerName"}
-                                            type={"text"}
-                                            placeholder={"Enter the customer name"}
-                                        />
-                                    </Col>
-                                    <Col xs={12} sm={12}>
-                                        <TextFieldCustom
-                                            label={"Phone Number"}
-                                            name={"phoneNumber"}
-                                            type={"text"}
-                                            placeholder={"Enter the phone number"}
-                                        />
-                                    </Col>
+                                    {/* Customer info */}
                                     <Row className="mb-3">
-                                        <Row className="mb-3">
-                                            <label className='form-label'>Expect Date</label>
-                                        </Row>
-                                        <Row className="mb-3">
-                                            <Col xs={12} sm={2}>
-                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DateTimePicker
-                                                        label="Expected Start Date"
-                                                        disabled={true}
-                                                        value={expectedStartDate}
-                                                        onChange={(newValue) => {
-                                                            setExpectedStartDate(newValue);
-                                                        }}
-                                                        onAccept={() => setIsCalculateCost(true)}
-                                                        renderInput={(params) => (
-                                                            <TextField {...params} />
-                                                        )}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                            <Col xs={12} sm={2}>
-                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DateTimePicker
-                                                        label="Expected End Date"
-                                                        value={expectedEndDate}
-                                                        onChange={(newValue) => {
-                                                            setExpectedEndDate(newValue);
-                                                        }}
-                                                        onAccept={() => setIsCalculateCost(true)}
-                                                        renderInput={(params) => (
-                                                            <TextField {...params} />
-                                                        )}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                        </Row>
-                                        <Row className="mb-3">
-                                            <label className='form-label'>Actual Date</label>
-                                        </Row>
-                                        <Row className="mb-3">
-                                            <Col xs={12} sm={2}>
-                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DateTimePicker
-                                                        label="Actual Start Date"
-                                                        value={actualStartDate}
-                                                        onChange={(newValue) => {
-                                                            setActualStartDate(newValue);
-                                                        }}
-                                                        onAccept={() => setIsCalculateCost(true)}
-                                                        renderInput={(params) => (
-                                                            <TextField {...params} />
-                                                        )}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                            <Col xs={12} sm={2}>
-                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DateTimePicker
-                                                        label="Actual End Date"
-                                                        value={actualEndDate}
-                                                        onChange={(newValue) => {
-                                                            setActualEndDate(newValue)
-                                                        }}
-                                                        onAccept={() => setIsCalculateCost(true)}
-                                                        renderInput={(params) => (
-                                                            <TextField {...params} />
-                                                        )}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                        </Row>
-
-                                    </Row>
-                                    <Row className="mb-3">
-
                                         <Col xs={12} sm={12}>
-                                            <label className='form-label'>Bike List</label>
-                                            {Object.keys(listBike).length !== 0 ?
-                                                <TableCartBikeList
-                                                    tableTitleList={tableTitleList}
-                                                    listData={listBike}
-                                                    isShowButtonDelete={false}
-                                                />
-                                                :
-                                                <div>No bike found</div>
-                                            }
+                                            <TextFieldCustom
+                                                label={"Customer Name"}
+                                                name={"customerName"}
+                                                type={"text"}
+                                                placeholder={"Enter the customer name"}
+                                            />
                                         </Col>
                                         <Col xs={12} sm={12}>
                                             <TextFieldCustom
-                                                label={"Cost"}
-                                                name={"calculatedCost"}
+                                                label={"Phone Number"}
+                                                name={"phoneNumber"}
+                                                type={"text"}
+                                                placeholder={"Enter the phone number"}
+                                            />
+                                        </Col>
+                                        <Row className="mb-3">
+                                            <Row className="mb-3">
+                                                <label className='form-label'>Expect Date</label>
+                                            </Row>
+                                            <Row className="mb-3">
+                                                <Col xs={12} sm={2}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            label="Expected Start Date"
+                                                            disabled={true}
+                                                            value={expectedStartDate}
+                                                            onChange={(newValue) => {
+                                                                setExpectedStartDate(newValue);
+                                                            }}
+                                                            onAccept={() => setIsCalculateCost(true)}
+                                                            renderInput={(params) => (
+                                                                <TextField {...params} />
+                                                            )}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                                <Col xs={12} sm={2}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            label="Expected End Date"
+                                                            value={expectedEndDate}
+                                                            onChange={(newValue) => {
+                                                                setExpectedEndDate(newValue);
+                                                            }}
+                                                            onAccept={() => setIsCalculateCost(true)}
+                                                            renderInput={(params) => (
+                                                                <TextField {...params} />
+                                                            )}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                            </Row>
+                                            <Row className="mb-3">
+                                                <label className='form-label'>Actual Date</label>
+                                            </Row>
+                                            <Row className="mb-3">
+                                                <Col xs={12} sm={2}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            label="Actual Start Date"
+                                                            value={actualStartDate}
+                                                            onChange={(newValue) => {
+                                                                setActualStartDate(newValue);
+                                                            }}
+                                                            onAccept={() => setIsCalculateCost(true)}
+                                                            renderInput={(params) => (
+                                                                <TextField {...params} />
+                                                            )}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                                <Col xs={12} sm={2}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            label="Actual End Date"
+                                                            value={actualEndDate}
+                                                            onChange={(newValue) => {
+                                                                setActualEndDate(newValue)
+                                                            }}
+                                                            onAccept={() => setIsCalculateCost(true)}
+                                                            renderInput={(params) => (
+                                                                <TextField {...params} />
+                                                            )}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                            </Row>
+
+                                        </Row>
+                                        <Row className="mb-3">
+
+                                            <Col xs={12} sm={12}>
+                                                <label className='form-label'>Bike List</label>
+                                                {Object.keys(listBike).length !== 0 ?
+                                                    <TableCartBikeList
+                                                        tableTitleList={tableTitleList}
+                                                        listData={listBike}
+                                                        isShowButtonDelete={false}
+                                                    />
+                                                    :
+                                                    <div>No bike found</div>
+                                                }
+                                            </Col>
+                                            <Col xs={12} sm={12}>
+                                                <TextFieldCustom
+                                                    label={"Cost"}
+                                                    name={"calculatedCost"}
+                                                    type={"number"}
+                                                    onWheel={(e) => e.target.blur()}
+                                                    placeholder={"Enter the cost"}
+                                                    value={calculatedCost}
+                                                    disabled={true}
+                                                />
+                                            </Col>
+                                        </Row>
+                                    </Row>
+
+                                    {/* Service info */}
+                                    <Row className="mb-3">
+                                        <Col xs={12} sm={12}>
+                                            <label className='form-label'>Using Service?</label>
+                                            <RadioGroup
+                                                aria-labelledby="demo-controlled-radio-buttons-group"
+                                                name="isUsedService"
+                                                defaultValue={isUsedService}
+                                                onChange={(e, value) => {
+                                                    let result = false;
+                                                    if (value === 'true') {
+                                                        result = true;
+                                                    } else {
+                                                        setServiceCost(0);
+                                                    }
+                                                    setIsUsedService(result)
+                                                    setFieldValue("isUsedService", result);
+                                                }}
+                                            >
+                                                <FormControlLabel value={false} control={<Radio />} label="No" />
+                                                <FormControlLabel value={true} control={<Radio />} label="Yes" />
+                                            </RadioGroup>
+                                        </Col>
+                                        {isUsedService === true &&
+                                            <Row>
+                                                <Col xs={12} sm={12}>
+                                                    <TextFieldCustom
+                                                        label={"Service Description"}
+                                                        name={"serviceDescription"}
+                                                        type={"text"}
+                                                        placeholder={"Enter the description"}
+                                                    />
+                                                </Col>
+                                                <Col xs={12} sm={12}>
+                                                    <TextFieldCustom
+                                                        label={"Service Cost"}
+                                                        name={"serviceCost"}
+                                                        type={"number"}
+                                                        onWheel={(e) => e.target.blur()}
+                                                        placeholder={"Enter the service cost"}
+                                                        value={serviceCost}
+                                                        onChange={(event) => {
+                                                            let value = event.target.value;
+                                                            if (value === "") {
+                                                                setServiceCost("")
+                                                            } else {
+                                                                setServiceCost(parseFloat(value))
+                                                            }
+                                                        }}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        }
+                                    </Row>
+
+                                    {/* Deposit info */}
+                                    <Row className="mb-3">
+                                        <Col xs={12} sm={12}>
+                                            <label className='form-label'>Deposit type</label>
+                                            <RadioGroup
+                                                aria-labelledby="demo-controlled-radio-buttons-group"
+                                                name="depositType"
+                                                defaultValue={depositType}
+                                                onChange={(e, value) => {
+                                                    setDepositType(value)
+                                                    setFieldValue("depositType", value);
+                                                }}
+                                            >
+                                                <FormControlLabel value="identifyCard" control={<Radio />} label="Identify Card" />
+                                                <FormControlLabel value="money" control={<Radio />} label="Money" />
+                                                <FormControlLabel value="hotel" control={<Radio />} label="Hotel" />
+                                            </RadioGroup>
+                                        </Col>
+                                        {depositType === "identifyCard" &&
+                                            <Col xs={12} sm={12}>
+                                                <TextFieldCustom
+                                                    label={"Identify Card"}
+                                                    name={"depositIdentifyCard"}
+                                                    type={"text"}
+                                                    placeholder={"Enter the Identify Card"}
+                                                />
+                                            </Col>
+                                        }
+                                        {depositType === "money" &&
+                                            <Col xs={12} sm={12}>
+                                                <TextFieldCustom
+                                                    label={"Despoit Amount"}
+                                                    name={"depositAmount"}
+                                                    type={"number"}
+                                                    onWheel={(e) => e.target.blur()}
+                                                    placeholder={"Enter the deposit amount"}
+                                                />
+                                            </Col>
+                                        }
+                                        {depositType === "hotel" &&
+                                            <Col xs={12} sm={12}>
+                                                <TextFieldCustom
+                                                    label={"Hotel"}
+                                                    name={"depositHotel"}
+                                                    type={"text"}
+                                                    placeholder={"Enter the hotel address"}
+                                                />
+                                            </Col>
+                                        }
+                                    </Row>
+
+                                    {/* Total info */}
+                                    <Row className="mb-3">
+                                        <Col xs={12} sm={12}>
+                                            <TextAreaCustom
+                                                label={"Note"}
+                                                name={"note"}
+                                                type={"text"}
+                                                placeholder={"Enter the note"}
+                                            />
+                                        </Col>
+                                        <Col xs={12} sm={12}>
+                                            <TextFieldCustom
+                                                label={"Total Cost"}
+                                                name={"totalAmount"}
                                                 type={"number"}
                                                 onWheel={(e) => e.target.blur()}
-                                                placeholder={"Enter the cost"}
-                                                value={calculatedCost}
+                                                placeholder={"Total Cost"}
+                                                value={totalAmount}
+                                                onChange={(event) => {
+                                                    let value = event.target.value;
+                                                    if (value === "") {
+                                                        setTotalAmount("")
+                                                    } else {
+                                                        setTotalAmount(parseFloat(value))
+                                                    }
+                                                }}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <button type="submit" className="btn btn-dark btn-md mt-3">
+                                        CLOSED
+                                    </button>
+                                </Form>
+                            )}
+                        </Formik>
+                    </div>
+                    :
+                    <div className="container">
+                        <h1 className="text-center">ORDER NO. {id}</h1>
+                        {isRunLinear && (
+                            <Box sx={{ width: '100%' }}>
+                                <LinearProgress />
+                            </Box>
+                        )}
+                        <Formik
+                            innerRef={formikRef}
+                            enableReinitialize
+                            initialValues={initialValues}
+                            validationSchema={OrderSchema}
+                            onSubmit={(values) => {
+                                setShowPopup(true);
+                                setTitlePopup("Close")
+                            }}>
+                            {({
+                                isSubmitting,
+                                handleChange,
+                                handleBlur,
+                                handleSubmit,
+                                values,
+                                errors,
+                                touched,
+                                setFieldValue,
+                            }) => (
+                                <Form className="d-flex flex-column">
+
+                                    {/* Customer info */}
+                                    <Row className="mb-3">
+                                        <Col xs={12} sm={12}>
+                                            <TextFieldCustom
+                                                label={"Customer Name"}
+                                                name={"customerName"}
+                                                type={"text"}
+                                                placeholder={"Enter the customer name"}
                                                 disabled={true}
                                             />
                                         </Col>
-                                    </Row>
-                                </Row>
+                                        <Col xs={12} sm={12}>
+                                            <TextFieldCustom
+                                                label={"Phone Number"}
+                                                name={"phoneNumber"}
+                                                type={"text"}
+                                                placeholder={"Enter the phone number"}
+                                                disabled={true}
+                                            />
+                                        </Col>
+                                        <Row className="mb-3">
+                                            <Row className="mb-3">
+                                                <label className='form-label'>Expect Date</label>
+                                            </Row>
+                                            <Row className="mb-3">
+                                                <Col xs={12} sm={2}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            label="Expected Start Date"
+                                                            disabled={true}
+                                                            value={expectedStartDate}
+                                                            onChange={(newValue) => {
+                                                                setExpectedStartDate(newValue);
+                                                            }}
+                                                            onAccept={() => setIsCalculateCost(true)}
+                                                            renderInput={(params) => (
+                                                                <TextField {...params} />
+                                                            )}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                                <Col xs={12} sm={2}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            label="Expected End Date"
+                                                            disabled={true}
+                                                            value={expectedEndDate}
+                                                            onChange={(newValue) => {
+                                                                setExpectedEndDate(newValue);
+                                                            }}
+                                                            onAccept={() => setIsCalculateCost(true)}
+                                                            renderInput={(params) => (
+                                                                <TextField {...params} />
+                                                            )}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                            </Row>
+                                            <Row className="mb-3">
+                                                <label className='form-label'>Actual Date</label>
+                                            </Row>
+                                            <Row className="mb-3">
+                                                <Col xs={12} sm={2}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            label="Actual Start Date"
+                                                            disabled={true}
+                                                            value={actualStartDate}
+                                                            onChange={(newValue) => {
+                                                                setActualStartDate(newValue);
+                                                            }}
+                                                            onAccept={() => setIsCalculateCost(true)}
+                                                            renderInput={(params) => (
+                                                                <TextField {...params} />
+                                                            )}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                                <Col xs={12} sm={2}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            label="Actual End Date"
+                                                            disabled={true}
+                                                            value={actualEndDate}
+                                                            onChange={(newValue) => {
+                                                                setActualEndDate(newValue)
+                                                            }}
+                                                            onAccept={() => setIsCalculateCost(true)}
+                                                            renderInput={(params) => (
+                                                                <TextField {...params} />
+                                                            )}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                            </Row>
 
-                                {/* Service info */}
-                                <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
-                                        <label className='form-label'>Using Service?</label>
-                                        <RadioGroup
-                                            aria-labelledby="demo-controlled-radio-buttons-group"
-                                            name="isUsedService"
-                                            defaultValue={isUsedService}
-                                            onChange={(e, value) => {
-                                                let result = false;
-                                                if (value === 'true') {
-                                                    result = true;
-                                                } else {
-                                                    setServiceCost(0);
-                                                }
-                                                setIsUsedService(result)
-                                                setFieldValue("isUsedService", result);
-                                            }}
-                                        >
-                                            <FormControlLabel value={false} control={<Radio />} label="No" />
-                                            <FormControlLabel value={true} control={<Radio />} label="Yes" />
-                                        </RadioGroup>
-                                    </Col>
-                                    {isUsedService === true &&
-                                        <Row>
+                                        </Row>
+                                        <Row className="mb-3">
+
                                             <Col xs={12} sm={12}>
-                                                <TextFieldCustom
-                                                    label={"Service Description"}
-                                                    name={"serviceDescription"}
-                                                    type={"text"}
-                                                    placeholder={"Enter the description"}
-                                                />
+                                                <label className='form-label'>Bike List</label>
+                                                {Object.keys(listBike).length !== 0 ?
+                                                    <TableCartBikeList
+                                                        tableTitleList={tableTitleList}
+                                                        listData={listBike}
+                                                        isShowButtonDelete={false}
+                                                    />
+                                                    :
+                                                    <div>No bike found</div>
+                                                }
                                             </Col>
                                             <Col xs={12} sm={12}>
                                                 <TextFieldCustom
-                                                    label={"Service Cost"}
-                                                    name={"serviceCost"}
+                                                    label={"Cost"}
+                                                    name={"calculatedCost"}
                                                     type={"number"}
                                                     onWheel={(e) => e.target.blur()}
-                                                    placeholder={"Enter the service cost"}
-                                                    value={serviceCost}
-                                                    onChange={(event) => {
-                                                        let value = event.target.value;
-                                                        if (value === "") {
-                                                            setServiceCost("")
-                                                        } else {
-                                                            setServiceCost(parseFloat(value))
-                                                        }
-                                                    }}
+                                                    placeholder={"Enter the cost"}
+                                                    value={calculatedCost}
+                                                    disabled={true}
                                                 />
                                             </Col>
                                         </Row>
-                                    }
-                                </Row>
+                                    </Row>
 
-                                {/* Deposit info */}
-                                <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
-                                        <label className='form-label'>Deposit type</label>
-                                        <RadioGroup
-                                            aria-labelledby="demo-controlled-radio-buttons-group"
-                                            name="depositType"
-                                            defaultValue={depositType}
-                                            onChange={(e, value) => {
-                                                setDepositType(value)
-                                                setFieldValue("depositType", value);
-                                            }}
-                                        >
-                                            <FormControlLabel value="identifyCard" control={<Radio />} label="Identify Card" />
-                                            <FormControlLabel value="money" control={<Radio />} label="Money" />
-                                            <FormControlLabel value="hotel" control={<Radio />} label="Hotel" />
-                                        </RadioGroup>
-                                    </Col>
-                                    {depositType === "identifyCard" &&
+                                    {/* Service info */}
+                                    <Row className="mb-3">
                                         <Col xs={12} sm={12}>
-                                            <TextFieldCustom
-                                                label={"Identify Card"}
-                                                name={"depositIdentifyCard"}
+                                            <label className='form-label'>Using Service?</label>
+                                            <RadioGroup
+                                                aria-labelledby="demo-controlled-radio-buttons-group"
+                                                name="isUsedService"
+                                                defaultValue={isUsedService}
+                                                onChange={(e, value) => {
+                                                    let result = false;
+                                                    if (value === 'true') {
+                                                        result = true;
+                                                    } else {
+                                                        setServiceCost(0);
+                                                    }
+                                                    setIsUsedService(result)
+                                                    setFieldValue("isUsedService", result);
+                                                }}
+                                            >
+                                                {isUsedService === true ?
+                                                    <FormControlLabel value={true} control={<Radio />} label="Yes" />
+                                                    :
+                                                    <FormControlLabel value={false} control={<Radio />} label="No" />
+                                                }
+                                            </RadioGroup>
+                                        </Col>
+                                        {isUsedService === true &&
+                                            <Row>
+                                                <Col xs={12} sm={12}>
+                                                    <TextFieldCustom
+                                                        label={"Service Description"}
+                                                        name={"serviceDescription"}
+                                                        type={"text"}
+                                                        placeholder={"Enter the description"}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col xs={12} sm={12}>
+                                                    <TextFieldCustom
+                                                        label={"Service Cost"}
+                                                        name={"serviceCost"}
+                                                        type={"number"}
+                                                        onWheel={(e) => e.target.blur()}
+                                                        placeholder={"Enter the service cost"}
+                                                        disabled={true}
+                                                        value={serviceCost}
+                                                        onChange={(event) => {
+                                                            let value = event.target.value;
+                                                            if (value === "") {
+                                                                setServiceCost("")
+                                                            } else {
+                                                                setServiceCost(parseFloat(value))
+                                                            }
+                                                        }}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        }
+                                    </Row>
+
+                                    {/* Deposit info */}
+                                    <Row className="mb-3">
+                                        <Col xs={12} sm={12}>
+                                            <label className='form-label'>Deposit type</label>
+                                            <RadioGroup
+                                                aria-labelledby="demo-controlled-radio-buttons-group"
+                                                name="depositType"
+                                                defaultValue={depositType}
+                                                onChange={(e, value) => {
+                                                    setDepositType(value)
+                                                    setFieldValue("depositType", value);
+                                                }}
+                                            >
+                                                {depositType === "identifyCard" &&
+                                                    <FormControlLabel value="identifyCard" control={<Radio />} label="Identify Card" />
+                                                }
+                                                {depositType === "money" &&
+                                                    <FormControlLabel value="money" control={<Radio />} label="Money" />
+                                                }
+                                                {depositType === "hotel" &&
+                                                    <FormControlLabel value="hotel" control={<Radio />} label="Hotel" />
+                                                }
+                                            </RadioGroup>
+                                        </Col>
+                                        {depositType === "identifyCard" &&
+                                            <Col xs={12} sm={12}>
+                                                <TextFieldCustom
+                                                    label={"Identify Card"}
+                                                    name={"depositIdentifyCard"}
+                                                    type={"text"}
+                                                    placeholder={"Enter the Identify Card"}
+                                                    disabled={true}
+                                                />
+                                            </Col>
+                                        }
+                                        {depositType === "money" &&
+                                            <Col xs={12} sm={12}>
+                                                <TextFieldCustom
+                                                    label={"Despoit Amount"}
+                                                    name={"depositAmount"}
+                                                    type={"number"}
+                                                    onWheel={(e) => e.target.blur()}
+                                                    placeholder={"Enter the deposit amount"}
+                                                    disabled={true}
+                                                />
+                                            </Col>
+                                        }
+                                        {depositType === "hotel" &&
+                                            <Col xs={12} sm={12}>
+                                                <TextFieldCustom
+                                                    label={"Hotel"}
+                                                    name={"depositHotel"}
+                                                    type={"text"}
+                                                    placeholder={"Enter the hotel address"}
+                                                    disabled={true}
+                                                />
+                                            </Col>
+                                        }
+                                    </Row>
+
+                                    {/* Total info */}
+                                    <Row className="mb-3">
+                                        <Col xs={12} sm={12}>
+                                            <TextAreaCustom
+                                                label={"Note"}
+                                                name={"note"}
                                                 type={"text"}
-                                                placeholder={"Enter the Identify Card"}
+                                                placeholder={"Enter the note"}
+                                                disabled={true}
                                             />
                                         </Col>
-                                    }
-                                    {depositType === "money" &&
                                         <Col xs={12} sm={12}>
                                             <TextFieldCustom
-                                                label={"Despoit Amount"}
-                                                name={"depositAmount"}
+                                                label={"Total Cost"}
+                                                name={"totalAmount"}
                                                 type={"number"}
                                                 onWheel={(e) => e.target.blur()}
-                                                placeholder={"Enter the deposit amount"}
+                                                placeholder={"Total Cost"}
+                                                disabled={true}
+                                                value={totalAmount}
+                                                onChange={(event) => {
+                                                    let value = event.target.value;
+                                                    if (value === "") {
+                                                        setTotalAmount("")
+                                                    } else {
+                                                        setTotalAmount(parseFloat(value))
+                                                    }
+                                                }}
                                             />
                                         </Col>
-                                    }
-                                    {depositType === "hotel" &&
-                                        <Col xs={12} sm={12}>
-                                            <TextFieldCustom
-                                                label={"Hotel"}
-                                                name={"depositHotel"}
-                                                type={"text"}
-                                                placeholder={"Enter the hotel address"}
-                                            />
-                                        </Col>
-                                    }
-                                </Row>
-
-                                {/* Total info */}
-                                <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
-                                        <TextAreaCustom
-                                            label={"Note"}
-                                            name={"note"}
-                                            type={"text"}
-                                            placeholder={"Enter the note"}
-                                        />
-                                    </Col>
-                                    <Col xs={12} sm={12}>
-                                        <TextFieldCustom
-                                            label={"Total Cost"}
-                                            name={"totalAmount"}
-                                            type={"number"}
-                                            onWheel={(e) => e.target.blur()}
-                                            placeholder={"Total Cost"}
-                                            value={totalAmount}
-                                            onChange={(event) => {
-                                                let value = event.target.value;
-                                                if (value === "") {
-                                                    setTotalAmount("")
-                                                } else {
-                                                    setTotalAmount(parseFloat(value))
-                                                }
-                                            }}
-                                        />
-                                    </Col>
-                                </Row>
-                                <button type="submit" className="btn btn-dark btn-md mt-3">
-                                    CLOSED
-                                </button>
-                            </Form>
-                        )}
-                    </Formik>
-                </div>
+                                    </Row>
+                                </Form>
+                            )}
+                        </Formik>
+                    </div>
+                }
             </Fragment >
             :
             <Fragment>
