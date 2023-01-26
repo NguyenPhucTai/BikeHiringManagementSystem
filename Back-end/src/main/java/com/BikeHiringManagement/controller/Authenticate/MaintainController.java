@@ -53,25 +53,7 @@ public class MaintainController {
             return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    /*
-    @PostMapping("/get")
-    public ResponseEntity<?> getMaintainPagination(@RequestBody PaginationBikeRequest reqBody, HttpServletRequest request){
-        try{
-            String jwt = jwtUtils.getJwtFromRequest(request);
-            String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            reqBody.setUsername(username);
-            PageDto result = maintainService.getMaintainPagination(reqBody);
-            if (result != null) {
-                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
-            }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
-        }
-        catch(Exception e){
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
-     */
     @PostMapping("/update/maintainId={maintainId}")
     public ResponseEntity<?> updateMaintain(@RequestBody MaintainRequest reqBody,
                                         @PathVariable Long maintainId,

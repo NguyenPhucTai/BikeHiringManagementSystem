@@ -8,15 +8,15 @@ import java.util.Date;
 @Data
 @Table(name = "maintain")
 public class Maintain extends BaseEntity{
-    @Column(name = "maintain_date")
-    private Date maintainDate;
+    @Column(name = "date")
+    private Date date;
 
-    @Column(name = "maintain_cost")
-    private Double maintainCost;
+    @Column(name = "cost")
+    private Double cost;
 
-    @Column(name = "maintain_description")
-    private String maintainDescription;
+    @Column(name = "description")
+    private String description;
 
-    @Column(name = "maintain_type")
-    private String maintainType;
+    @Column(name = "type")
+    private String type;
 }

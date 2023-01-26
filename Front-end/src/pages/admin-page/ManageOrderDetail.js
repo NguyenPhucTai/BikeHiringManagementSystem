@@ -27,7 +27,7 @@ import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
 import { OrderManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
-import { TableCartBikeList } from "../../components/Table/TableCartBikeList";
+import { TableDelete } from "../../components/Table/TableDelete";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -242,9 +242,7 @@ function ManageOrderDetail() {
     // VARIABLE
     // CART
     // TRIGGER
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCalculateCost, setIsCalculateCost] = useState(false);
-    const [isCancelOrder, setIsCancelOrder] = useState(false);
 
     // DATA
     const [data, setData] = useState({})
@@ -647,7 +645,7 @@ function ManageOrderDetail() {
                                             <Col xs={12} sm={12}>
                                                 <label className='form-label'>Bike List</label>
                                                 {Object.keys(listBike).length !== 0 ?
-                                                    <TableCartBikeList
+                                                    <TableDelete
                                                         tableTitleList={tableTitleList}
                                                         listData={listBike}
                                                         isShowButtonDelete={false}
@@ -943,7 +941,7 @@ function ManageOrderDetail() {
                                             <Col xs={12} sm={12}>
                                                 <label className='form-label'>Bike List</label>
                                                 {Object.keys(listBike).length !== 0 ?
-                                                    <TableCartBikeList
+                                                    <TableDelete
                                                         tableTitleList={tableTitleList}
                                                         listData={listBike}
                                                         isShowButtonDelete={false}

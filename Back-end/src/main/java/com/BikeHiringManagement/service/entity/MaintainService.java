@@ -56,10 +56,10 @@ public class MaintainService {
             Maintain newMaintainLog = modelMapper.map(maintainRequest, Maintain.class);
             newMaintainLog.setCreatedDate(new Date());
             newMaintainLog.setCreatedUser(username);
-            newMaintainLog.setMaintainDate(maintainRequest.getMaintainDate());
-            newMaintainLog.setMaintainCost(maintainRequest.getCost());
-            newMaintainLog.setMaintainType(maintainRequest.getType());
-            newMaintainLog.setMaintainDescription(maintainRequest.getDescription());
+            newMaintainLog.setDate(maintainRequest.getDate());
+            newMaintainLog.setCost(maintainRequest.getCost());
+            newMaintainLog.setType(maintainRequest.getType());
+            newMaintainLog.setDescription(maintainRequest.getDescription());
             Maintain saveMaintainLog = maintainRepository.save(newMaintainLog);
 
             //save bike maintain type
@@ -96,7 +96,7 @@ public class MaintainService {
             }
             Maintain maintainLog = maintainRepository.findMaintainByIdAndIsDeleted(id, false);
             //another maintain
-            if(!Objects.equals(maintainLog.getMaintainType(), "MAINTAIN_BIKE")){
+            if(!Objects.equals(maintainLog.getType(), "MAINTAIN_BIKE")){
                 result.setMessage("Get successful");
                 result.setCode(Constant.SUCCESS_CODE);
                 result.setObject(maintainLog);
@@ -114,10 +114,10 @@ public class MaintainService {
                 maintainResponse.setListBike(listRes);
 
                 maintainResponse.setId(maintainResponse.getId());
-                maintainResponse.setMaintainCost(maintainLog.getMaintainCost());
-                maintainResponse.setMaintainDate(maintainLog.getMaintainDate());
-                maintainResponse.setMaintainType(maintainLog.getMaintainType());
-                maintainResponse.setMaintainDescription(maintainLog.getMaintainDescription());
+                maintainResponse.setMaintainCost(maintainLog.getCost());
+                maintainResponse.setMaintainDate(maintainLog.getDate());
+                maintainResponse.setMaintainType(maintainLog.getType());
+                maintainResponse.setMaintainDescription(maintainLog.getDescription());
 
                 result.setMessage("Get successful");
                 result.setCode(Constant.SUCCESS_CODE);
@@ -214,9 +214,9 @@ public class MaintainService {
             // Save new maintain log
             maintain.setModifiedDate(new Date());
             maintain.setModifiedUser(username);
-            maintain.setMaintainCost(maintainRequest.getCost());
-            maintain.setMaintainDate(maintainRequest.getMaintainDate());
-            maintain.setMaintainDescription(maintainRequest.getDescription());
+            maintain.setCost(maintainRequest.getCost());
+            maintain.setDate(maintainRequest.getDate());
+            maintain.setDescription(maintainRequest.getDescription());
 
             if(listBikeIdRequest.isEmpty()){
                 maintainRepository.save(maintain);
@@ -239,10 +239,10 @@ public class MaintainService {
                 HistoryObject historyMaintainObject = new HistoryObject();
                 historyMaintainObject.setUsername(username);
                 historyMaintainObject.setEntityId(maintainId);
-                historyMaintainObject.getComparingMap().put("maintain_cost", new ComparedObject(maintain.getMaintainCost(), maintainRequest.getCost()));
-                historyMaintainObject.getComparingMap().put("maintain_date", new ComparedObject(maintain.getMaintainDate(), maintainRequest.getMaintainDate()));
-                historyMaintainObject.getComparingMap().put("maintain_description", new ComparedObject(maintain.getMaintainDescription(), maintainRequest.getDescription()));
-                historyMaintainObject.getComparingMap().put("maintain_type", new ComparedObject(maintain.getMaintainType(), maintainRequest.getType()));
+                historyMaintainObject.getComparingMap().put("maintain_cost", new ComparedObject(maintain.getCost(), maintainRequest.getCost()));
+                historyMaintainObject.getComparingMap().put("maintain_date", new ComparedObject(maintain.getDate(), maintainRequest.getDate()));
+                historyMaintainObject.getComparingMap().put("maintain_description", new ComparedObject(maintain.getDescription(), maintainRequest.getDescription()));
+                historyMaintainObject.getComparingMap().put("maintain_type", new ComparedObject(maintain.getType(), maintainRequest.getType()));
                 if(!Objects.equals(maintainRequest.getType(), "MAINTAIN_BIKE")){
                     historyService.saveHistory(Constant.HISTORY_UPDATE, maintain, historyMaintainObject);
                 }

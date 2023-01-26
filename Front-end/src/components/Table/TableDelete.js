@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Table from 'react-bootstrap/Table';
 
-export const TableCartBikeList = props => {
+export const TableDelete = props => {
 
     const { tableTitleList, listData, setDataID, setIsDelete, isShowButtonDelete } = props;
 
