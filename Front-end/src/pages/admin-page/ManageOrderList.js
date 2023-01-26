@@ -163,8 +163,8 @@ function ManageOrderList() {
 
     // Search By Date
     var now = dayjs()
-    const [startDate, setStartDate] = useState(now.startOf('month'));
-    const [endDate, setEndDate] = useState(now.endOf('month'));
+    const [startDate, setStartDate] = useState(now.startOf('year'));
+    const [endDate, setEndDate] = useState(now.endOf('year'));
 
 
     // USE EFFECT

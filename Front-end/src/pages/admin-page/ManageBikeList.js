@@ -12,7 +12,7 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import { BikeManagement } from '../../api/EndPoint';
 
 //Component
-import { TableView } from '../../components/Table/TableView';
+import { TableOrderList } from '../../components/Table/TableBikeList';
 import SortBar from "../../components/Navbar/SortBar";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
@@ -176,7 +176,7 @@ function ManageBikeList() {
     let tablePagination;
     if (listData.length > 0) {
         tablePagination = <div className='table-pagination'>
-            <TableView
+            <TableOrderList
                 tableTitleList={tableTitleList}
                 listData={listData}
                 setDataID={setDataID}

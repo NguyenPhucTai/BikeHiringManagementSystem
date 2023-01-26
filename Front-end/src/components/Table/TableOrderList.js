@@ -32,7 +32,12 @@ export const TableOrderList = props => {
                                             return (
                                                 <td key={index}><span style={{ color: '#FF8C00', fontWeight: "bold" }}>{element[propertyName]}</span></td>
                                             )
-                                        } else {
+                                        } else if (element[propertyName] === "CANCEL") {
+                                            return (
+                                                <td key={index}><span style={{ color: 'red', fontWeight: "bold" }}>{element[propertyName]}</span></td>
+                                            )
+                                        }
+                                        else {
                                             return (
                                                 <td key={index}>{element[propertyName]}</td>
                                             )

@@ -66,7 +66,8 @@ const handleGetOrder = async (
     setActualEndDate,
     setCalculatedCost,
     setServiceCost,
-    setTotalAmount
+    setTotalAmount,
+    setStatus
 ) => {
     await AxiosInstance.get(OrderManagement.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
@@ -95,6 +96,7 @@ const handleGetOrder = async (
             setCalculatedCost(res.data.data.calculatedCost)
             setServiceCost(res.data.data.serviceCost)
             setTotalAmount(res.data.data.totalAmount)
+            setStatus(res.data.data.status)
         }
         setTimeout(() => {
             setLoadingData(false)
@@ -106,21 +108,20 @@ const handleGetOrder = async (
     });
 }
 
-
 const handleCalculateCost = async (
     id,
-    expectedStartDate,
-    expectedEndDate,
+    startDate,
+    endDate,
     setIsCalculateCost,
     serviceCost,
     setTotalAmount,
     setCalculatedCost,
 ) => {
-    if (expectedEndDate.isAfter(expectedStartDate)) {
+    if (endDate.isAfter(startDate)) {
         const body = {
             id: id,
-            expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
-            expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+            expectedStartDate: startDate,
+            expectedEndDate: endDate,
         };
         await AxiosInstance.post(OrderManagement.cartCalculateCost, body, {
             headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
@@ -141,27 +142,29 @@ const handleCalculateCost = async (
     }
 }
 
-const handleSaveCart = async (
-    isCreateOrder,
+const handleSaveOrder = async (
+    id,
     formikRef,
     expectedStartDate,
     expectedEndDate,
     calculatedCost,
     serviceCost,
     totalAmount,
+    status,
     setLoadingData,
-    setShowPopup,
+    setShowCloseButton,
     setAlert,
-    setIsRunLinear,
+    setIsRunLinear
 ) => {
     if (serviceCost === undefined || serviceCost < 0) {
         serviceCost = 0;
     }
     const body = {
+        id: id,
         tempCustomerName: formikRef.current.values.customerName === "" ? null : formikRef.current.values.customerName,
         tempCustomerPhone: formikRef.current.values.phoneNumber === "" ? null : formikRef.current.values.phoneNumber,
-        expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
-        expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+        expectedStartDate: expectedStartDate,
+        expectedEndDate: expectedEndDate,
 
         serviceDescription: formikRef.current.values.serviceDescription === "" ? null : formikRef.current.values.serviceDescription,
         depositAmount: formikRef.current.values.depositAmount,
@@ -175,24 +178,37 @@ const handleSaveCart = async (
         calculatedCost: calculatedCost,
         serviceCost: serviceCost,
         totalAmount: totalAmount,
-        isCreateOrder: isCreateOrder
+        status: status
     };
-    await AxiosInstance.post(OrderManagement.cartSave, body, {
+    await AxiosInstance.post(OrderManagement.saveOrder, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     }).then((res) => {
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true)
         }
-        if (isCreateOrder === false) {
-            setLoadingData(true)
-        }
+        setLoadingData(true)
         setIsRunLinear(false);
-        setShowPopup(true)
+        setShowCloseButton(true)
     }).catch((error) => {
         showAlert(setAlert, error, false)
     });
 };
 
+const handleCancelOrder = async (id, setAlert, setShowCloseButton) => {
+    const body = {
+        id: id
+    };
+    await AxiosInstance.post(OrderManagement.cancelOrder, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+    }).then((res) => {
+        if (res.data.code === 1) {
+            showAlert(setAlert, res.data.message, true)
+        }
+        setShowCloseButton(true)
+    }).catch((error) => {
+        showAlert(setAlert, error, false)
+    });
+};
 
 function ManageOrderDetail() {
 
@@ -218,6 +234,7 @@ function ManageOrderDetail() {
     // TRIGGER
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCalculateCost, setIsCalculateCost] = useState(false);
+    const [isCancelOrder, setIsCancelOrder] = useState(false);
 
     // DATA
     const [data, setData] = useState({})
@@ -226,6 +243,7 @@ function ManageOrderDetail() {
     const [expectedEndDate, setExpectedEndDate] = useState(null);
     const [actualStartDate, setActualStartDate] = useState(null);
     const [actualEndDate, setActualEndDate] = useState(null);
+    const [status, setStatus] = useState('');
 
     const [isUsedService, setIsUsedService] = useState(false);
     const [depositType, setDepositType] = useState("identifyCard");
@@ -233,6 +251,7 @@ function ManageOrderDetail() {
     const [calculatedCost, setCalculatedCost] = useState(0);
     const [serviceCost, setServiceCost] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
+
 
 
     // VARIABLE
@@ -251,6 +270,9 @@ function ManageOrderDetail() {
     // VARIABLE
     // POPUP
     const [showPopup, setShowPopup] = useState(false);
+    const [titlePopup, setTitlePopup] = useState("");
+    const [showCloseButton, setShowCloseButton] = useState(false);
+
 
     // VARIABLE
     // FORMIK
@@ -284,7 +306,8 @@ function ManageOrderDetail() {
                 setActualEndDate,
                 setCalculatedCost,
                 setServiceCost,
-                setTotalAmount
+                setTotalAmount,
+                setStatus
             )
         }
     }, [loadingData])
@@ -333,45 +356,117 @@ function ManageOrderDetail() {
         initialValues.note = data.note === null ? "" : data.note;
     }
 
-    let popup = <Popup showPopup={showPopup} setShowPopup={setShowPopup}
-        child={
-            <Fragment>
-                <AlertMessage
-                    isShow={alert.alertShow}
-                    message={alert.alertMessage}
-                    status={alert.alertStatus}
-                />
-                {isSubmitting === false ?
+    let popupConfirm;
+    if (titlePopup === "Save") {
+        popupConfirm = <Popup showPopup={showPopup} setShowPopup={setShowPopup} child={
+            showCloseButton ?
+                < Fragment >
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
                                 setShowPopup(false);
-                            }}>Close</button>
+                            }}>Back</button>
                     </div>
-                    :
+                </ Fragment>
+                :
+                <Fragment>
+                    <div className='popup-message text-center mb-3'>
+                        <label>Do you really want to save new information</label>
+                        <p>This process cannot be undone</p>
+                    </div>
+                    <div className="popup-button">
+                        <button className="btn btn-success btn-action"
+                            onClick={() => {
+                                handleSaveOrder(
+                                    id,
+                                    formikRef,
+                                    expectedStartDate,
+                                    expectedEndDate,
+                                    calculatedCost,
+                                    serviceCost,
+                                    totalAmount,
+                                    status,
+                                    setLoadingData,
+                                    setShowCloseButton,
+                                    setAlert,
+                                    setIsRunLinear
+                                );
+                            }}>{titlePopup}</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                            }}>Cancel</button>
+                    </div>
+                </Fragment >
+        }
+        />
+    } else if (titlePopup === "Cancel") {
+        popupConfirm = <Popup showPopup={showPopup} setShowPopup={setShowPopup} child={
+            showCloseButton ?
+                < Fragment >
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
                                 navigate('/manage/order')
                             }}>Close</button>
                     </div>
-                }
-            </Fragment >
+                </ Fragment>
+                :
+                <Fragment>
+                    <div className='popup-message text-center mb-3'>
+                        <label>Do you really want to cancel this order?</label>
+                        <p>This process cannot be undone</p>
+                    </div>
+                    <div className="popup-button">
+                        <button className="btn btn-danger btn-action"
+                            onClick={() => {
+                                handleCancelOrder(id, setAlert, setShowCloseButton);
+                            }}>{titlePopup}</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                            }}>Back</button>
+                    </div>
+                </Fragment >
         }
-    />
+        />
+    } else if (titlePopup === "Closed") {
+        console.log("Closed")
+    }
+
 
     return (
         !loadingData ?
             <Fragment>
-                {popup}
+                {popupConfirm}
                 <div className="container">
-                    <h1 className="text-center">CREATE ORDER</h1>
-                    <Button variant="contained" color="success"
-                        onClick={() => {
-                            console.log("UPDATE")
-                        }}>
-                        UPDATE
-                    </Button>
+                    <h1 className="text-center">ORDER NO. {id}</h1>
+                    <div className="button-header" style={{ textAlign: "end" }}>
+                        <Button variant="contained" color="success" style={{ marginRight: "8px" }}
+                            onClick={() => {
+                                setShowPopup(true);
+                                setTitlePopup("Save");
+                            }}>
+                            SAVE INFORMATION
+                        </Button>
+                        <Button variant="contained" color="error"
+                            onClick={() => {
+                                setShowPopup(true);
+                                setTitlePopup("Cancel")
+                            }}>
+                            CANCEL ORDER
+                        </Button>
+                    </div>
                     {isRunLinear && (
                         <Box sx={{ width: '100%' }}>
                             <LinearProgress />

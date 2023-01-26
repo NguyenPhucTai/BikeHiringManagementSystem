@@ -30,6 +30,7 @@ public class OrderRequest {
 
     private String note;
     private Double totalAmount;
+    private String status;
 
     private Long bikeId;
     private Boolean isCreateOrder;

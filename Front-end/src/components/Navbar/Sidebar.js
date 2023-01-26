@@ -120,6 +120,14 @@ const Sidebar = () => {
                                         <ListItemText primary="Manage Bike" />
                                     </ListItemButton>
                                 </ListItem>
+                                <ListItem key={'order'} disableGutters={true} style={{ paddingLeft: 40 }}>
+                                    <ListItemButton className="item-button" component="a" href="/manage/order">
+                                        <ListItemIcon>
+                                            <EditIcon className="item-icon" />
+                                        </ListItemIcon>
+                                        <ListItemText primary="Manage Order" />
+                                    </ListItemButton>
+                                </ListItem>
                             </List>
                         </Collapse>
                         <ListItem key={'cart'} disableGutters={true}>

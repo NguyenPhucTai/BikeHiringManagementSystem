@@ -408,7 +408,7 @@ public class OrderService {
             /*--------------------------- UPDATE OTHER FIELD ------------------------*/
             order.setNote(orderRequest.getNote());
             if (orderRequest.getIsCreateOrder() == Boolean.TRUE) {
-                updateHiredNumberOfBike(order.getId());
+                updateStatusOfBike(order.getId(), Constant.STATUS_BIKE_HIRED);
                 order.setStatus("PENDING");
                 order.setTotalAmount(orderRequest.getTotalAmount());
                 message = "Create order successfully";
@@ -487,6 +487,106 @@ public class OrderService {
         }
     }
 
+    public Result saveOrder(OrderRequest orderRequest, String username) {
+        try {
+            Long orderId = orderRequest.getId();
+            if(!checkEntityExistService.isEntityExisted(Constant.ORDER, "id", orderId)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
+            }
+            Order order = orderRepository.findOrderByIdAndIsDeleted(orderId, Boolean.FALSE);
+            String message = "Save order successfully";
+            /*--------------------------- CUSTOMER LOGIC ------------------------*/
+            String tempCustomerName = orderRequest.getTempCustomerName();
+            String tempCustomerPhone = orderRequest.getTempCustomerPhone();
+            Long customerId = null;
+
+            /*--------------------------- CUSTOMER COST ------------------------*/
+            if (customerRepository.existsByPhoneNumberAndIsDeleted(tempCustomerPhone, Boolean.FALSE)) {
+                Customer customer = customerRepository.findCustomerByPhoneNumberAndIsDeleted(tempCustomerPhone, Boolean.FALSE);
+                customer.setName(tempCustomerName);
+                customerId = customer.getId();
+            }else{
+                Customer customer = new Customer();
+                customer.setCreatedDate(new Date());
+                customer.setCreatedUser(username);
+                customer.setPhoneNumber(tempCustomerPhone);
+                customer.setName(tempCustomerName);
+                Customer saveCustomer = customerRepository.save(customer);
+                customerId = saveCustomer.getId();
+            }
+            order.setCustomerId(customerId);
+
+            /*--------------------------- CALCULATE COST ------------------------*/
+            order.setExpectedStartDate(orderRequest.getExpectedStartDate());
+            order.setExpectedEndDate(orderRequest.getExpectedEndDate());
+            order.setCalculatedCost(orderRequest.getCalculatedCost());
+
+            /*--------------------------- SERVICE COST LOGIC ------------------------*/
+            String serviceDescription = null;
+            Double serviceCost = null;
+            if (orderRequest.getIsUsedService() != null && orderRequest.getIsUsedService() == true) {
+                serviceDescription = orderRequest.getServiceDescription();
+                serviceCost = orderRequest.getServiceCost();
+            }
+            order.setIsUsedService(orderRequest.getIsUsedService());
+            order.setServiceDescription(serviceDescription);
+            order.setServiceCost(serviceCost);
+
+            /*--------------------------- DEPOSIT COST LOGIC ------------------------*/
+            Double depositAmount = null;
+            String depositIdentifyCard = null;
+            String depositHotel = null;
+            String depositType = orderRequest.getDepositType();
+            switch (depositType.toUpperCase()) {
+                case "MONEY":
+                    depositAmount = orderRequest.getDepositAmount();
+                    break;
+                case "HOTEL":
+                    depositHotel = orderRequest.getDepositHotel();
+                    break;
+                case "IDENTIFYCARD":
+                    depositIdentifyCard = orderRequest.getDepositIdentifyCard();
+                    break;
+            }
+            order.setDepositType(depositType);
+            order.setDepositAmount(depositAmount);
+            order.setDepositHotel(depositHotel);
+            order.setDepositIdentifyCard(depositIdentifyCard);
+
+
+            /*--------------------------- UPDATE OTHER FIELD ------------------------*/
+            order.setNote(orderRequest.getNote());
+            order.setStatus(orderRequest.getStatus());
+            order.setTotalAmount(orderRequest.getTotalAmount());
+            order.setModifiedUser(username);
+            order.setModifiedDate(new Date());
+
+            orderRepository.save(order);
+            return new Result(Constant.SUCCESS_CODE, message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
+
+    public Result cancelOrder(OrderRequest orderRequest, String username) {
+        try {
+            Long orderId = orderRequest.getId();
+            if(!checkEntityExistService.isEntityExisted(Constant.ORDER, "id", orderId)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
+            }
+            Order order = orderRepository.findOrderByIdAndIsDeleted(orderId, Boolean.FALSE);
+            order.setStatus("CANCEL");
+            order.setModifiedUser(username);
+            order.setModifiedDate(new Date());
+            orderRepository.save(order);
+            return new Result(Constant.SUCCESS_CODE, "The order: " + orderId + " has been canceled!!!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
+        }
+    }
+
     /*--------------------------- NONE RETURN FUNCTION ------------------------*/
     public Integer getNumberOfBikeInCartById(Long orderId) {
         try {
@@ -555,13 +655,16 @@ public class OrderService {
         }
     }
 
-    public void updateHiredNumberOfBike(Long orderID){
+    public void updateStatusOfBike(Long orderID, String status){
         try{
             List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderID, Boolean.FALSE);
             List<Bike> listBike = new ArrayList<>();
             for(OrderDetail item : listOrderDetail){
                 Bike bike = bikeRepository.findBikeById(item.getBikeId());
-                bike.setHiredNumber(bike.getHiredNumber() + 1);
+                bike.setStatus(status);
+                if(status.equalsIgnoreCase("AVAILABLE")){
+                    bike.setHiredNumber(bike.getHiredNumber() + 1);
+                }
                 listBike.add(bike);
             }
             bikeRepository.saveAll(listBike);

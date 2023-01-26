@@ -35,4 +35,8 @@ public class Constant {
     // TIME
     public static final double MILLI_TO_HOUR = 1000 * 60 * 60;
 
+    // Bike status
+    public static final String STATUS_BIKE_HIRED = "HIRED";
+    public static final String STATUS_BIKE_AVAILABLE = "AVAILABLE";
+
 }
