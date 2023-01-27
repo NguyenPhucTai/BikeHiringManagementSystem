@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Table from 'react-bootstrap/Table';
 
-export const TableOrderList = props => {
+export const TableBikeList = props => {
 
     const { tableTitleList, listData, setDataID } = props;
 
@@ -12,10 +12,10 @@ export const TableOrderList = props => {
                     <tr>
                         {tableTitleList.map((element, index) => {
                             return (
-                                <th key={index}>{element}</th>
+                                <th key={index} style={{ width: element.width }}>{element.name}</th>
                             )
                         })}
-                        <th key={'buttonColumn'}>ACTION</th>
+                        <th key={'buttonColumn'} style={{ width: '20%' }}>ACTION</th>
                     </tr>
                 </thead>
                 <tbody>

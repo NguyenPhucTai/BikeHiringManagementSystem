@@ -12,10 +12,10 @@ export const TableOrderList = props => {
                     <tr>
                         {tableTitleList.map((element, index) => {
                             return (
-                                <th key={index}>{element}</th>
+                                <th key={index} style={{ width: element.width }}>{element.name}</th>
                             )
                         })}
-                        <th key={'buttonColumn'}>ACTION</th>
+                        <th key={'buttonColumn'} style={{ width: '20%' }}>ACTION</th>
                     </tr>
                 </thead>
                 <tbody>

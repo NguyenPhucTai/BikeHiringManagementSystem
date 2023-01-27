@@ -12,7 +12,7 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import { BikeManagement } from '../../api/EndPoint';
 
 //Component
-import { TableOrderList } from '../../components/Table/TableBikeList';
+import { TableBikeList } from '../../components/Table/TableBikeList';
 import SortBar from "../../components/Navbar/SortBar";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
@@ -103,7 +103,13 @@ function ManageBikeList() {
 
     // USE STATE
     // Table variables
-    const tableTitleList = ['ID', 'NAME', 'CATEGORY', 'HIRED NUMBER', 'STATUS']
+    const tableTitleList = [
+        { name: 'ID', width: '10%' },
+        { name: 'NAME', width: '20%' },
+        { name: 'CATEGORY', width: '20%' },
+        { name: 'HIRED NUMBER', width: '15%' },
+        { name: 'STATUS', width: '15%' }
+    ]
 
     // Redux - Filter form
     let reduxFilter = {
@@ -176,7 +182,7 @@ function ManageBikeList() {
     let tablePagination;
     if (listData.length > 0) {
         tablePagination = <div className='table-pagination'>
-            <TableOrderList
+            <TableBikeList
                 tableTitleList={tableTitleList}
                 listData={listData}
                 setDataID={setDataID}
@@ -195,11 +201,12 @@ function ManageBikeList() {
         !loadingData ?
             <Fragment>
                 <div className='container'>
+                    <h2 className="text-center">Management Bike List</h2>
                     <SortBar SortBy={SortBy} />
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike List</label></Col>
-                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }}
+                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px', width: '5rem' }}
                                 onClick={() => navigate('/manage/bike/create')} >Create</button></Col>
                         </Row>
                     </div>

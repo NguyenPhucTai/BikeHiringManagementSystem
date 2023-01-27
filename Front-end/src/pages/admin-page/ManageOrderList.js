@@ -135,7 +135,15 @@ function ManageOrderList() {
 
     // USE STATE
     // Table variables
-    const tableTitleList = ['ID', '*START DATE', '*END DATE', "HIRING HOURS", 'NUMBER OF BIKES', 'TOTAL AMOUNT', 'STATUS']
+    const tableTitleList = [
+        { name: 'ID', width: '5%' },
+        { name: '*START DATE', width: '15%' },
+        { name: '*END DATE', width: '15%' },
+        { name: 'HIRING HOURS', width: '15%' },
+        { name: 'TOTAL BIKES', width: '10%' },
+        { name: 'TOTAL AMOUNT', width: '15%' },
+        { name: 'STATUS', width: '10%' },
+    ]
 
     // Redux - Filter form
     let reduxFilter = {
@@ -231,6 +239,7 @@ function ManageOrderList() {
         !loadingData ?
             <Fragment>
                 <div className='container'>
+                    <h2 className="text-center">Management Order List</h2>
                     {reduxFilter.reduxSortByStatus === "CLOSED" ?
                         <SortBarOrder
                             SortBy={SortByActual}

@@ -104,6 +104,11 @@ button {
     font-weight: 600;
 }
 
+th,
+td {
+    vertical-align: middle;
+}
+
 .circular_progress {
     text-align: center;
     margin-top: 2.6rem;
@@ -117,4 +122,17 @@ button {
 
 .MuiCircularProgress-colorPrimary {
     color: $color-coral !important;
+}
+
+.btn-dark {
+    background-color: $color-coral !important;
+    border-color: $color-tomato !important;
+}
+
+.btn-info {
+    color: $color-white;
+
+    &:hover {
+        color: $color-white;
+    }
 }

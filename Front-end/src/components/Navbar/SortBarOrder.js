@@ -34,7 +34,7 @@ const SortBarOrder = (props) => {
     return (
         <Fragment>
             <Row className="sort-bar mb-3">
-                <Col lg={2} xs={12}>
+                <Col lg={3} xs={12}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
                             label="From"
@@ -48,7 +48,7 @@ const SortBarOrder = (props) => {
                         />
                     </LocalizationProvider>
                 </Col>
-                <Col lg={2} xs={12}>
+                <Col lg={3} xs={12}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
                             label="To"
@@ -62,9 +62,7 @@ const SortBarOrder = (props) => {
                         />
                     </LocalizationProvider>
                 </Col>
-            </Row>
-            <Row className="sort-bar mb-3">
-                <Col lg={2} xs={12}>
+                <Col lg={3} xs={12}>
                     <SortSelect
                         options={SortByStatus}
                         defaultValue={{ label: "PENDING", value: "PENDING" }}
@@ -82,6 +80,8 @@ const SortBarOrder = (props) => {
                         }}
                     />
                 </Col>
+            </Row>
+            <Row className="sort-bar mb-3">
                 <Col lg={3} xs={12}>
                     <SortSelect
                         options={SortType}
@@ -91,7 +91,7 @@ const SortBarOrder = (props) => {
                         }}
                     />
                 </Col>
-                <Col lg={4} xs={12}>
+                <Col lg={6} xs={12}>
                     <Formik
                         initialValues={initialValues}
                         onSubmit={(values) => {

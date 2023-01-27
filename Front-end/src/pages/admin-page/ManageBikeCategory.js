@@ -211,7 +211,11 @@ function ManageBikeCategory() {
     }
 
     // Table variables
-    const tableTitleList = ['ID', 'NAME', 'PRICE']
+    const tableTitleList = [
+        { name: 'ID', width: '10%' },
+        { name: 'NAME', width: '20%' },
+        { name: 'PRICE', width: '20%' },
+    ]
 
     // Formik variables
     const initialValues = {
@@ -595,11 +599,12 @@ function ManageBikeCategory() {
             <Fragment>
                 <div className='container'>
                     {popupTitle}
+                    <h2 className="text-center">Management Bike Category</h2>
                     <SortBar SortBy={SortBy} />
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike Category List</label></Col>
-                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button></Col>
+                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px', width: '5rem' }} onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button></Col>
                         </Row>
                     </div>
                     {tablePagination}

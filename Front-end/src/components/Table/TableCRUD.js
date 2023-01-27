@@ -12,10 +12,10 @@ export const TableCRUD = props => {
                     <tr>
                         {tableTitleList.map((element, index) => {
                             return (
-                                <th key={index}>{element}</th>
+                                <th key={index} style={{ width: element.width }}>{element.name}</th>
                             )
                         })}
-                        <th key={'buttonColumn'}>ACTION</th>
+                        <th key={'buttonColumn'} style={{ width: '20%' }}>ACTION</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,9 +30,9 @@ export const TableCRUD = props => {
                                     })
                                 }
                                 <td key={'buttonRow'}>
-                                    <button className="btn btn-success" onClick={() => { setShowPopup(true); setTitlePopup("View"); setDataID(element.id); }}>View</button>
-                                    <button className="btn btn-primary" onClick={() => { setShowPopup(true); setTitlePopup("Update"); setDataID(element.id); setIsUpdate(true) }}>Update</button>
-                                    <button className="btn btn-danger" onClick={() => { setShowPopup(true); setTitlePopup("Delete"); setDataID(element.id); setIsDelete(true) }}>Delete</button>
+                                    <button className="btn btn-info table-btn" onClick={() => { setShowPopup(true); setTitlePopup("View"); setDataID(element.id); }}>View</button>
+                                    <button className="btn btn-success table-btn" onClick={() => { setShowPopup(true); setTitlePopup("Update"); setDataID(element.id); setIsUpdate(true) }}>Update</button>
+                                    <button className="btn btn-danger table-btn" onClick={() => { setShowPopup(true); setTitlePopup("Delete"); setDataID(element.id); setIsDelete(true) }}>Delete</button>
                                 </td>
                             </tr>
                         )
