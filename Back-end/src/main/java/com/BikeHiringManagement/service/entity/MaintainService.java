@@ -15,6 +15,7 @@ import com.BikeHiringManagement.repository.MaintainRepository;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeSpecification;
+import com.BikeHiringManagement.specification.MaintainSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,12 @@ public class MaintainService {
     MaintainRepository maintainRepository;
     @Autowired
     MaintainBikeRepository maintainBikeRepository;
-
     @Autowired
     BikeRepository bikeRepository;
     @Autowired
     BikeSpecification bikeSpecification;
+    @Autowired
+    MaintainSpecification maintainSpecification;
     @Autowired
     ResponseUtils responseUtils;
     @Autowired
@@ -40,6 +42,35 @@ public class MaintainService {
     CheckEntityExistService checkEntityExistService;
     @Autowired
     HistoryService historyService;
+
+    public PageDto getMaintainPagination(PaginationMaintainRequest paginationMaintainRequest) {
+        try {
+            String searchKey = paginationMaintainRequest.getSearchKey();
+            Integer page = paginationMaintainRequest.getPage();
+            Integer limit = paginationMaintainRequest.getLimit();
+            String sortBy = paginationMaintainRequest.getSortBy();
+            String sortType = paginationMaintainRequest.getSortType();
+            Date dateTo = paginationMaintainRequest.getDateTo();
+            Date dateFrom = paginationMaintainRequest.getDateFrom();
+
+            Map<String, Object> mapResult = maintainSpecification.getMaintainPagination(searchKey, page, limit, sortBy, sortType, dateFrom, dateTo);
+            List<MaintainResponse> listRes = (List<MaintainResponse>) mapResult.get("data");
+            Long totalItems = (Long) mapResult.get("count");
+            Integer totalPage = responseUtils.getPageCount(totalItems, limit);
+
+            return PageDto.builder()
+                    .content(listRes)
+                    .numberOfElements(Math.toIntExact(totalItems))
+                    .page(page)
+                    .size(limit)
+                    .totalPages(totalPage)
+                    .totalElements(totalItems)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public Result createMaintain(MaintainRequest maintainRequest, String username){
         try{
@@ -145,10 +176,10 @@ public class MaintainService {
                 maintainResponse.setListBike(listRes);
 
                 maintainResponse.setId(maintainResponse.getId());
-                maintainResponse.setMaintainCost(maintainLog.getCost());
-                maintainResponse.setMaintainDate(maintainLog.getDate());
-                maintainResponse.setMaintainType(maintainLog.getType());
-                maintainResponse.setMaintainDescription(maintainLog.getDescription());
+//                maintainResponse.setMaintainCost(maintainLog.getCost());
+//                maintainResponse.setMaintainDate(maintainLog.getDate());
+//                maintainResponse.setMaintainType(maintainLog.getType());
+//                maintainResponse.setMaintainDescription(maintainLog.getDescription());
 
                 result.setMessage("Get successful");
                 result.setCode(Constant.SUCCESS_CODE);

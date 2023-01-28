@@ -7,10 +7,19 @@ import java.util.List;
 @Data
 public class MaintainResponse {
     public Long id;
-    public Date maintainDate;
-    public Double maintainCost;
-    public String maintainDescription;
-    public String maintainType;
-
+    public Date date;
+    public String type;
+    public String title;
+    public String description;
+    public Double cost;
     public List<BikeResponse> listBike;
+
+
+    public MaintainResponse(Long id, Date date, String type, String title, Double cost) {
+        this.id = id;
+        this.date = date;
+        this.type = type;
+        this.title = title;
+        this.cost = cost;
+    }
 }

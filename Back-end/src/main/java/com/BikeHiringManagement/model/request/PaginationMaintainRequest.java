@@ -2,12 +2,11 @@ package com.BikeHiringManagement.model.request;
 
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 @Data
 public class PaginationMaintainRequest extends PaginationRequest {
         private String username;
-        private Long maintainId;
-        private String maintainType;
-        private Double maintainCost;
-        private List<FilterOptionRequest> filterList;
+        private Date dateFrom;
+        private Date dateTo;
 }

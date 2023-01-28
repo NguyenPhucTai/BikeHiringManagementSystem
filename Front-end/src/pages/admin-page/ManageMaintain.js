@@ -2,15 +2,15 @@ import React, { Fragment, useEffect, useState } from 'react';
 
 // Library
 import Cookies from 'universal-cookie';
-
 import { Formik, Form } from 'formik';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import dayjs from 'dayjs';
 
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { CategoryManagement } from '../../api/EndPoint';
+import { MaintainManagement } from '../../api/EndPoint';
 
 //Component
 import { TableViewDelete } from '../../components/Table/TableViewDelete';
@@ -22,6 +22,7 @@ import { GetFormattedDate } from "../../function/DateFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
 import { GetFormattedCurrency } from '../../function/CurrencyFormat';
+import { GetFormattedDatetTime } from '../../function/DateTimeFormat';
 import { useNavigate } from 'react-router-dom';
 
 // Redux
@@ -36,7 +37,7 @@ const cookies = new Cookies();
 const SortBy = [
     { value: "id", label: "Sort by ID", key: "1" },
     { value: "type", label: "Sort by type", key: "2" },
-    { value: "description", label: "Sort by description", key: "3" },
+    { value: "title", label: "Sort by title", key: "3" },
     { value: "cost", label: "Sort by cost", key: "4" },
 ];
 
@@ -61,17 +62,41 @@ const handleGetDataPagination = async (
     setLoadingData,
     setTotalPages,
     reduxFilter,
-    reduxPagination
+    reduxPagination,
+    startDate,
+    endDate
 ) => {
     const body = {
         searchKey: reduxFilter.reduxSearchKey,
         page: reduxPagination.reduxPage,
         limit: reduxPagination.reduxRowsPerPage,
         sortBy: reduxFilter.reduxSortBy,
-        sortType: reduxFilter.reduxSortType
+        sortType: reduxFilter.reduxSortType,
+        dateFrom: startDate,
+        dateTo: endDate
     };
-    console.log(body)
-    setLoadingData(false)
+    await AxiosInstance.post(MaintainManagement.getPagination, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        var listData = res.data.data.content.map((data) => {
+            return {
+                id: data.id,
+                date: GetFormattedDatetTime(data.date),
+                type: data.type,
+                title: data.title,
+                cost: GetFormattedCurrency(data.cost)
+            }
+        })
+        setListData(listData)
+        setTotalPages(res.data.data.totalPages)
+        setTimeout(() => {
+            setLoadingData(false)
+        }, 500);
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
 };
 
 function ManageMaintain() {
@@ -90,7 +115,13 @@ function ManageMaintain() {
     const navigate = useNavigate();
 
     // Table variables
-    const tableTitleList = ['ID', 'DATE', 'TYPE', 'DESCRIPTION', 'COST']
+    const tableTitleList = [
+        { name: 'ID', width: '10%' },
+        { name: 'DATE', width: '15%' },
+        { name: 'TYPE', width: '15%' },
+        { name: 'TITLE', width: '25%' },
+        { name: 'COST', width: '15%' }
+    ]
 
     // Formik variables
     const initialValues = {
@@ -114,6 +145,11 @@ function ManageMaintain() {
         reduxRowsPerPage: useSelector((state) => state.reduxPagination.rowsPerPage)
     }
 
+    // Search By Date
+    var now = dayjs()
+    const [startDate, setStartDate] = useState(now.startOf('year'));
+    const [endDate, setEndDate] = useState(now.endOf('year'));
+
     // Table useState
     const [loadingData, setLoadingData] = useState(true);
     const [listData, setListData] = useState([]);
@@ -135,7 +171,7 @@ function ManageMaintain() {
     // Table loading - page load
     useEffect(() => {
         if (loadingData === true) {
-            console.log("handle get")
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination, startDate, endDate);
         }
     }, [loadingData])
 
@@ -143,7 +179,7 @@ function ManageMaintain() {
     useEffect(() => {
         if (reduxIsSubmitting === true) {
             if (reduxPagination.reduxPage === 1) {
-                handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+                handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination, startDate, endDate);
             } else {
                 dispatch(reduxPaginationAction.updatePage(1));
             }
@@ -153,14 +189,14 @@ function ManageMaintain() {
 
     // Table loading pagination - change page
     useEffect(() => {
-        handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+        handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination, startDate, endDate);
     }, [reduxPagination.reduxPage])
 
 
     // Table loading pagination - change row per page -> call above useEffect
     useEffect(() => {
         if (reduxPagination.reduxPage === 1) {
-            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination, startDate, endDate);
         } else {
             dispatch(reduxPaginationAction.updatePage(1));
         }
@@ -373,7 +409,13 @@ function ManageMaintain() {
             <Fragment>
                 <div className='container'>
                     {popupTitle}
-                    <SortBarMaintain SortBy={SortBy} />
+                    <SortBarMaintain
+                        SortBy={SortBy}
+                        startDate={startDate}
+                        endDate={endDate}
+                        setStartDate={setStartDate}
+                        setEndDate={setEndDate}
+                    />
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Maintain List</label></Col>
