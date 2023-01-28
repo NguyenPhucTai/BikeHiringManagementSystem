@@ -45,3 +45,13 @@ export const UserSchema = Yup.object().shape({
     username: Yup.string().required("Username is required"),
     password: Yup.string().required("Password is required"),
 });
+
+export const MaintainSchema = Yup.object().shape({
+    title: Yup.string().required("Title is required"),
+    description: Yup.string().required("Description is required"),
+    stringListManualId: Yup.string()
+        .when('type', {
+            is: (type) => type === "BIKE",
+            then: Yup.string().required("Bike manual ID list is required"),
+        }),
+});

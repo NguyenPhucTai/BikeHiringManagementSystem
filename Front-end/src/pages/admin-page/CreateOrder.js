@@ -541,7 +541,7 @@ function CreateOrder() {
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
                                             name="isUsedService"
-                                            defaultValue={isUsedService}
+                                            value={isUsedService}
                                             onChange={(e, value) => {
                                                 let result = false;
                                                 if (value === 'true') {
@@ -596,7 +596,7 @@ function CreateOrder() {
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
                                             name="depositType"
-                                            defaultValue={depositType}
+                                            value={depositType}
                                             onChange={(e, value) => {
                                                 setDepositType(value)
                                                 setFieldValue("depositType", value);
