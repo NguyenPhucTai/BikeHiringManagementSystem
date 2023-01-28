@@ -136,3 +136,9 @@ td {
         color: $color-white;
     }
 }
+
+.MuiInputAdornment-positionEnd {
+    align-items: end !important;
+    float: right !important;
+    padding-right: 10px !important;
+}

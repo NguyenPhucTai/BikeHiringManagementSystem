@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Fragment } from "react";
+import React, { Fragment } from "react";
 import { Formik, Form } from "formik";
 import { SortSelect } from "../Form/SortSelect";
 import { SearchField } from "../Form/SearchField";
@@ -9,16 +9,13 @@ import { useDispatch } from "react-redux";
 import { reduxAction } from "../../redux-store/redux/redux.slice";
 
 // Library - date time
-import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
 
 const initialValues = {
     searchKey: ""
 };
-
 
 const SortByStatus = [
     { value: "PENDING", label: "PENDING", key: "1" },
@@ -42,8 +39,16 @@ const SortBarOrder = (props) => {
                             onChange={(newValue) => {
                                 setStartDate(newValue);
                             }}
-                            renderInput={(params) => (
-                                <TextField {...params} />
+                            renderInput={({ inputRef, inputProps, InputProps }) => (
+                                <div className="form-group mb-3">
+                                    <div style={{ display: 'inline' }}>
+                                        <input className='form-control shadow-none'
+                                            autoComplete='off'
+                                            ref={inputRef} {...inputProps}
+                                        />
+                                        {InputProps?.endAdornment}
+                                    </div>
+                                </div>
                             )}
                         />
                     </LocalizationProvider>
@@ -56,20 +61,19 @@ const SortBarOrder = (props) => {
                             onChange={(newValue) => {
                                 setEndDate(newValue);
                             }}
-                            renderInput={(params) => (
-                                <TextField {...params} />
+                            renderInput={({ inputRef, inputProps, InputProps }) => (
+                                <div className="form-group mb-3">
+                                    <div style={{ display: 'inline' }}>
+                                        <input className='form-control shadow-none'
+                                            autoComplete='off'
+                                            ref={inputRef} {...inputProps}
+                                        />
+                                        {InputProps?.endAdornment}
+                                    </div>
+                                </div>
                             )}
                         />
                     </LocalizationProvider>
-                </Col>
-                <Col lg={3} xs={12}>
-                    <SortSelect
-                        options={SortByStatus}
-                        defaultValue={{ label: "PENDING", value: "PENDING" }}
-                        onChange={(value) => {
-                            dispatch(reduxAction.sortByStatus(value.value))
-                        }}
-                    />
                 </Col>
                 <Col lg={3} xs={12}>
                     <SortSelect
@@ -80,14 +84,23 @@ const SortBarOrder = (props) => {
                         }}
                     />
                 </Col>
-            </Row>
-            <Row className="sort-bar mb-3">
                 <Col lg={3} xs={12}>
                     <SortSelect
                         options={SortType}
                         defaultValue={{ label: "Newest to Oldest", value: "DESC" }}
                         onChange={(value) => {
                             dispatch(reduxAction.sortTypeBike(value.value))
+                        }}
+                    />
+                </Col>
+            </Row>
+            <Row className="sort-bar mb-3">
+                <Col lg={3} xs={12}>
+                    <SortSelect
+                        options={SortByStatus}
+                        defaultValue={{ label: "PENDING", value: "PENDING" }}
+                        onChange={(value) => {
+                            dispatch(reduxAction.sortByStatus(value.value))
                         }}
                     />
                 </Col>

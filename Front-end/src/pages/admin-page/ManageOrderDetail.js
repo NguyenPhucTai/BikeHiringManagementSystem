@@ -237,7 +237,14 @@ function ManageOrderDetail() {
     let { id } = useParams();
 
     // TABLE TITLE
-    const tableTitleList = ["ID", 'NAME', 'MANUAL ID', 'CATEGORY', 'PRICE', 'HIRED NUMBER']
+    const tableTitleList = [
+        { name: 'ID', width: '5%' },
+        { name: 'NAME', width: '15%' },
+        { name: 'MANUAL ID', width: '15%' },
+        { name: 'CATEGORY', width: '15%' },
+        { name: 'PRICE', width: '10%' },
+        { name: 'HIRED NUMBER', width: '15%' },
+    ]
 
     // VARIABLE
     // CART

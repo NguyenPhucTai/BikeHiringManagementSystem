@@ -43,7 +43,6 @@ const SortByActual = [
     { value: "totalAmount", label: "Sort by total amount", key: "4" }
 ];
 
-
 const showAlert = (setAlert, message, isSuccess) => {
     if (isSuccess) {
         setAlert({
@@ -79,12 +78,10 @@ const handleGetDataPagination = async (
         startDate: startDate,
         endDate: endDate
     };
-    console.log(body);
     await AxiosInstance.post(OrderManagement.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
-            console.log(res.data.data);
             var expectedStartDate = dayjs(data.expectedStartDate)
             var expectedEndDate = dayjs(data.expectedEndDate)
             var totalHours = expectedEndDate.diff(expectedStartDate, 'hour');
@@ -130,6 +127,8 @@ function ManageOrderList() {
     const [loadingPage, setLoadingPage] = useState(true);
     if (loadingPage === true) {
         dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
+        dispatch(reduxAction.sortTypeBike('DESC'));
+        dispatch(reduxAction.sortByBike('id'));
         setLoadingPage(false);
     }
 
