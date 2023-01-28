@@ -45,4 +45,8 @@ public class Constant {
     public static final String STATUS_ORDER_CANCEL = "CANCEL";
     public static final String STATUS_ORDER_CLOSED = "CLOSED";
 
+    // Maintain status
+    public static final String STATUS_MAINTAIN_GENERAL = "GENERAL";
+    public static final String STATUS_MAINTAIN_BIKE = "BIKE";
+
 }

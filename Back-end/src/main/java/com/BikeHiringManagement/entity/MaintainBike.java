@@ -12,7 +12,4 @@ public class MaintainBike extends BaseEntity{
 
     @Column(name = "bike_id", nullable = false)
     private Long bikeId;
-
-    @Column(name = "bike_manual_id", nullable = false)
-    private String bikeManualId;
 }

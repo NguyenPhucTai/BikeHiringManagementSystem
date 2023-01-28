@@ -7,8 +7,10 @@ import java.util.List;
 @Data
 public class MaintainRequest {
     private Date date;
-    private Double cost;
+    private String title;
     private String description;
     private String type;
+    private Double cost;
+    private String stringListManualId;
     private List<BikeIDListRequest> bikeIDList;
 }

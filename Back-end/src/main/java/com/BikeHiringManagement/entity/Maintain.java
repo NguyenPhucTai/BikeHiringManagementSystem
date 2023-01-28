@@ -11,12 +11,19 @@ public class Maintain extends BaseEntity{
     @Column(name = "date")
     private Date date;
 
-    @Column(name = "cost")
-    private Double cost;
+    @Column(name = "type")
+    private String type;
+
+    @Column(name = "title")
+    private String title;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "type")
-    private String type;
+    @Column(name = "cost")
+    private Double cost;
+
+
+
+
 }

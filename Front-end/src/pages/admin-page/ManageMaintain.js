@@ -22,6 +22,7 @@ import { GetFormattedDate } from "../../function/DateFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
 import { GetFormattedCurrency } from '../../function/CurrencyFormat';
+import { useNavigate } from 'react-router-dom';
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -82,6 +83,9 @@ function ManageMaintain() {
         dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
         setLoadingPage(false);
     }
+
+    // Render page
+    const navigate = useNavigate();
 
     // Table variables
     const tableTitleList = ['ID', 'DATE', 'TYPE', 'DESCRIPTION', 'COST']
@@ -371,7 +375,7 @@ function ManageMaintain() {
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Maintain List</label></Col>
-                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button></Col>
+                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => navigate('/manage/maintain/create')}>Create</button></Col>
                         </Row>
                     </div>
                     {tablePagination}

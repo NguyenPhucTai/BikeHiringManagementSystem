@@ -43,45 +43,76 @@ public class MaintainService {
 
     public Result createMaintain(MaintainRequest maintainRequest, String username){
         try{
-            if(Objects.equals(maintainRequest.getType(), "MAINTAIN_BIKE")){
-                for (BikeIDListRequest item : maintainRequest.getBikeIDList()) {
-                    Long checkBikeId = item.getBikeId();
-                    String checkBikeManualId = item.getBikeManualId();
-                    if (!bikeRepository.existsByIdAndBikeManualIdAndIsDeleted(checkBikeId, checkBikeManualId, false)) {
-                        return new Result(Constant.LOGIC_ERROR_CODE, "Bike Id or Bike Manual Id is not existed");
+            String type = maintainRequest.getType();
+            String title = maintainRequest.getTitle();
+            String description = maintainRequest.getDescription();
+            Double cost = maintainRequest.getCost();
+            Date date = maintainRequest.getDate();
+            String stringListManualId = maintainRequest.getStringListManualId();
+
+            List<String> listInvalidManualId = new ArrayList<>();
+            List<Bike> listBike = new ArrayList<>();
+            String error_message = null;
+
+            // IF STATUS = BIKE -> check valid bike manual ID
+            if(type.equalsIgnoreCase(Constant.STATUS_MAINTAIN_BIKE))
+            {
+                if(stringListManualId == null || stringListManualId.isEmpty()){
+                    error_message = "Please input bike manual ID list";
+                    return new Result(Constant.LOGIC_ERROR_CODE, error_message);
+                }
+
+                String[] arrManualId = stringListManualId.split(",");
+                for (int i = 0; i < arrManualId.length; i++) {
+                    // IF valid manual ID -> get Bike list
+                    if(bikeRepository.existsByBikeManualIdAndIsDeleted(arrManualId[i].trim(), Boolean.FALSE)){
+                        Bike bike = bikeRepository.findBikeByBikeManualId(arrManualId[i].trim());
+                        listBike.add(bike);
+                    }
+                    // IF invalid manual ID -> add to error list
+                    else{
+                        listInvalidManualId.add(arrManualId[i]);
                     }
                 }
             }
-            //save general maintain type
-            Maintain newMaintainLog = modelMapper.map(maintainRequest, Maintain.class);
-            newMaintainLog.setCreatedDate(new Date());
-            newMaintainLog.setCreatedUser(username);
-            newMaintainLog.setDate(maintainRequest.getDate());
-            newMaintainLog.setCost(maintainRequest.getCost());
-            newMaintainLog.setType(maintainRequest.getType());
-            newMaintainLog.setDescription(maintainRequest.getDescription());
-            Maintain saveMaintainLog = maintainRepository.save(newMaintainLog);
 
-            //save bike maintain type
-            List<MaintainBike> saveList = new ArrayList<>();
-            if(!maintainRequest.getBikeIDList().isEmpty()) {
-                for (BikeIDListRequest item : maintainRequest.getBikeIDList()) {
-                    MaintainBike maintainBike = new MaintainBike();
-                    maintainBike.setMaintainId(saveMaintainLog.getId());
-                    maintainBike.setBikeId(item.getBikeId());
-                    maintainBike.setBikeManualId(item.getBikeManualId());
-                    maintainBike.setCreatedDate(new Date());
-                    maintainBike.setCreatedUser(username);
-                    saveList.add(maintainBike);
+            // IF error list have value -> Throw error
+            if(type.equalsIgnoreCase(Constant.STATUS_MAINTAIN_BIKE) && listInvalidManualId.size() > 0){
+                error_message = "Invalid manual IDs:";
+                for(String id : listInvalidManualId){
+                    error_message += id + ",";
                 }
+                error_message = error_message.substring(0, error_message.length() - 1);
+                return new Result(Constant.LOGIC_ERROR_CODE, error_message);
             }
-            maintainBikeRepository.saveAll(saveList);
+
+            // Save maintain
+            Maintain newMaintain = modelMapper.map(maintainRequest, Maintain.class);
+            newMaintain.setCreatedDate(new Date());
+            newMaintain.setCreatedUser(username);
+            Maintain savedMaintain =  maintainRepository.save(newMaintain);
+
+            // Save maintain detail
+            if(type.equalsIgnoreCase(Constant.STATUS_MAINTAIN_BIKE) && listBike.size() > 0){
+                List<MaintainBike> maintainBikeList = new ArrayList<>();
+                for(Bike bike : listBike){
+                    MaintainBike newMaintainBike = new MaintainBike();
+                    newMaintainBike.setMaintainId(savedMaintain.getId());
+                    newMaintainBike.setBikeId(bike.getId());
+                    newMaintainBike.setCreatedDate(new Date());
+                    newMaintainBike.setCreatedUser(username);
+                    maintainBikeList.add(newMaintainBike);
+                }
+                maintainBikeRepository.saveAll(maintainBikeList);
+            }
+
             //save history
             HistoryObject historyObject = new HistoryObject();
             historyObject.setUsername(username);
-            historyObject.setEntityId(saveMaintainLog.getId());
-            historyService.saveHistory(Constant.HISTORY_CREATE, saveMaintainLog, historyObject);
-            return new Result(Constant.SUCCESS_CODE, "Create new maintain log successfully");
+            historyObject.setEntityId(savedMaintain.getId());
+            historyService.saveHistory(Constant.HISTORY_CREATE, savedMaintain, historyObject);
+
+            return new Result(Constant.SUCCESS_CODE, "Create new maintain successfully");
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
@@ -205,69 +236,68 @@ public class MaintainService {
      */
     public Result updateMaintain(MaintainRequest maintainRequest, Long maintainId, String username){
         try{
-            if(!maintainBikeRepository.existsByMaintainIdAndIsDeleted(maintainId, false)){
-                return new Result(Constant.LOGIC_ERROR_CODE, "The maintain Id has not been existed!!!");
-            }
-            Maintain maintain = maintainRepository.findMaintainByIdAndIsDeleted(maintainId, false);
-            List<MaintainBike> listMaintainBike = maintainBikeRepository.findAllByMaintainIdAndIsDeleted(maintainId,false);
-            List<BikeIDListRequest> listBikeIdRequest = maintainRequest.getBikeIDList();
-            // Save new maintain log
-            maintain.setModifiedDate(new Date());
-            maintain.setModifiedUser(username);
-            maintain.setCost(maintainRequest.getCost());
-            maintain.setDate(maintainRequest.getDate());
-            maintain.setDescription(maintainRequest.getDescription());
-
-            if(listBikeIdRequest.isEmpty()){
-                maintainRepository.save(maintain);
-                return new Result(Constant.SUCCESS_CODE, "Update new maintain log successfully");
-            }
-            else{
-                List<MaintainBike> saveList = new ArrayList<>();
-                for (BikeIDListRequest item : maintainRequest.getBikeIDList()) {
-                    MaintainBike maintainBike = maintainBikeRepository.findAllByMaintainIdAndBikeId(maintainId, item.getBikeId());
-                    if(maintainBike.getIsDeleted())
-                    maintainBike.setBikeId(item.getBikeId());
-                    maintainBike.setBikeManualId(item.getBikeManualId());
-                    maintain.setModifiedDate(new Date());
-                    maintain.setModifiedUser(username);
-                    saveList.add(maintainBike);
-                }
-                maintainBikeRepository.saveAll(saveList);
-
-                //History Update
-                HistoryObject historyMaintainObject = new HistoryObject();
-                historyMaintainObject.setUsername(username);
-                historyMaintainObject.setEntityId(maintainId);
-                historyMaintainObject.getComparingMap().put("maintain_cost", new ComparedObject(maintain.getCost(), maintainRequest.getCost()));
-                historyMaintainObject.getComparingMap().put("maintain_date", new ComparedObject(maintain.getDate(), maintainRequest.getDate()));
-                historyMaintainObject.getComparingMap().put("maintain_description", new ComparedObject(maintain.getDescription(), maintainRequest.getDescription()));
-                historyMaintainObject.getComparingMap().put("maintain_type", new ComparedObject(maintain.getType(), maintainRequest.getType()));
-                if(!Objects.equals(maintainRequest.getType(), "MAINTAIN_BIKE")){
-                    historyService.saveHistory(Constant.HISTORY_UPDATE, maintain, historyMaintainObject);
-                }
-                else{
-
-                    for(MaintainBike item:listMaintainBike) {
-                        for(BikeIDListRequest items:listBikeIdRequest){
-                            Long checkBikeIdEntity = item.getBikeId();
-                            String checkBikeManualIdEntity = item.getBikeManualId();
-
-                            Long checkBikeIdRequest = items.getBikeId();
-                            String checkBikeManualIdRequest = items.getBikeManualId();
-                            if (!bikeRepository.existsByIdAndBikeManualIdAndIsDeleted(checkBikeIdRequest, checkBikeManualIdRequest, false)) {
-                                return new Result(Constant.LOGIC_ERROR_CODE, "Bike Id or Bike Manual Id is not existed");
-                            }
-                            else {
-                                historyMaintainObject.getComparingMap().put("bike_manual_id", new ComparedObject(checkBikeManualIdEntity, checkBikeManualIdRequest));
-                                historyMaintainObject.getComparingMap().put("bike_id", new ComparedObject(checkBikeIdEntity, checkBikeIdRequest));
-                            }
-                        }
-                    }
-                    historyService.saveHistory(Constant.HISTORY_UPDATE, maintain, historyMaintainObject);
-                }
-
-            }
+//            if(!maintainBikeRepository.existsByMaintainIdAndIsDeleted(maintainId, false)){
+//                return new Result(Constant.LOGIC_ERROR_CODE, "The maintain Id has not been existed!!!");
+//            }
+//            Maintain maintain = maintainRepository.findMaintainByIdAndIsDeleted(maintainId, false);
+//            List<MaintainBike> listMaintainBike = maintainBikeRepository.findAllByMaintainIdAndIsDeleted(maintainId,false);
+//            List<BikeIDListRequest> listBikeIdRequest = maintainRequest.getBikeIDList();
+//            // Save new maintain log
+//            maintain.setModifiedDate(new Date());
+//            maintain.setModifiedUser(username);
+//            maintain.setCost(maintainRequest.getCost());
+//            maintain.setDate(maintainRequest.getDate());
+//            maintain.setDescription(maintainRequest.getDescription());
+//
+//            if(listBikeIdRequest.isEmpty()){
+//                maintainRepository.save(maintain);
+//                return new Result(Constant.SUCCESS_CODE, "Update new maintain log successfully");
+//            }
+//            else{
+//                List<MaintainBike> saveList = new ArrayList<>();
+//                for (BikeIDListRequest item : maintainRequest.getBikeIDList()) {
+//                    MaintainBike maintainBike = maintainBikeRepository.findAllByMaintainIdAndBikeId(maintainId, item.getBikeId());
+//                    if(maintainBike.getIsDeleted())
+//                    maintainBike.setBikeId(item.getBikeId());
+//                    maintain.setModifiedDate(new Date());
+//                    maintain.setModifiedUser(username);
+//                    saveList.add(maintainBike);
+//                }
+//                maintainBikeRepository.saveAll(saveList);
+//
+//                //History Update
+//                HistoryObject historyMaintainObject = new HistoryObject();
+//                historyMaintainObject.setUsername(username);
+//                historyMaintainObject.setEntityId(maintainId);
+//                historyMaintainObject.getComparingMap().put("maintain_cost", new ComparedObject(maintain.getCost(), maintainRequest.getCost()));
+//                historyMaintainObject.getComparingMap().put("maintain_date", new ComparedObject(maintain.getDate(), maintainRequest.getDate()));
+//                historyMaintainObject.getComparingMap().put("maintain_description", new ComparedObject(maintain.getDescription(), maintainRequest.getDescription()));
+//                historyMaintainObject.getComparingMap().put("maintain_type", new ComparedObject(maintain.getType(), maintainRequest.getType()));
+//                if(!Objects.equals(maintainRequest.getType(), "MAINTAIN_BIKE")){
+//                    historyService.saveHistory(Constant.HISTORY_UPDATE, maintain, historyMaintainObject);
+//                }
+//                else{
+//
+//                    for(MaintainBike item:listMaintainBike) {
+//                        for(BikeIDListRequest items:listBikeIdRequest){
+//                            Long checkBikeIdEntity = item.getBikeId();
+//                            String checkBikeManualIdEntity = item.getBikeManualId();
+//
+//                            Long checkBikeIdRequest = items.getBikeId();
+//                            String checkBikeManualIdRequest = items.getBikeManualId();
+//                            if (!bikeRepository.existsByIdAndBikeManualIdAndIsDeleted(checkBikeIdRequest, checkBikeManualIdRequest, false)) {
+//                                return new Result(Constant.LOGIC_ERROR_CODE, "Bike Id or Bike Manual Id is not existed");
+//                            }
+//                            else {
+//                                historyMaintainObject.getComparingMap().put("bike_manual_id", new ComparedObject(checkBikeManualIdEntity, checkBikeManualIdRequest));
+//                                historyMaintainObject.getComparingMap().put("bike_id", new ComparedObject(checkBikeIdEntity, checkBikeIdRequest));
+//                            }
+//                        }
+//                    }
+//                    historyService.saveHistory(Constant.HISTORY_UPDATE, maintain, historyMaintainObject);
+//                }
+//
+//            }
             return new Result(Constant.SUCCESS_CODE, "Update new maintain log successfully");
         }catch (Exception e) {
             e.printStackTrace();
