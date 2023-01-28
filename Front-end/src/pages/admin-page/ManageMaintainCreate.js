@@ -24,7 +24,7 @@ import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
 import { SelectField } from "../../components/Form/SelectField";
-import { OrderManagement } from "../../api/EndPoint";
+import { MaintainManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { TableDelete } from "../../components/Table/TableDelete";
@@ -52,8 +52,28 @@ const showAlert = (setAlert, message, isSuccess) => {
         })
     }
 }
-const handleSubmit = async (formikRef, date, setAlert, setShowPopup) => {
-
+const handleSubmit = async (formikRef, date, setAlert, setShowPopup, setIsSubmitting) => {
+    const body = {
+        date: date,
+        type: formikRef.current.values.type === "" ? null : formikRef.current.values.type,
+        title: formikRef.current.values.title === "" ? null : formikRef.current.values.title,
+        description: formikRef.current.values.description === "" ? null : formikRef.current.values.description,
+        cost: formikRef.current.values.cost < 0 ? null : formikRef.current.values.cost,
+        stringListManualId: formikRef.current.values.stringListManualId === "" ? null : formikRef.current.values.stringListManualId,
+    };
+    await AxiosInstance.post(MaintainManagement.create, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
+    }).then((res) => {
+        if (res.data.code === 1) {
+            showAlert(setAlert, res.data.message, true)
+        } else {
+            showAlert(setAlert, res.data.message, false)
+        }
+        setShowPopup(true)
+        setIsSubmitting(false)
+    }).catch((error) => {
+        showAlert(setAlert, error, false)
+    });
 }
 
 
@@ -133,7 +153,7 @@ function ManageMaintainCreate() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting === true) {
-            handleSubmit(formikRef, date, setAlert, setShowPopup)
+            handleSubmit(formikRef, date, setAlert, setShowPopup, setIsSubmitting)
         }
     }, [isSubmitting])
 
@@ -146,18 +166,18 @@ function ManageMaintainCreate() {
                     message={alert.alertMessage}
                     status={alert.alertStatus}
                 />
-                {isSubmitting === false ?
+                {alert.alertStatus === "success" ?
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
-                                setShowPopup(false);
+                                navigate('/manage/maintain')
                             }}>Close</button>
                     </div>
                     :
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
-                                navigate('/manage/order')
+                                setShowPopup(false);
                             }}>Close</button>
                     </div>
                 }

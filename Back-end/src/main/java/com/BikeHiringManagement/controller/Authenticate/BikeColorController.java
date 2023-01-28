@@ -33,12 +33,13 @@ public class BikeColorController {
         try{
             PageDto result = bikeColorService.getBikeColor(reqBody);
             if (result != null) {
-                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
+                return responseUtils.getResponseEntity(result, Constant.SUCCESS_CODE, "Get Successfully", HttpStatus.OK);
             }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, "Failed", HttpStatus.OK);
         }
         catch(Exception e){
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -46,14 +47,15 @@ public class BikeColorController {
     public ResponseEntity<?> getBikeColorById(@RequestParam  Long id) {
         try {
             Result result = bikeColorService.getBikeColorById(id);
-            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
-                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
-            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
-                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            if(result.getCode() == Constant.SUCCESS_CODE){
+                return  responseUtils.getResponseEntity( result.getObject(), result.getCode(), result.getMessage(), HttpStatus.OK);
             }
-            return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
+            else{
+                return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+            }
         }catch(Exception e){
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -68,7 +70,7 @@ public class BikeColorController {
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }catch(Exception e){
             e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -86,7 +88,7 @@ public class BikeColorController {
         }
         catch(Exception e){
             e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -100,7 +102,7 @@ public class BikeColorController {
         }
         catch(Exception e){
             e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -32,10 +32,15 @@ public class MaintainController {
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
             Result result = maintainService.createMaintain(maintainRequest, username);
+            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
+                return responseUtils.getResponseEntity(null, 0, result.getMessage(), HttpStatus.OK);
+            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
+                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }catch(Exception e){
             e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -44,13 +49,14 @@ public class MaintainController {
         try {
             Result result = maintainService.getMaintainLogById(maintainId);
             if(result.getCode() == Constant.LOGIC_ERROR_CODE){
-                return responseUtils.getResponseEntity(null, 1, result.getMessage(), HttpStatus.OK);
+                return responseUtils.getResponseEntity(null, 0, result.getMessage(), HttpStatus.OK);
             }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
                 return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
         }catch(Exception e){
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -66,7 +72,7 @@ public class MaintainController {
         }
         catch(Exception e){
             e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

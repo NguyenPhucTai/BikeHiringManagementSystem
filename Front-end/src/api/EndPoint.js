@@ -60,5 +60,13 @@ export const OrderManagement = {
     cancelOrder: "/admin/order/cancel"
 }
 
+export const MaintainManagement = {
+    create: "/admin/maintain/create",
+    update: "/admin/maintain/update/",
+    delete: "/admin/maintain/delete/",
+    getPagination: "/admin/maintain/get",
+    getById: "/admin/maintain/get?id="
+}
+
 // Fire Base
 export const Firebase_URL = "https://firebasestorage.googleapis.com/v0/b/bike-hiring-management-d7a01.appspot.com/o/bike-image%2F"

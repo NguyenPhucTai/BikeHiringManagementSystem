@@ -1,5 +1,6 @@
 package com.BikeHiringManagement.controller.Unauthenticate;
 
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.service.system.ResponseUtils;
@@ -28,12 +29,13 @@ public class CustomerBikeCategoryController {
         try{
             PageDto result = bikeCategoryService.getBikeCategory(reqBody);
             if (result != null) {
-                return responseUtils.getResponseEntity(result, 1, "Get Successfully", HttpStatus.OK);
+                return responseUtils.getResponseEntity(result, Constant.SUCCESS_CODE, "Get Successfully", HttpStatus.OK);
             }
-            return responseUtils.getResponseEntity(null, -1, "Failed", HttpStatus.OK);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, "Failed", HttpStatus.OK);
         }
         catch(Exception e){
-            return responseUtils.getResponseEntity(e, -1, "Login fail!", HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

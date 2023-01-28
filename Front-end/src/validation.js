@@ -38,7 +38,7 @@ export const OrderSchema = Yup.object().shape({
             is: (depositType) => depositType === 'hotel',
             then: Yup.string().required("Hotel address is required"),
         }),
-    totalAmount: Yup.number().min(1, "Total amount required")
+    totalAmount: Yup.number().min(1, "Total amount must be greater than 0")
 });
 
 export const UserSchema = Yup.object().shape({
@@ -54,4 +54,5 @@ export const MaintainSchema = Yup.object().shape({
             is: (type) => type === "BIKE",
             then: Yup.string().required("Bike manual ID list is required"),
         }),
+    cost: Yup.number().min(1, "Total cost must be greater than 0")
 });

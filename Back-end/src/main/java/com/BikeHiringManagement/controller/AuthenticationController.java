@@ -86,7 +86,7 @@ public class AuthenticationController {
             return responseUtils.getResponseEntity(null, -1, "SERVER ERROR", HttpStatus.OK);
         }catch (Exception e) {
             e.printStackTrace();
-            return responseUtils.getResponseEntity(e, SYSTEM_ERROR_CODE, SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -112,7 +112,7 @@ public class AuthenticationController {
             return responseUtils.getResponseEntity(null, 1, "Create account successfully", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "Create account fail", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

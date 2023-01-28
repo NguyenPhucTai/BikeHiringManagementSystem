@@ -78,11 +78,11 @@ public class MaintainService {
 
             // IF error list have value -> Throw error
             if(type.equalsIgnoreCase(Constant.STATUS_MAINTAIN_BIKE) && listInvalidManualId.size() > 0){
-                error_message = "Invalid manual IDs:";
+                error_message = "Invalid manual IDs: ";
                 for(String id : listInvalidManualId){
-                    error_message += id + ",";
+                    error_message += id.trim() + ", ";
                 }
-                error_message = error_message.substring(0, error_message.length() - 1);
+                error_message = error_message.substring(0, error_message.length() - 2);
                 return new Result(Constant.LOGIC_ERROR_CODE, error_message);
             }
 

@@ -1,6 +1,7 @@
 package com.BikeHiringManagement.controller.Authenticate;
 
 
+import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.model.temp.Result;
 import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.service.entity.RoleService;
@@ -27,7 +28,7 @@ public class RoleController {
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }catch(Exception e){
             e.printStackTrace();
-            return responseUtils.getResponseEntity(null, -1, "System Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
