@@ -239,7 +239,7 @@ function ManageBikeDetail() {
                     }) => (
                         <Form className="d-flex flex-column">
                             <Row>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Bike Id"}
                                         name={"id"}
@@ -247,7 +247,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Bike Manual Id"}
                                         name={"bikeManualId"}
@@ -255,7 +255,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Bike Name"}
                                         name={"bikeName"}
@@ -263,7 +263,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Bike No"}
                                         name={"bikeNo"}
@@ -271,7 +271,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Bike Category"}
                                         name={"bikeCategory"}
@@ -279,7 +279,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Price"}
                                         name={"price"}
@@ -287,7 +287,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Bike Manufacturer"}
                                         name={"bikeManufacturer"}
@@ -295,7 +295,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Bike Color"}
                                         name={"bikeColor"}
@@ -303,7 +303,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Hired Number"}
                                         name={"hiredNumber"}
@@ -311,7 +311,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Status"}
                                         name={"status"}
@@ -319,7 +319,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Create User"}
                                         name={"createdUser"}
@@ -327,7 +327,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Create Date"}
                                         name={"createdDate"}
@@ -335,7 +335,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Modified User"}
                                         name={"modifiedUser"}
@@ -343,7 +343,7 @@ function ManageBikeDetail() {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col xs={12} sm={6}>
+                                <Col xs={12} lg={6}>
                                     <TextFieldCustom
                                         label={"Modified Date"}
                                         name={"modifiedDate"}

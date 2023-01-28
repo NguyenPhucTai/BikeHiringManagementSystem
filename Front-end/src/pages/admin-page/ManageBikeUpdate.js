@@ -541,7 +541,7 @@ function ManageBikeUpdate() {
                         }) => (
                             <Form className="d-flex flex-column">
                                 <Row className="mb-3">
-                                    <Col xs={12} sm={6}>
+                                    <Col xs={12} lg={6}>
                                         <TextFieldCustom
                                             label={"Bike Manual Id"}
                                             name={"bikeManualId"}
@@ -549,7 +549,7 @@ function ManageBikeUpdate() {
                                             placeholder={"Enter the bike manual id"}
                                         />
                                     </Col>
-                                    <Col xs={12} sm={6}>
+                                    <Col xs={12} lg={6}>
                                         <TextFieldCustom
                                             label={"Bike Name"}
                                             name={"bikeName"}
@@ -557,7 +557,7 @@ function ManageBikeUpdate() {
                                             placeholder={"Enter the bike name"}
                                         />
                                     </Col>
-                                    <Col xs={12} sm={6}>
+                                    <Col xs={12} lg={6}>
                                         <TextFieldCustom
                                             label={"Bike No"}
                                             name={"bikeNo"}
@@ -565,7 +565,7 @@ function ManageBikeUpdate() {
                                             placeholder={"Enter your bike number"}
                                         />
                                     </Col>
-                                    <Col xs={12} sm={6}>
+                                    <Col xs={12} lg={6}>
                                         <SelectField
                                             label={"Bike Category"}
                                             name={"bikeCategory"}
@@ -581,7 +581,7 @@ function ManageBikeUpdate() {
                                             }}
                                         />
                                     </Col>
-                                    <Col xs={12} sm={6}>
+                                    <Col xs={12} lg={6}>
                                         <SelectField
                                             label={"Bike Manufacturer"}
                                             name={"bikeManufacturer"}
@@ -597,7 +597,7 @@ function ManageBikeUpdate() {
                                             }}
                                         />
                                     </Col>
-                                    <Col xs={12} sm={6}>
+                                    <Col xs={12} lg={6}>
                                         <SelectField
                                             label={"Bike Color"}
                                             name={"bikeColor"}

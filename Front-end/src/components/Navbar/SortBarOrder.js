@@ -41,6 +41,9 @@ const SortBarOrder = (props) => {
                             }}
                             renderInput={({ inputRef, inputProps, InputProps }) => (
                                 <div className="form-group mb-3">
+                                    <label className='form-label' htmlFor={inputProps.name}>
+                                        Date From
+                                    </label>
                                     <div style={{ display: 'inline' }}>
                                         <input className='form-control shadow-none'
                                             autoComplete='off'
@@ -63,6 +66,9 @@ const SortBarOrder = (props) => {
                             }}
                             renderInput={({ inputRef, inputProps, InputProps }) => (
                                 <div className="form-group mb-3">
+                                    <label className='form-label' htmlFor={inputProps.name}>
+                                        Date To
+                                    </label>
                                     <div style={{ display: 'inline' }}>
                                         <input className='form-control shadow-none'
                                             autoComplete='off'
@@ -77,6 +83,8 @@ const SortBarOrder = (props) => {
                 </Col>
                 <Col lg={3} xs={12}>
                     <SortSelect
+                        label={'Sort By'}
+                        name={'sortBy'}
                         options={SortBy}
                         defaultValue={{ label: "Sort by ID", value: "id" }}
                         onChange={(value) => {
@@ -86,6 +94,8 @@ const SortBarOrder = (props) => {
                 </Col>
                 <Col lg={3} xs={12}>
                     <SortSelect
+                        label={'Sort Type'}
+                        name={'sortType'}
                         options={SortType}
                         defaultValue={{ label: "Newest to Oldest", value: "DESC" }}
                         onChange={(value) => {
@@ -97,6 +107,8 @@ const SortBarOrder = (props) => {
             <Row className="sort-bar mb-3">
                 <Col lg={3} xs={12}>
                     <SortSelect
+                        label={'Status'}
+                        name={'status'}
                         options={SortByStatus}
                         defaultValue={{ label: "PENDING", value: "PENDING" }}
                         onChange={(value) => {
@@ -125,13 +137,14 @@ const SortBarOrder = (props) => {
                                 <Row>
                                     <Col lg={9} xs={12}>
                                         <SearchField
+                                            label={"Search"}
                                             name={"searchKey"}
                                             type={"text"}
                                             placeholder={"Search by id, total amount"}
                                         />
                                     </Col>
                                     <Col lg={3} xs={12}>
-                                        <button type="submit" className="btn btn-dark btn-md" style={{ width: '100%' }}>
+                                        <button type="submit" className="btn btn-dark btn-md" style={{ width: '100%', marginTop: '2rem' }}>
                                             Submit
                                         </button>
                                     </Col>

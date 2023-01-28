@@ -214,7 +214,6 @@ const handleSaveCart = async (
     });
 };
 
-
 function CreateOrder() {
 
     // Show Public Navigation
@@ -460,7 +459,7 @@ function CreateOrder() {
                             <Form className="d-flex flex-column">
                                 {/* Customer info */}
                                 <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <TextFieldCustom
                                             label={"Customer Name"}
                                             name={"customerName"}
@@ -468,7 +467,7 @@ function CreateOrder() {
                                             placeholder={"Enter the customer name"}
                                         />
                                     </Col>
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <TextFieldCustom
                                             label={"Phone Number"}
                                             name={"phoneNumber"}
@@ -476,74 +475,90 @@ function CreateOrder() {
                                             placeholder={"Enter the phone number"}
                                         />
                                     </Col>
-                                    <Row className="mb-3">
-                                        <Row className="mb-3">
-                                            <label className='form-label'>Expect Date</label>
-                                        </Row>
-                                        <Row className="mb-3">
-                                            <Col xs={12} sm={2}>
-                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DateTimePicker
-                                                        label="Expected Start Date"
-                                                        value={expectedStartDate}
-                                                        onChange={(newValue) => {
-                                                            setExpectedStartDate(newValue);
-                                                        }}
-                                                        onAccept={() => setIsCalculateCost(true)}
-                                                        renderInput={(params) => (
-                                                            <TextField {...params} />
-                                                        )}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                            <Col xs={12} sm={2}>
-                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DateTimePicker
-                                                        label="Expected End Date"
-                                                        value={expectedEndDate}
-                                                        onChange={(newValue) => {
-                                                            setExpectedEndDate(newValue);
-                                                        }}
-                                                        onAccept={() => setIsCalculateCost(true)}
-                                                        renderInput={(params) => (
-                                                            <TextField {...params} />
-                                                        )}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                        </Row>
-                                    </Row>
-                                    <Row>
-                                        <Col xs={12} sm={12}>
-                                            <label className='form-label'>Bike List</label>
-                                            {Object.keys(listBike).length !== 0 ?
-                                                <TableDelete
-                                                    tableTitleList={tableTitleList}
-                                                    listData={listBike}
-                                                    setDataID={setDataID}
-                                                    setIsDelete={setIsDelete}
-                                                    isShowButtonDelete={true}
-                                                />
-                                                :
-                                                <div>No bike found</div>
-                                            }
-                                        </Col>
-                                        <Col xs={12} sm={12}>
-                                            <TextFieldCustom
-                                                label={"Cost"}
-                                                name={"calculatedCost"}
-                                                type={"number"} onWheel={(e) => e.target.blur()}
-                                                placeholder={"Enter the cost"}
-                                                value={calculatedCost}
-                                                disabled={true}
+
+                                    <Col lg={3} xs={12}>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DateTimePicker
+                                                label="Expected Start Date"
+                                                value={expectedStartDate}
+                                                onChange={(newValue) => {
+                                                    setExpectedStartDate(newValue);
+                                                }}
+                                                onAccept={() => setIsCalculateCost(true)}
+                                                renderInput={({ inputRef, inputProps, InputProps }) => (
+                                                    <div className="form-group mb-3">
+                                                        <label className='form-label' htmlFor={inputProps.name}>
+                                                            Expected Start Date
+                                                        </label>
+                                                        <div style={{ display: 'inline' }}>
+                                                            <input className='form-control shadow-none'
+                                                                autoComplete='off'
+                                                                ref={inputRef} {...inputProps}
+                                                            />
+                                                            {InputProps?.endAdornment}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             />
-                                        </Col>
-                                    </Row>
+                                        </LocalizationProvider>
+                                    </Col>
+                                    <Col lg={3} xs={12}>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DateTimePicker
+                                                label="Expected End Date"
+                                                value={expectedEndDate}
+                                                onChange={(newValue) => {
+                                                    setExpectedEndDate(newValue);
+                                                }}
+                                                onAccept={() => setIsCalculateCost(true)}
+                                                renderInput={({ inputRef, inputProps, InputProps }) => (
+                                                    <div className="form-group mb-3">
+                                                        <label className='form-label' htmlFor={inputProps.name}>
+                                                            Expected End Date
+                                                        </label>
+                                                        <div style={{ display: 'inline' }}>
+                                                            <input className='form-control shadow-none'
+                                                                autoComplete='off'
+                                                                ref={inputRef} {...inputProps}
+                                                            />
+                                                            {InputProps?.endAdornment}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            />
+                                        </LocalizationProvider>
+                                    </Col>
+
+                                    <Col xs={12} lg={12}>
+                                        <label className='form-label'>Bike List</label>
+                                        {Object.keys(listBike).length !== 0 ?
+                                            <TableDelete
+                                                tableTitleList={tableTitleList}
+                                                listData={listBike}
+                                                setDataID={setDataID}
+                                                setIsDelete={setIsDelete}
+                                                isShowButtonDelete={true}
+                                            />
+                                            :
+                                            <div>No bike found</div>
+                                        }
+                                    </Col>
+                                    <Col xs={12} lg={12}>
+                                        <TextFieldCustom
+                                            label={"Cost"}
+                                            name={"calculatedCost"}
+                                            type={"number"} onWheel={(e) => e.target.blur()}
+                                            placeholder={"Enter the cost"}
+                                            value={calculatedCost}
+                                            disabled={true}
+                                        />
+                                    </Col>
+
                                 </Row>
 
                                 {/* Service info */}
                                 <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <label className='form-label'>Using Service?</label>
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
@@ -566,7 +581,7 @@ function CreateOrder() {
                                     </Col>
                                     {isUsedService === true &&
                                         <Row>
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Service Description"}
                                                     name={"serviceDescription"}
@@ -574,7 +589,7 @@ function CreateOrder() {
                                                     placeholder={"Enter the description"}
                                                 />
                                             </Col>
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Service Cost"}
                                                     name={"serviceCost"}
@@ -598,7 +613,7 @@ function CreateOrder() {
 
                                 {/* Deposit info */}
                                 <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <label className='form-label'>Deposit type</label>
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
@@ -615,7 +630,7 @@ function CreateOrder() {
                                         </RadioGroup>
                                     </Col>
                                     {depositType === "identifyCard" &&
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Identify Card"}
                                                 name={"depositIdentifyCard"}
@@ -625,7 +640,7 @@ function CreateOrder() {
                                         </Col>
                                     }
                                     {depositType === "money" &&
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Despoit Amount"}
                                                 name={"depositAmount"}
@@ -636,7 +651,7 @@ function CreateOrder() {
                                         </Col>
                                     }
                                     {depositType === "hotel" &&
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Hotel"}
                                                 name={"depositHotel"}
@@ -649,7 +664,7 @@ function CreateOrder() {
 
                                 {/* Total info */}
                                 <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <TextAreaCustom
                                             label={"Note"}
                                             name={"note"}
@@ -657,7 +672,7 @@ function CreateOrder() {
                                             placeholder={"Enter the note"}
                                         />
                                     </Col>
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <TextFieldCustom
                                             label={"Total Cost"}
                                             name={"totalAmount"}

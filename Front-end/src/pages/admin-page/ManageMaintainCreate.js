@@ -191,7 +191,7 @@ function ManageMaintainCreate() {
                         }) => (
                             <Form className="d-flex flex-column">
                                 <Row className="mb-3">
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <TextFieldCustom
                                             label={"Title"}
                                             name={"title"}
@@ -200,28 +200,34 @@ function ManageMaintainCreate() {
                                         />
                                     </Col>
 
-                                    <Row className="mb-3">
-                                        <Row>
-                                            <label className='form-label'>Date</label>
-                                        </Row>
-                                        <Row>
-                                            <Col xs={12} sm={12}>
-                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DateTimePicker
-                                                        label="Choose date"
-                                                        value={date}
-                                                        onChange={(newValue) => {
-                                                            setDate(newValue);
-                                                        }}
-                                                        renderInput={(params) => (
-                                                            <TextField {...params} />
-                                                        )}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                        </Row>
+                                    <Row>
+                                        <Col xs={12} lg={3}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DateTimePicker
+                                                    label="Choose date"
+                                                    value={date}
+                                                    onChange={(newValue) => {
+                                                        setDate(newValue);
+                                                    }}
+                                                    renderInput={({ inputRef, inputProps, InputProps }) => (
+                                                        <div className="form-group mb-3">
+                                                            <label className='form-label' htmlFor={inputProps.name}>
+                                                                Choose date
+                                                            </label>
+                                                            <div style={{ display: 'inline' }}>
+                                                                <input className='form-control shadow-none'
+                                                                    autoComplete='off'
+                                                                    ref={inputRef} {...inputProps}
+                                                                />
+                                                                {InputProps?.endAdornment}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                />
+                                            </LocalizationProvider>
+                                        </Col>
                                     </Row>
-                                    <Col xs={12} sm={2}>
+                                    <Col xs={12} lg={2}>
                                         <label className='form-label'>Type</label>
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
@@ -237,7 +243,7 @@ function ManageMaintainCreate() {
                                         </RadioGroup>
                                     </Col>
                                     {type === "BIKE" &&
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextAreaCustom
                                                 label={"Bike Manual ID List"}
                                                 name={"stringListManualId"}
@@ -246,7 +252,7 @@ function ManageMaintainCreate() {
                                             />
                                         </Col>
                                     }
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <TextAreaCustom
                                             label={"Description"}
                                             name={"description"}
@@ -254,7 +260,7 @@ function ManageMaintainCreate() {
                                             placeholder={"Enter the description"}
                                         />
                                     </Col>
-                                    <Col xs={12} sm={12}>
+                                    <Col xs={12} lg={12}>
                                         <TextFieldCustom
                                             label={"Total cost"}
                                             name={"cost"}

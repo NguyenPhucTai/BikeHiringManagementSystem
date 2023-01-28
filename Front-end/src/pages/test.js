@@ -309,7 +309,7 @@ function Test() {
                 }) => (
                     <Form className="d-flex flex-column">
                         <Row>
-                            <Col xs={12} sm={6}>
+                            <Col xs={12} lg={6}>
                                 <TextFieldCustom
                                     label={"Bike Manual Id"}
                                     name={"bikeManualId"}
@@ -317,7 +317,7 @@ function Test() {
                                     placeholder={"Enter the bike manual id"}
                                 />
                             </Col>
-                            <Col xs={12} sm={6}>
+                            <Col xs={12} lg={6}>
                                 <TextFieldCustom
                                     label={"Bike Name"}
                                     name={"bikeName"}
@@ -325,7 +325,7 @@ function Test() {
                                     placeholder={"Enter the bike name"}
                                 />
                             </Col>
-                            <Col xs={12} sm={6}>
+                            <Col xs={12} lg={6}>
                                 <TextFieldCustom
                                     label={"Bike No"}
                                     name={"bikeNo"}
@@ -333,7 +333,7 @@ function Test() {
                                     placeholder={"Enter your bike number"}
                                 />
                             </Col>
-                            <Col xs={12} sm={6}>
+                            <Col xs={12} lg={6}>
                                 <SelectField
                                     label={"Bike Category"}
                                     name={"bikeCategory"}
@@ -347,7 +347,7 @@ function Test() {
                                     }}
                                 />
                             </Col>
-                            <Col xs={12} sm={6}>
+                            <Col xs={12} lg={6}>
                                 <SelectField
                                     label={"Bike Manufacturer"}
                                     name={"bikeManufacturer"}
@@ -361,7 +361,7 @@ function Test() {
                                     }}
                                 />
                             </Col>
-                            <Col xs={12} sm={6}>
+                            <Col xs={12} lg={6}>
                                 <SelectField
                                     label={"Bike Color"}
                                     name={"bikeColor"}

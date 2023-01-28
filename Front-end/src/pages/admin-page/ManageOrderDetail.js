@@ -557,7 +557,7 @@ function ManageOrderDetail() {
 
                                     {/* Customer info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Customer Name"}
                                                 name={"customerName"}
@@ -565,7 +565,7 @@ function ManageOrderDetail() {
                                                 placeholder={"Enter the customer name"}
                                             />
                                         </Col>
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Phone Number"}
                                                 name={"phoneNumber"}
@@ -578,7 +578,7 @@ function ManageOrderDetail() {
                                                 <label className='form-label'>Expect Date</label>
                                             </Row>
                                             <Row className="mb-3">
-                                                <Col xs={12} sm={2}>
+                                                <Col xs={12} lg={2}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Expected Start Date"
@@ -594,7 +594,7 @@ function ManageOrderDetail() {
                                                         />
                                                     </LocalizationProvider>
                                                 </Col>
-                                                <Col xs={12} sm={2}>
+                                                <Col xs={12} lg={2}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Expected End Date"
@@ -614,7 +614,7 @@ function ManageOrderDetail() {
                                                 <label className='form-label'>Actual Date</label>
                                             </Row>
                                             <Row className="mb-3">
-                                                <Col xs={12} sm={2}>
+                                                <Col xs={12} lg={2}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Actual Start Date"
@@ -629,7 +629,7 @@ function ManageOrderDetail() {
                                                         />
                                                     </LocalizationProvider>
                                                 </Col>
-                                                <Col xs={12} sm={2}>
+                                                <Col xs={12} lg={2}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Actual End Date"
@@ -649,7 +649,7 @@ function ManageOrderDetail() {
                                         </Row>
                                         <Row className="mb-3">
 
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <label className='form-label'>Bike List</label>
                                                 {Object.keys(listBike).length !== 0 ?
                                                     <TableDelete
@@ -661,7 +661,7 @@ function ManageOrderDetail() {
                                                     <div>No bike found</div>
                                                 }
                                             </Col>
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Cost"}
                                                     name={"calculatedCost"}
@@ -677,7 +677,7 @@ function ManageOrderDetail() {
 
                                     {/* Service info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <label className='form-label'>Using Service?</label>
                                             <RadioGroup
                                                 aria-labelledby="demo-controlled-radio-buttons-group"
@@ -700,7 +700,7 @@ function ManageOrderDetail() {
                                         </Col>
                                         {isUsedService === true &&
                                             <Row>
-                                                <Col xs={12} sm={12}>
+                                                <Col xs={12} lg={12}>
                                                     <TextFieldCustom
                                                         label={"Service Description"}
                                                         name={"serviceDescription"}
@@ -708,7 +708,7 @@ function ManageOrderDetail() {
                                                         placeholder={"Enter the description"}
                                                     />
                                                 </Col>
-                                                <Col xs={12} sm={12}>
+                                                <Col xs={12} lg={12}>
                                                     <TextFieldCustom
                                                         label={"Service Cost"}
                                                         name={"serviceCost"}
@@ -732,7 +732,7 @@ function ManageOrderDetail() {
 
                                     {/* Deposit info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <label className='form-label'>Deposit type</label>
                                             <RadioGroup
                                                 aria-labelledby="demo-controlled-radio-buttons-group"
@@ -749,7 +749,7 @@ function ManageOrderDetail() {
                                             </RadioGroup>
                                         </Col>
                                         {depositType === "identifyCard" &&
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Identify Card"}
                                                     name={"depositIdentifyCard"}
@@ -759,7 +759,7 @@ function ManageOrderDetail() {
                                             </Col>
                                         }
                                         {depositType === "money" &&
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Despoit Amount"}
                                                     name={"depositAmount"}
@@ -770,7 +770,7 @@ function ManageOrderDetail() {
                                             </Col>
                                         }
                                         {depositType === "hotel" &&
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Hotel"}
                                                     name={"depositHotel"}
@@ -783,7 +783,7 @@ function ManageOrderDetail() {
 
                                     {/* Total info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextAreaCustom
                                                 label={"Note"}
                                                 name={"note"}
@@ -791,7 +791,7 @@ function ManageOrderDetail() {
                                                 placeholder={"Enter the note"}
                                             />
                                         </Col>
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Total Cost"}
                                                 name={"totalAmount"}
@@ -848,7 +848,7 @@ function ManageOrderDetail() {
 
                                     {/* Customer info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Customer Name"}
                                                 name={"customerName"}
@@ -857,7 +857,7 @@ function ManageOrderDetail() {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Phone Number"}
                                                 name={"phoneNumber"}
@@ -871,7 +871,7 @@ function ManageOrderDetail() {
                                                 <label className='form-label'>Expect Date</label>
                                             </Row>
                                             <Row className="mb-3">
-                                                <Col xs={12} sm={2}>
+                                                <Col xs={12} lg={2}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Expected Start Date"
@@ -887,7 +887,7 @@ function ManageOrderDetail() {
                                                         />
                                                     </LocalizationProvider>
                                                 </Col>
-                                                <Col xs={12} sm={2}>
+                                                <Col xs={12} lg={2}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Expected End Date"
@@ -908,7 +908,7 @@ function ManageOrderDetail() {
                                                 <label className='form-label'>Actual Date</label>
                                             </Row>
                                             <Row className="mb-3">
-                                                <Col xs={12} sm={2}>
+                                                <Col xs={12} lg={2}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Actual Start Date"
@@ -924,7 +924,7 @@ function ManageOrderDetail() {
                                                         />
                                                     </LocalizationProvider>
                                                 </Col>
-                                                <Col xs={12} sm={2}>
+                                                <Col xs={12} lg={2}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Actual End Date"
@@ -945,7 +945,7 @@ function ManageOrderDetail() {
                                         </Row>
                                         <Row className="mb-3">
 
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <label className='form-label'>Bike List</label>
                                                 {Object.keys(listBike).length !== 0 ?
                                                     <TableDelete
@@ -957,7 +957,7 @@ function ManageOrderDetail() {
                                                     <div>No bike found</div>
                                                 }
                                             </Col>
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Cost"}
                                                     name={"calculatedCost"}
@@ -973,7 +973,7 @@ function ManageOrderDetail() {
 
                                     {/* Service info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <label className='form-label'>Using Service?</label>
                                             <RadioGroup
                                                 aria-labelledby="demo-controlled-radio-buttons-group"
@@ -999,7 +999,7 @@ function ManageOrderDetail() {
                                         </Col>
                                         {isUsedService === true &&
                                             <Row>
-                                                <Col xs={12} sm={12}>
+                                                <Col xs={12} lg={12}>
                                                     <TextFieldCustom
                                                         label={"Service Description"}
                                                         name={"serviceDescription"}
@@ -1008,7 +1008,7 @@ function ManageOrderDetail() {
                                                         disabled={true}
                                                     />
                                                 </Col>
-                                                <Col xs={12} sm={12}>
+                                                <Col xs={12} lg={12}>
                                                     <TextFieldCustom
                                                         label={"Service Cost"}
                                                         name={"serviceCost"}
@@ -1033,7 +1033,7 @@ function ManageOrderDetail() {
 
                                     {/* Deposit info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <label className='form-label'>Deposit type</label>
                                             <RadioGroup
                                                 aria-labelledby="demo-controlled-radio-buttons-group"
@@ -1056,7 +1056,7 @@ function ManageOrderDetail() {
                                             </RadioGroup>
                                         </Col>
                                         {depositType === "identifyCard" &&
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Identify Card"}
                                                     name={"depositIdentifyCard"}
@@ -1067,7 +1067,7 @@ function ManageOrderDetail() {
                                             </Col>
                                         }
                                         {depositType === "money" &&
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Despoit Amount"}
                                                     name={"depositAmount"}
@@ -1079,7 +1079,7 @@ function ManageOrderDetail() {
                                             </Col>
                                         }
                                         {depositType === "hotel" &&
-                                            <Col xs={12} sm={12}>
+                                            <Col xs={12} lg={12}>
                                                 <TextFieldCustom
                                                     label={"Hotel"}
                                                     name={"depositHotel"}
@@ -1093,7 +1093,7 @@ function ManageOrderDetail() {
 
                                     {/* Total info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextAreaCustom
                                                 label={"Note"}
                                                 name={"note"}
@@ -1102,7 +1102,7 @@ function ManageOrderDetail() {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col xs={12} sm={12}>
+                                        <Col xs={12} lg={12}>
                                             <TextFieldCustom
                                                 label={"Total Cost"}
                                                 name={"totalAmount"}
