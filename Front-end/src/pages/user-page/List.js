@@ -97,6 +97,8 @@ const List = props => {
     const [loadingPage, setLoadingPage] = useState(true);
     if (loadingPage === true) {
         dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
+        dispatch(reduxAction.setSortType('DESC'));
+        dispatch(reduxAction.setSortBy('id'));
         setLoadingPage(false);
     }
 

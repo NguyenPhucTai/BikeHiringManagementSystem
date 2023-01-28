@@ -3,7 +3,7 @@ import React, { Fragment, useState, useEffect, useRef } from "react";
 // Library
 import { AxiosInstance } from "../../api/AxiosClient";
 import { Formik, Form } from 'formik';
-import { OrderSchema } from "../../validation";
+import { MaintainSchema } from "../../validation";
 import Cookies from 'universal-cookie';
 import LinearProgress from '@mui/material/LinearProgress';
 import Row from 'react-bootstrap/Row';
@@ -52,10 +52,14 @@ const showAlert = (setAlert, message, isSuccess) => {
         })
     }
 }
+const handleSubmit = async (formikRef, date, setAlert, setShowPopup) => {
 
+}
 
 
 function ManageMaintainCreate() {
+
+    var now = dayjs()
 
     // Show Public Navigation
     const dispatch = useDispatch();
@@ -72,11 +76,17 @@ function ManageMaintainCreate() {
     // CART
     // TRIGGER
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isCalculateCost, setIsCalculateCost] = useState(false);
 
     // DATA
+    const listType = [
+        { value: "GENERAL", label: "GENERAL", key: 1 },
+        { value: "BIKE", label: "BIKE", key: 2 }
+    ]
+
     const [data, setData] = useState({})
-    const [date, setDate] = useState(null);
+    const [date, setDate] = useState(now);
+    const [type, setType] = useState("GENERAL");
+
 
     // VARIABLE
     // PAGE LOADING
@@ -100,10 +110,10 @@ function ManageMaintainCreate() {
     // FORMIK
     const formikRef = useRef(null);
     const initialValues = {
-        type: "",
+        type: "GENERAL",
         title: "",
         description: "",
-        listBikeId: "",
+        stringListManualId: "",
         cost: 0,
     }
 
@@ -113,8 +123,9 @@ function ManageMaintainCreate() {
     // PAGE LOADING
     useEffect(() => {
         if (loadingData === true) {
-            console.log("load data")
-            setLoadingData(false)
+            setTimeout(() => {
+                setLoadingData(false)
+            }, 500);
         }
     }, [loadingData])
 
@@ -122,7 +133,7 @@ function ManageMaintainCreate() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting === true) {
-            console.log("Submit form")
+            handleSubmit(formikRef, date, setAlert, setShowPopup)
         }
     }, [isSubmitting])
 
@@ -164,9 +175,9 @@ function ManageMaintainCreate() {
                         innerRef={formikRef}
                         enableReinitialize
                         initialValues={initialValues}
-                        // validationSchema={OrderSchema}
+                        validationSchema={MaintainSchema}
                         onSubmit={(values) => {
-                            console.log("Submit");
+                            setIsSubmitting(true);
                         }}>
                         {({
                             isSubmitting,
@@ -210,28 +221,31 @@ function ManageMaintainCreate() {
                                             </Col>
                                         </Row>
                                     </Row>
-                                    <Col xs={12} sm={3}>
-                                        <SelectField
-                                            label={"Choose Type"}
-                                            name={"type"}
-                                            options={null}
-                                            placeholder={"Choose type"}
-                                            onChange={(selectOption) => {
-                                                setFieldValue("type", selectOption.value);
+                                    <Col xs={12} sm={2}>
+                                        <label className='form-label'>Type</label>
+                                        <RadioGroup
+                                            aria-labelledby="demo-controlled-radio-buttons-group"
+                                            name="type"
+                                            value={type}
+                                            onChange={(e, value) => {
+                                                setType(value)
+                                                setFieldValue("type", value);
                                             }}
-                                            onBlur={() => {
-                                                handleBlur({ target: { name: "type" } });
-                                            }}
-                                        />
+                                        >
+                                            <FormControlLabel value={"GENERAL"} control={<Radio />} label="GENERAL" />
+                                            <FormControlLabel value={"BIKE"} control={<Radio />} label="BIKE" />
+                                        </RadioGroup>
                                     </Col>
-                                    <Col xs={12} sm={12}>
-                                        <TextAreaCustom
-                                            label={"Bike Manual ID List"}
-                                            name={"stringListManualId"}
-                                            type={"text"}
-                                            placeholder={"Enter the manual ID list"}
-                                        />
-                                    </Col>
+                                    {type === "BIKE" &&
+                                        <Col xs={12} sm={12}>
+                                            <TextAreaCustom
+                                                label={"Bike Manual ID List"}
+                                                name={"stringListManualId"}
+                                                type={"text"}
+                                                placeholder={"Enter the manual ID list"}
+                                            />
+                                        </Col>
+                                    }
                                     <Col xs={12} sm={12}>
                                         <TextAreaCustom
                                             label={"Description"}

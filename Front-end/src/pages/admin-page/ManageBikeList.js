@@ -98,6 +98,8 @@ function ManageBikeList() {
     const [loadingPage, setLoadingPage] = useState(true);
     if (loadingPage === true) {
         dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
+        dispatch(reduxAction.setSortType('DESC'));
+        dispatch(reduxAction.setSortBy('id'));
         setLoadingPage(false);
     }
 

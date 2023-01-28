@@ -80,7 +80,7 @@ const SortBarOrder = (props) => {
                         options={SortBy}
                         defaultValue={{ label: "Sort by ID", value: "id" }}
                         onChange={(value) => {
-                            dispatch(reduxAction.sortByBike(value.value))
+                            dispatch(reduxAction.setSortBy(value.value))
                         }}
                     />
                 </Col>
@@ -89,7 +89,7 @@ const SortBarOrder = (props) => {
                         options={SortType}
                         defaultValue={{ label: "Newest to Oldest", value: "DESC" }}
                         onChange={(value) => {
-                            dispatch(reduxAction.sortTypeBike(value.value))
+                            dispatch(reduxAction.setSortType(value.value))
                         }}
                     />
                 </Col>
@@ -100,7 +100,7 @@ const SortBarOrder = (props) => {
                         options={SortByStatus}
                         defaultValue={{ label: "PENDING", value: "PENDING" }}
                         onChange={(value) => {
-                            dispatch(reduxAction.sortByStatus(value.value))
+                            dispatch(reduxAction.setSortByStatus(value.value))
                         }}
                     />
                 </Col>

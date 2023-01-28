@@ -22,18 +22,18 @@ const SortBar = (props) => {
                 <Col lg={3} xs={6}>
                     <SortSelect
                         options={props.SortBy}
-                        placeholder={"Sort by ID"}
+                        defaultValue={{ label: "Sort by ID", value: "id" }}
                         onChange={(value) => {
-                            dispatch(reduxAction.sortByBike(value.value))
+                            dispatch(reduxAction.setSortBy(value.value))
                         }}
                     />
                 </Col>
                 <Col lg={3} xs={6}>
                     <SortSelect
                         options={SortType}
-                        placeholder={"Newest to Oldest"}
+                        defaultValue={{ label: "Newest to Oldest", value: "DESC" }}
                         onChange={(value) => {
-                            dispatch(reduxAction.sortTypeBike(value.value))
+                            dispatch(reduxAction.setSortType(value.value))
                         }}
                     />
                 </Col>

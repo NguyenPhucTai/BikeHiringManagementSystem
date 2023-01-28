@@ -127,8 +127,9 @@ function ManageOrderList() {
     const [loadingPage, setLoadingPage] = useState(true);
     if (loadingPage === true) {
         dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
-        dispatch(reduxAction.sortTypeBike('DESC'));
-        dispatch(reduxAction.sortByBike('id'));
+        dispatch(reduxAction.setSortType('DESC'));
+        dispatch(reduxAction.setSortBy('id'));
+        dispatch(reduxAction.setSortByStatus('PENDING'))
         setLoadingPage(false);
     }
 

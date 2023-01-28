@@ -17,10 +17,10 @@ const reduxSlice = createSlice({
         searchBike(state, action) {
             state.searchKey = action.payload.searchKey;
         },
-        sortByBike(state, action) {
+        setSortBy(state, action) {
             state.sortBy = action.payload;
         },
-        sortTypeBike(state, action) {
+        setSortType(state, action) {
             state.sortType = action.payload;
         },
         filterBike(state, action) {
@@ -30,7 +30,7 @@ const reduxSlice = createSlice({
         setIsSubmitting(state, action) {
             state.isSubmitting = action.payload.isSubmitting;
         },
-        sortByStatus(state, action) {
+        setSortByStatus(state, action) {
             state.status = action.payload;
         }
     }
