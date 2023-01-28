@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MaintainService {
@@ -150,43 +151,29 @@ public class MaintainService {
         }
     }
 
-    public Result getMaintainLogById(Long id){
+    public Result getMaintainById(Long id){
         try{
             Result result = new Result();
-            if(!maintainRepository.existsByIdAndIsDeleted(id,false)){
-                return new Result(Constant.LOGIC_ERROR_CODE, "Maintain id is invalid !!!");
+            if(!checkEntityExistService.isEntityExisted(Constant.MAINTAIN, "id", id)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "Maintain id " + id + " is invalid !!!");
             }
-            Maintain maintainLog = maintainRepository.findMaintainByIdAndIsDeleted(id, false);
-            //another maintain
-            if(!Objects.equals(maintainLog.getType(), "MAINTAIN_BIKE")){
-                result.setMessage("Get successful");
-                result.setCode(Constant.SUCCESS_CODE);
-                result.setObject(maintainLog);
-            }
-            //maintain type is bike
-            else {
-                List<MaintainBike> listMaintainBike = maintainBikeRepository.findAllByMaintainIdAndIsDeleted(id,false);
-                List<Long> listBikeID = new ArrayList<>();
-                for(MaintainBike item:listMaintainBike) {
-                    listBikeID.add(item.getBikeId());
-                }
+
+            Maintain maintain = maintainRepository.findMaintainByIdAndIsDeleted(id, Boolean.FALSE);
+            MaintainResponse maintainResponse = modelMapper.map(maintain, MaintainResponse.class);
+
+            // IF TYPE = GENERAL -> GET LIST BIKE
+            if(maintain.getType().equalsIgnoreCase(Constant.STATUS_MAINTAIN_BIKE)){
+                List<MaintainBike> listMaintainBike = maintainBikeRepository.findAllByMaintainIdAndIsDeleted(id,Boolean.FALSE);
+                List<Long> listBikeID = listMaintainBike.stream().map(x -> x.getBikeId()).collect(Collectors.toList());
                 Map<String, Object> mapBike = bikeSpecification.getBikeListById(listBikeID);
                 List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
-                MaintainResponse maintainResponse = modelMapper.map(maintainLog, MaintainResponse.class);
                 maintainResponse.setListBike(listRes);
-
-                maintainResponse.setId(maintainResponse.getId());
-//                maintainResponse.setMaintainCost(maintainLog.getCost());
-//                maintainResponse.setMaintainDate(maintainLog.getDate());
-//                maintainResponse.setMaintainType(maintainLog.getType());
-//                maintainResponse.setMaintainDescription(maintainLog.getDescription());
-
-                result.setMessage("Get successful");
-                result.setCode(Constant.SUCCESS_CODE);
-                result.setObject(maintainResponse);
             }
-            return  result;
 
+            result.setMessage("Get successfully!!!");
+            result.setCode(Constant.SUCCESS_CODE);
+            result.setObject(maintainResponse);
+            return  result;
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(Constant.SYSTEM_ERROR_CODE, "System error", null);

@@ -40,6 +40,22 @@ public class MaintainController {
         }
     }
 
+    @GetMapping("/get")
+    public ResponseEntity<?> getMaintainLogById(@RequestParam Long id) {
+        try {
+            Result result = maintainService.getMaintainById(id);
+            if(result.getCode() == Constant.SUCCESS_CODE){
+                return  responseUtils.getResponseEntity( result.getObject(), result.getCode(), result.getMessage(), HttpStatus.OK);
+            }
+            else{
+                return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createMaintain(@RequestBody MaintainRequest maintainRequest,
                                              HttpServletRequest request) {
@@ -54,21 +70,7 @@ public class MaintainController {
         }
     }
 
-    @GetMapping("/get/maintainId={maintainId}")
-    public ResponseEntity<?> getMaintainLogById(@PathVariable Long maintainId) {
-        try {
-            Result result = maintainService.getMaintainLogById(maintainId);
-            if(result.getCode() == Constant.LOGIC_ERROR_CODE){
-                return responseUtils.getResponseEntity(null, 0, result.getMessage(), HttpStatus.OK);
-            }else if(result.getCode() == Constant.SYSTEM_ERROR_CODE){
-                return  responseUtils.getResponseEntity(null, -1, result.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            return  responseUtils.getResponseEntity(result.getObject(), 1, "Get Successfully", HttpStatus.OK);
-        }catch(Exception e){
-            e.printStackTrace();
-            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+
 
     @PostMapping("/update/maintainId={maintainId}")
     public ResponseEntity<?> updateMaintain(@RequestBody MaintainRequest reqBody,

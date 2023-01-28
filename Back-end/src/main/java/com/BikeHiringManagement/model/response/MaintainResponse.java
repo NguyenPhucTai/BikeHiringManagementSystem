@@ -14,6 +14,8 @@ public class MaintainResponse {
     public Double cost;
     public List<BikeResponse> listBike;
 
+    public MaintainResponse() {
+    }
 
     public MaintainResponse(Long id, Date date, String type, String title, Double cost) {
         this.id = id;
