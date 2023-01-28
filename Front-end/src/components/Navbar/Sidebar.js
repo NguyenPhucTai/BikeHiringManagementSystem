@@ -128,6 +128,14 @@ const Sidebar = () => {
                                         <ListItemText primary="Manage Order" />
                                     </ListItemButton>
                                 </ListItem>
+                                <ListItem key={'maintain'} disableGutters={true} style={{ paddingLeft: 40 }}>
+                                    <ListItemButton className="item-button" component="a" href="/manage/maintain">
+                                        <ListItemIcon>
+                                            <EditIcon className="item-icon" />
+                                        </ListItemIcon>
+                                        <ListItemText primary="Manage Maintain" />
+                                    </ListItemButton>
+                                </ListItem>
                             </List>
                         </Collapse>
                         <ListItem key={'cart'} disableGutters={true}>

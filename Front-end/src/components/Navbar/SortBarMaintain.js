@@ -27,38 +27,58 @@ const SortBarMaintain = (props) => {
     return (
         <Fragment>
             <Row className="sort-bar mb-3">
-                <Col lg={2} xs={12}>
+                <Col lg={3} xs={12}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
-                            label="From"
                             value={startDate}
                             onChange={(newValue) => {
                                 setStartDate(newValue);
                             }}
-                            renderInput={(params) => (
-                                <TextField {...params} />
+                            renderInput={({ inputRef, inputProps, InputProps }) => (
+                                <div className="form-group mb-3">
+                                    <label className='form-label' htmlFor={inputProps.name}>
+                                        Date From
+                                    </label>
+                                    <div style={{ display: 'inline' }}>
+                                        <input className='form-control shadow-none'
+                                            autoComplete='off'
+                                            ref={inputRef} {...inputProps}
+                                        />
+                                        {InputProps?.endAdornment}
+                                    </div>
+                                </div>
                             )}
                         />
                     </LocalizationProvider>
                 </Col>
-                <Col lg={2} xs={12}>
+                <Col lg={3} xs={12}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
-                            label="To"
                             value={endDate}
                             onChange={(newValue) => {
                                 setEndDate(newValue);
                             }}
-                            renderInput={(params) => (
-                                <TextField {...params} />
+                            renderInput={({ inputRef, inputProps, InputProps }) => (
+                                <div className="form-group mb-3">
+                                    <label className='form-label' htmlFor={inputProps.name}>
+                                        Date To
+                                    </label>
+                                    <div style={{ display: 'inline' }}>
+                                        <input className='form-control shadow-none'
+                                            autoComplete='off'
+                                            ref={inputRef} {...inputProps}
+                                        />
+                                        {InputProps?.endAdornment}
+                                    </div>
+                                </div>
                             )}
                         />
                     </LocalizationProvider>
                 </Col>
-            </Row>
-            <Row className="sort-bar mb-3">
-                <Col lg={2} xs={12}>
+                <Col lg={3} xs={12}>
                     <SortSelect
+                        label={'Sort By'}
+                        name={'sortBy'}
                         options={SortBy}
                         defaultValue={{ label: "Sort by ID", value: "id" }}
                         onChange={(value) => {
@@ -66,8 +86,10 @@ const SortBarMaintain = (props) => {
                         }}
                     />
                 </Col>
-                <Col lg={2} xs={12}>
+                <Col lg={3} xs={12}>
                     <SortSelect
+                        label={'Sort Type'}
+                        name={'sortType'}
                         options={SortType}
                         defaultValue={{ label: "Newest to Oldest", value: "DESC" }}
                         onChange={(value) => {
@@ -75,7 +97,10 @@ const SortBarMaintain = (props) => {
                         }}
                     />
                 </Col>
-                <Col lg={8} xs={12}>
+            </Row>
+            <Row className="sort-bar mb-3">
+                <Col lg={6} xs={12}></Col>
+                <Col lg={6} xs={12}>
                     <Formik
                         initialValues={initialValues}
                         onSubmit={(values) => {
@@ -96,13 +121,14 @@ const SortBarMaintain = (props) => {
                                 <Row>
                                     <Col lg={9} xs={12}>
                                         <SearchField
+                                            label={"Search"}
                                             name={"searchKey"}
                                             type={"text"}
                                             placeholder={"Search by id, type, cost, description"}
                                         />
                                     </Col>
                                     <Col lg={3} xs={12}>
-                                        <button type="submit" className="btn btn-dark btn-md" style={{ width: '100%' }}>
+                                        <button type="submit" className="btn btn-dark btn-md" style={{ width: '100%', marginTop: '2rem' }}>
                                             Submit
                                         </button>
                                     </Col>

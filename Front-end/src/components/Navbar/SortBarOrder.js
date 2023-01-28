@@ -105,6 +105,7 @@ const SortBarOrder = (props) => {
                 </Col>
             </Row>
             <Row className="sort-bar mb-3">
+                <Col lg={3} xs={12}></Col>
                 <Col lg={3} xs={12}>
                     <SortSelect
                         label={'Status'}
