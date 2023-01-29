@@ -69,17 +69,12 @@ public class MaintainController {
             return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
-    @PostMapping("/update/maintainId={maintainId}")
-    public ResponseEntity<?> updateMaintain(@RequestBody MaintainRequest reqBody,
-                                        @PathVariable Long maintainId,
-                                        HttpServletRequest request){
+    @PostMapping("/update")
+    public ResponseEntity<?> updateMaintain(@RequestBody MaintainRequest reqBody, HttpServletRequest request){
         try{
             String jwt = jwtUtils.getJwtFromRequest(request);
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
-            Result result = maintainService.updateMaintain(reqBody,maintainId, username);
+            Result result = maintainService.updateMaintain(reqBody, username);
             return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
         }
         catch(Exception e){

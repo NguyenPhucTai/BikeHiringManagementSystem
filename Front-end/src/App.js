@@ -31,6 +31,7 @@ import ManageOrderList from "./pages/admin-page/ManageOrderList";
 import ManageOrderDetail from "./pages/admin-page/ManageOrderDetail";
 import ManageMaintain from "./pages/admin-page/ManageMaintain";
 import ManageMaintainCreate from "./pages/admin-page/ManageMaintainCreate";
+import ManageMaintainDetail from "./pages/admin-page/ManageMaintainDetail";
 
 // Redux
 import { useSelector } from "react-redux";
@@ -86,6 +87,7 @@ function App() {
 						<Route path='/manage/order/:id' element={<ManageOrderDetail />} />
 						<Route path='/manage/maintain' exact element={<ManageMaintain />} />
 						<Route path='/manage/maintain/create' exact element={<ManageMaintainCreate />} />
+						<Route path='/manage/maintain/:id' element={<ManageMaintainDetail />} />
 					</Route>
 				</Routes>
 				{/* {reduxIsShowPublicNavBar && <Footer />} */}

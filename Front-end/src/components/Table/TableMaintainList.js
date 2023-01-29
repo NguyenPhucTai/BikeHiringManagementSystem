@@ -1,9 +1,12 @@
 import React, { Fragment } from "react";
 import Table from 'react-bootstrap/Table';
+import { useNavigate } from "react-router-dom";
 
-export const TableDelete = props => {
+export const TableMaintainList = props => {
 
-    const { tableTitleList, listData, setDataID, setIsDelete, isShowButtonDelete } = props;
+    const { setShowPopup, setTitlePopup, tableTitleList, listData, setDataID, setIsDelete } = props;
+
+    const navigate = useNavigate();
 
     return (
         <Fragment>
@@ -15,9 +18,7 @@ export const TableDelete = props => {
                                 <th key={index} style={{ width: element.width }}>{element.name}</th>
                             )
                         })}
-                        {isShowButtonDelete === true &&
-                            <th key={'buttonColumn'} style={{ width: '20%' }}>ACTION</th>
-                        }
+                        <th key={'buttonColumn'} style={{ width: '20%' }}>ACTION</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,12 +32,10 @@ export const TableDelete = props => {
                                         )
                                     })
                                 }
-                                {isShowButtonDelete === true &&
-                                    <td key={'buttonRow'}>
-                                        <button className="btn btn-danger" type="button" onClick={() => { setDataID(element.id); setIsDelete(true) }}>Delete</button>
-                                    </td>
-                                }
-
+                                <td key={'buttonRow'}>
+                                    <button className="btn btn-success" type="button" onClick={() => navigate("/manage/maintain/" + element.id)}>View</button>
+                                    <button className="btn btn-danger" type="button" onClick={() => { setShowPopup(true); setTitlePopup("Delete"); setDataID(element.id); setIsDelete(true) }}>Delete</button>
+                                </td>
                             </tr>
                         )
                     })}

@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class MaintainRequest {
+    private Long id;
     private Date date;
     private String title;
     private String description;

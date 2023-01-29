@@ -26,7 +26,7 @@ import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
 import { OrderManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
-import { TableDelete } from "../../components/Table/TableDelete";
+import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -532,7 +532,7 @@ function CreateOrder() {
                                     <Col xs={12} lg={12}>
                                         <label className='form-label'>Bike List</label>
                                         {Object.keys(listBike).length !== 0 ?
-                                            <TableDelete
+                                            <TableOrderBikeList
                                                 tableTitleList={tableTitleList}
                                                 listData={listBike}
                                                 setDataID={setDataID}

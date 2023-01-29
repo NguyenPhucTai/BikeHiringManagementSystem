@@ -5,12 +5,14 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import { Formik, Form } from 'formik';
 import { MaintainSchema } from "../../validation";
 import Cookies from 'universal-cookie';
+import LinearProgress from '@mui/material/LinearProgress';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Radio, RadioGroup, FormControlLabel, Button, Box } from "@mui/material";
 
 // Library - date time
+import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers';
@@ -21,9 +23,11 @@ import dayjs from 'dayjs';
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
+import { SelectField } from "../../components/Form/SelectField";
 import { MaintainManagement } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
+import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -48,7 +52,53 @@ const showAlert = (setAlert, message, isSuccess) => {
         })
     }
 }
-const handleSubmit = async (formikRef, date, setAlert, setShowPopup, setIsSubmitting) => {
+
+
+const handleGetMaintainById = async (id, setData, setDate, setType, setListBike, setLoadingData, navigate) => {
+    await AxiosInstance.get(MaintainManagement.getById + id, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            if (res.data.data !== null) {
+                setData(res.data.data);
+                setType(res.data.data.type);
+                setLoadingData(false);
+                var date = dayjs(res.data.data.date);
+                setDate(date);
+                var listBike = res.data.data.listBike.map((data) => {
+                    return {
+                        id: data.id,
+                        name: data.name,
+                        bikeManualId: data.bikeManualId,
+                        bikeCategoryName: data.bikeCategoryName,
+                        color: data.bikeColor,
+                        manufacturer: data.bikeManufacturerName,
+                        hiredNumber: data.hiredNumber,
+                        status: data.status
+                    }
+                })
+                setListBike(listBike);
+            }
+            else {
+                navigate("/404");
+            }
+        }
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
+
+}
+
+const saveMaintain = async (
+    id,
+    formikRef,
+    date,
+    setAlert,
+    setShowPopup,
+    setIsSubmitting
+) => {
     const body = {
         date: date,
         type: formikRef.current.values.type === "" ? null : formikRef.current.values.type,
@@ -73,9 +123,7 @@ const handleSubmit = async (formikRef, date, setAlert, setShowPopup, setIsSubmit
 }
 
 
-function ManageMaintainCreate() {
-
-    var now = dayjs()
+function ManageMaintainDetail() {
 
     // Show Public Navigation
     const dispatch = useDispatch();
@@ -88,26 +136,34 @@ function ManageMaintainCreate() {
     // Render page
     const navigate = useNavigate();
 
+    // GET ID FROM URL
+    let { id } = useParams()
+
+    // TABLE TITLE
+    const tableTitleList = [
+        { name: 'ID', width: '12.5%' },
+        { name: 'NAME', width: '12.5%' },
+        { name: 'MANUAL ID', width: '12.5%' },
+        { name: 'CATEGORY', width: '12.5%' },
+        { name: 'COLOR', width: '12.5%' },
+        { name: 'MANUFACTURER', width: '12.5%' },
+        { name: 'HIRED NUMBER', width: '12.5%' },
+        { name: 'STATUS', width: '12.5%' },
+    ]
+
     // VARIABLE
     // CART
     // TRIGGER
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // DATA
-    const listType = [
-        { value: "GENERAL", label: "GENERAL", key: 1 },
-        { value: "BIKE", label: "BIKE", key: 2 }
-    ]
-
     const [data, setData] = useState({})
-    const [date, setDate] = useState(now);
-    const [type, setType] = useState("GENERAL");
+    const [date, setDate] = useState(null);
+    const [type, setType] = useState(null);
+    const [listBike, setListBike] = useState([])
 
 
     // VARIABLE
     // PAGE LOADING
     const [loadingData, setLoadingData] = useState(true);
-    const [isRunLinear, setIsRunLinear] = useState(false);
 
     // VARIABLE
     // ALERT MESSAGE
@@ -133,15 +189,22 @@ function ManageMaintainCreate() {
         cost: 0,
     }
 
+    // Update initialValues
+    if (Object.keys(data).length !== 0) {
+        initialValues.id = data.id;
+        initialValues.title = data.title;
+        initialValues.type = data.type;
+        initialValues.description = data.description;
+        initialValues.cost = data.cost;
+        initialValues.stringListManualId = data.stringListManualId;
+    }
 
 
     // USE EFFECT
     // PAGE LOADING
     useEffect(() => {
         if (loadingData === true) {
-            setTimeout(() => {
-                setLoadingData(false)
-            }, 500);
+            handleGetMaintainById(id, setData, setDate, setType, setListBike, setLoadingData, navigate);
         }
     }, [loadingData])
 
@@ -149,7 +212,7 @@ function ManageMaintainCreate() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting === true) {
-            handleSubmit(formikRef, date, setAlert, setShowPopup, setIsSubmitting)
+            console.log("save")
         }
     }, [isSubmitting])
 
@@ -186,7 +249,7 @@ function ManageMaintainCreate() {
             <Fragment>
                 {popup}
                 <div className="container">
-                    <h1 className="text-center">CREATE MAINTAIN</h1>
+                    <h1 className="text-center">MAINTAIN NO. {id}</h1>
                     <Formik
                         innerRef={formikRef}
                         enableReinitialize
@@ -215,7 +278,6 @@ function ManageMaintainCreate() {
                                             placeholder={"Enter the title"}
                                         />
                                     </Col>
-
                                     <Row>
                                         <Col xs={12} lg={3}>
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -254,19 +316,39 @@ function ManageMaintainCreate() {
                                                 setFieldValue("type", value);
                                             }}
                                         >
-                                            <FormControlLabel value={"GENERAL"} control={<Radio />} label="GENERAL" />
-                                            <FormControlLabel value={"BIKE"} control={<Radio />} label="BIKE" />
+                                            {type === "BIKE" &&
+                                                <FormControlLabel value={"BIKE"} control={<Radio />} label="BIKE" />
+                                            }
+                                            {type === "GENERAL" &&
+                                                <FormControlLabel value={"GENERAL"} control={<Radio />} label="GENERAL" />
+                                            }
+
                                         </RadioGroup>
                                     </Col>
                                     {type === "BIKE" &&
-                                        <Col xs={12} lg={12}>
-                                            <TextAreaCustom
-                                                label={"Bike Manual ID List"}
-                                                name={"stringListManualId"}
-                                                type={"text"}
-                                                placeholder={"Enter the manual ID list"}
-                                            />
-                                        </Col>
+                                        <div>
+                                            <Col xs={12} lg={12}>
+                                                <TextAreaCustom
+                                                    label={"Bike Manual ID List"}
+                                                    name={"stringListManualId"}
+                                                    type={"text"}
+                                                    placeholder={"Enter the manual ID list"}
+                                                />
+                                            </Col>
+                                            <Col xs={12} lg={12}>
+                                                <label className='form-label'>Bike List</label>
+                                                {Object.keys(listBike).length !== 0 ?
+                                                    <TableOrderBikeList
+                                                        tableTitleList={tableTitleList}
+                                                        listData={listBike}
+                                                        isShowButtonDelete={false}
+                                                    />
+                                                    :
+                                                    <div>No bike found</div>
+                                                }
+                                            </Col>
+                                        </div>
+
                                     }
                                     <Col xs={12} lg={12}>
                                         <TextAreaCustom
@@ -287,7 +369,7 @@ function ManageMaintainCreate() {
                                     </Col>
                                 </Row>
                                 <button type="submit" className="btn btn-dark btn-md mt-3">
-                                    Submit
+                                    SAVE
                                 </button>
                             </Form>
                         )}
@@ -302,4 +384,4 @@ function ManageMaintainCreate() {
     )
 }
 
-export default ManageMaintainCreate;
+export default ManageMaintainDetail;

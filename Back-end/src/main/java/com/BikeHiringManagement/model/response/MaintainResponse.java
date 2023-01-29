@@ -12,6 +12,7 @@ public class MaintainResponse {
     public String title;
     public String description;
     public Double cost;
+    public String stringListManualId;
     public List<BikeResponse> listBike;
 
     public MaintainResponse() {

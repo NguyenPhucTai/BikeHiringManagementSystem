@@ -13,7 +13,7 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import { MaintainManagement } from '../../api/EndPoint';
 
 //Component
-import { TableViewDelete } from '../../components/Table/TableViewDelete';
+import { TableMaintainList } from '../../components/Table/TableMaintainList';
 import SortBarMaintain from "../../components/Navbar/SortBarMaintain";
 import { Popup } from '../../components/Modal/Popup';
 import { TextFieldCustom } from '../../components/Form/TextFieldCustom';
@@ -30,7 +30,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { reduxAction } from "../../redux-store/redux/redux.slice";
 import { reduxPaginationAction } from '../../redux-store/redux/reduxPagination.slice';
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
-import { TableDelete } from '../../components/Table/TableDelete';
 
 const cookies = new Cookies();
 
@@ -386,7 +385,7 @@ function ManageMaintain() {
     let tablePagination;
     if (listData.length > 0) {
         tablePagination = <div className='table-pagination'>
-            <TableViewDelete
+            <TableMaintainList
                 tableTitleList={tableTitleList}
                 listData={listData}
                 setShowPopup={setShowPopup}

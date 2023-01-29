@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 import Table from 'react-bootstrap/Table';
 
-export const TableViewDelete = props => {
+export const TableOrderBikeList = props => {
 
-    const { setShowPopup, setTitlePopup, tableTitleList, listData, setDataID, setIsDelete } = props;
+    const { tableTitleList, listData, setDataID, setIsDelete, isShowButtonDelete } = props;
 
     return (
         <Fragment>
@@ -15,7 +15,9 @@ export const TableViewDelete = props => {
                                 <th key={index} style={{ width: element.width }}>{element.name}</th>
                             )
                         })}
-                        <th key={'buttonColumn'} style={{ width: '20%' }}>ACTION</th>
+                        {isShowButtonDelete === true &&
+                            <th key={'buttonColumn'} style={{ width: '20%' }}>ACTION</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -29,10 +31,12 @@ export const TableViewDelete = props => {
                                         )
                                     })
                                 }
-                                <td key={'buttonRow'}>
-                                    <button className="btn btn-success" type="button" onClick={() => { setShowPopup(true); setTitlePopup("View"); setDataID(element.id); }}>View</button>
-                                    <button className="btn btn-danger" type="button" onClick={() => { setShowPopup(true); setTitlePopup("Delete"); setDataID(element.id); setIsDelete(true) }}>Delete</button>
-                                </td>
+                                {isShowButtonDelete === true &&
+                                    <td key={'buttonRow'}>
+                                        <button className="btn btn-danger" type="button" onClick={() => { setDataID(element.id); setIsDelete(true) }}>Delete</button>
+                                    </td>
+                                }
+
                             </tr>
                         )
                     })}
