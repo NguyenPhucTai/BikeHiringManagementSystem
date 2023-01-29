@@ -83,4 +83,17 @@ public class MaintainController {
         }
     }
 
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteMaintain(@PathVariable Long id, HttpServletRequest request){
+        try{
+            String jwt = jwtUtils.getJwtFromRequest(request);
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            Result result = maintainService.deleteMaintainById(id, username);
+            return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -62,7 +62,7 @@ export const OrderManagement = {
 
 export const MaintainManagement = {
     create: "/admin/maintain/create",
-    update: "/admin/maintain/update/",
+    update: "/admin/maintain/update",
     delete: "/admin/maintain/delete/",
     getPagination: "/admin/maintain/get",
     getById: "/admin/maintain/get?id="

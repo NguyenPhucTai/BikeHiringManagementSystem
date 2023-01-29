@@ -7,4 +7,5 @@ public interface MaintainRepository extends JpaRepository<Maintain, Long>, JpaSp
     boolean existsByIdAndIsDeleted(Long id, boolean check);
 
     Maintain findMaintainByIdAndIsDeleted(Long id, boolean check);
+    Maintain findMaintainById(Long id);
 }

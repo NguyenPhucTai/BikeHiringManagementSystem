@@ -62,7 +62,6 @@ const handleGetMaintainById = async (id, setData, setDate, setType, setListBike,
             if (res.data.data !== null) {
                 setData(res.data.data);
                 setType(res.data.data.type);
-                setLoadingData(false);
                 var date = dayjs(res.data.data.date);
                 setDate(date);
                 var listBike = res.data.data.listBike.map((data) => {
@@ -78,6 +77,7 @@ const handleGetMaintainById = async (id, setData, setDate, setType, setListBike,
                     }
                 })
                 setListBike(listBike);
+                setLoadingData(false)
             }
             else {
                 navigate("/404");
@@ -100,6 +100,7 @@ const saveMaintain = async (
     setIsSubmitting
 ) => {
     const body = {
+        id: id,
         date: date,
         type: formikRef.current.values.type === "" ? null : formikRef.current.values.type,
         title: formikRef.current.values.title === "" ? null : formikRef.current.values.title,
@@ -107,7 +108,7 @@ const saveMaintain = async (
         cost: formikRef.current.values.cost < 0 ? null : formikRef.current.values.cost,
         stringListManualId: formikRef.current.values.stringListManualId === "" ? null : formikRef.current.values.stringListManualId,
     };
-    await AxiosInstance.post(MaintainManagement.create, body, {
+    await AxiosInstance.post(MaintainManagement.update, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     }).then((res) => {
         if (res.data.code === 1) {
@@ -121,7 +122,6 @@ const saveMaintain = async (
         showAlert(setAlert, error, false)
     });
 }
-
 
 function ManageMaintainDetail() {
 
@@ -212,7 +212,14 @@ function ManageMaintainDetail() {
     // HANDLING SUBMIT FORM
     useEffect(() => {
         if (isSubmitting === true) {
-            console.log("save")
+            saveMaintain(
+                id,
+                formikRef,
+                date,
+                setAlert,
+                setShowPopup,
+                setIsSubmitting
+            )
         }
     }, [isSubmitting])
 
@@ -229,7 +236,8 @@ function ManageMaintainDetail() {
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
-                                navigate('/manage/maintain')
+                                setLoadingData(true);
+                                setShowPopup(false);
                             }}>Close</button>
                     </div>
                     :

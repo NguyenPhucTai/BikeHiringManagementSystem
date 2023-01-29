@@ -49,15 +49,14 @@ const handleNavigateToListPage = (isDeleted, navigate) => {
 
 // FUNCTION
 // CALL API
-const handleGetBikeById = async (id, setData, navigate) => {
+const handleGetBikeById = async (id, setData, setLoadingData, navigate) => {
     await AxiosInstance.get(BikeManagement.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
             if (res.data.data !== null) {
                 setData(res.data.data);
-
-
+                setLoadingData(false);
             } else {
                 navigate("/404");
             }
@@ -153,8 +152,7 @@ function ManageBikeDetail() {
     // PAGE LOADING
     useEffect(() => {
         if (loadingData) {
-            handleGetBikeById(id, setData, navigate);
-            setLoadingData(false)
+            handleGetBikeById(id, setData, setLoadingData, navigate);
         }
     }, [loadingData])
 

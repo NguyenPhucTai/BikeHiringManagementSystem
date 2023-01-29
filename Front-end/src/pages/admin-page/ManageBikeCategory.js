@@ -106,13 +106,9 @@ const handleGetDataById = async (dataID, setLineItem) => {
 
 const handleCreateData = async (
     values,
-    reduxFilter,
-    reduxPagination,
     setAlert,
-    setListData,
     setLoadingData,
-    setShowCloseButton,
-    setTotalPages
+    setShowCloseButton
 ) => {
     const body = {
         name: values.name,
@@ -123,7 +119,7 @@ const handleCreateData = async (
     }).then((res) => {
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true);
-            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            setLoadingData(true)
             setShowCloseButton(true);
         } else {
             showAlert(setAlert, res.data.message, false);
@@ -140,13 +136,9 @@ const handleCreateData = async (
 const handleUpdateData = async (
     values,
     dataID,
-    reduxFilter,
-    reduxPagination,
     setAlert,
-    setListData,
     setLoadingData,
-    setShowCloseButton,
-    setTotalPages
+    setShowCloseButton
 ) => {
     const body = {
         name: values.name,
@@ -157,7 +149,7 @@ const handleUpdateData = async (
     }).then((res) => {
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true);
-            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            setLoadingData(true)
             setShowCloseButton(true);
         } else {
             showAlert(setAlert, res.data.message, false);
@@ -173,20 +165,16 @@ const handleUpdateData = async (
 
 const handleDeleteData = async (
     dataID,
-    reduxFilter,
-    reduxPagination,
     setAlert,
-    setListData,
     setLoadingData,
-    setShowCloseButton,
-    setTotalPages
+    setShowCloseButton
 ) => {
     await AxiosInstance.post(CategoryManagement.delete + dataID, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true);
-            handleGetDataPagination(setListData, setLoadingData, setTotalPages, reduxFilter, reduxPagination);
+            setLoadingData(true)
         } else {
             showAlert(setAlert, res.data.message, false);
         }
@@ -340,13 +328,9 @@ function ManageBikeCategory() {
                         onSubmit={(values) => {
                             handleCreateData(
                                 values,
-                                reduxFilter,
-                                reduxPagination,
                                 setAlert,
-                                setListData,
                                 setLoadingData,
-                                setShowCloseButton,
-                                setTotalPages
+                                setShowCloseButton
                             );
                         }}>
                         {({
@@ -419,13 +403,9 @@ function ManageBikeCategory() {
                             handleUpdateData(
                                 values,
                                 dataID,
-                                reduxFilter,
-                                reduxPagination,
                                 setAlert,
-                                setListData,
                                 setLoadingData,
-                                setShowCloseButton,
-                                setTotalPages
+                                setShowCloseButton
                             );
                         }}>
                         {({
@@ -553,13 +533,9 @@ function ManageBikeCategory() {
                         <button className="btn btn-danger btn-action"
                             onClick={() => handleDeleteData(
                                 dataID,
-                                reduxFilter,
-                                reduxPagination,
                                 setAlert,
-                                setListData,
                                 setLoadingData,
-                                setShowCloseButton,
-                                setTotalPages
+                                setShowCloseButton
                             )}>{titlePopup}</button>
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {

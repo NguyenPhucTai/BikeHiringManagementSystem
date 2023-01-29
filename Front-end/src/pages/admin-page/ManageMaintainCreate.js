@@ -48,6 +48,7 @@ const showAlert = (setAlert, message, isSuccess) => {
         })
     }
 }
+
 const handleSubmit = async (formikRef, date, setAlert, setShowPopup, setIsSubmitting) => {
     const body = {
         date: date,

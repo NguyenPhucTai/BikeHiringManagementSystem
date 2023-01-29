@@ -315,78 +315,30 @@ public class MaintainService {
         }
     }
 
-    /*
-    public PageDto getMaintainPagination(PaginationMaintainRequest paginationMaintainRequest) {
-        try {
-            String searchKey = paginationMaintainRequest.getSearchKey();
-            Integer page = paginationMaintainRequest.getPage();
-            Integer limit = paginationMaintainRequest.getLimit();
-            String sortBy = paginationMaintainRequest.getSortBy();
-            String sortType = paginationMaintainRequest.getSortType();
-            Long maintainId = paginationMaintainRequest.getMaintainId();
-            String username = paginationMaintainRequest.getUsername();
-            String maintainType = paginationMaintainRequest.getMaintainType();
-            Double maintainCost = paginationMaintainRequest.getMaintainCost();
-
-            Map<String, Object> mapBike = bikeSpecification.getBikePaginationforMaintain(searchKey, page, limit, sortBy, sortType, maintainId, maintainType, maintainCost);
-            List<BikeResponse> listRes = (List<BikeResponse>) mapBike.get("data");
-            Long totalItems = (Long) mapBike.get("count");
-            Integer totalPage = responseUtils.getPageCount(totalItems, limit);
-
-            // Image handling
-            List<BikeResponse> listResult = new ArrayList<>();
-            for(BikeResponse bikeResponse : listRes){
-                List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(bikeResponse.getId(), false);
-
-                if(!listImage.isEmpty()){
-
-                    List<AttachmentResponse> listImageResponse = new ArrayList<>();
-                    for(BikeImage bikeImage : listImage){
-                        AttachmentResponse attachmentResponse = new AttachmentResponse();
-                        attachmentResponse.setId(bikeImage.getId());
-                        attachmentResponse.setFilePath(bikeImage.getPath());
-                        attachmentResponse.setFileName(bikeImage.getName());
-                        listImageResponse.add(attachmentResponse);
-                    }
-                    bikeResponse.setImageList(listImageResponse);
-                }
-                listResult.add(bikeResponse);
+    public Result deleteMaintainById(Long id, String username){
+        try{
+            if(!checkEntityExistService.isEntityExisted(Constant.MAINTAIN, "id", id)){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The maintain id " + id + " has not been existed!!!");
+            }
+            Maintain maintain = maintainRepository.findMaintainById(id);
+            if(maintain.getIsDeleted() == Boolean.TRUE){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The maintain id " + id + " has not been existed!!!");
             }
 
-            // Get orderId IF in CART
-            if(isInCart != null)
-            {
-                if(orderRepository.existsByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false))
-                {
-                    Order order = orderRepository.findByCreatedUserAndStatusAndIsDeleted(username, "IN CART", false);
-                    List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(order.getId(), false);
-                    for(OrderDetail item : listOrderDetail)
-                    {
-                        for(BikeResponse bikeResponse : listResult)
-                        {
-                            if(bikeResponse.getId() == item.getBikeId())
-                            {
-                                bikeResponse.setOrderId(order.getId());
-                            }
-                        }
-                    }
-                }
-            }
+            maintain.setModifiedUser(username);
+            maintain.setModifiedDate(new Date());
+            maintain.setIsDeleted(Boolean.TRUE);
+            maintainRepository.save(maintain);
 
-            return PageDto.builder()
-                    .content(listResult)
-                    .numberOfElements(Math.toIntExact(totalItems))
-                    .page(page)
-                    .size(limit)
-                    .totalPages(totalPage)
-                    .totalElements(totalItems)
-                    .build();
-        } catch (Exception e) {
+            HistoryObject historyObject = new HistoryObject();
+            historyObject.setUsername(username);
+            historyObject.setEntityId(maintain.getId());
+            historyService.saveHistory(Constant.HISTORY_DELETE, maintain, historyObject);
+            return new Result(Constant.SUCCESS_CODE, "Delete maintain successfully");
+        }catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new Result(Constant.SYSTEM_ERROR_CODE, "Fail");
         }
     }
-
-     */
 
 }
