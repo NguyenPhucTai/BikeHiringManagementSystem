@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BikeService {
@@ -130,6 +131,8 @@ public class BikeService {
     public Result getBikeById(Long bikeId){
         try{
             Result result = new Result();
+
+            /*-------------- GET BIKE --------------------*/
             Map<String, Object> mapBike = bikeSpecification.getBikeById(bikeId);
             if(mapBike.size() == 0) {
                 result.setMessage("No Bike found");
@@ -138,7 +141,6 @@ public class BikeService {
             }
 
             BikeResponse bikeResponse = (BikeResponse) mapBike.get("data");
-
             List<BikeImage> listImage = bikeImageRepository.findAllByBikeIdAndIsDeletedOrderByNameAsc(bikeResponse.getId(),false);
             List<AttachmentResponse> listImageResponse = new ArrayList<>();
             if(!listImage.isEmpty()){
@@ -151,6 +153,20 @@ public class BikeService {
                 }
             }
             bikeResponse.setImageList(listImageResponse);
+
+            /*-------------- GET RELATION BIKE LIST --------------------*/
+            PaginationBikeRequest paginationBikeRequest = new PaginationBikeRequest();
+            paginationBikeRequest.setSearchKey(null);
+            paginationBikeRequest.setLimit(7);
+            paginationBikeRequest.setPage(1);
+            paginationBikeRequest.setSortBy("hiredNumber");
+            paginationBikeRequest.setSortType("DESC");
+            paginationBikeRequest.setCategoryId(bikeResponse.getBikeCategoryId());
+            PageDto pageDto = getBikePagination(paginationBikeRequest);
+            List<BikeResponse> listBike = pageDto.getContent();
+            listBike = listBike.stream().filter(x -> x.getId() != bikeResponse.getId()).collect(Collectors.toList());
+            bikeResponse.setListBike(listBike);
+
 
             result.setMessage("Get successful");
             result.setCode(Constant.SUCCESS_CODE);

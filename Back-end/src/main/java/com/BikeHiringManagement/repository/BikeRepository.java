@@ -20,6 +20,9 @@ public interface BikeRepository extends JpaRepository<Bike, Long>, JpaSpecificat
     Bike findBikeById(Long id);
     Bike findBikeByBikeManualId(String manualId);
 
+    Integer countBikesByBikeCategoryIdAndIsDeleted(Long categoryId, Boolean check);
+    Integer countBikesByIsDeleted(Boolean check);
+
     @Query("SELECT b, ct.name FROM Bike b inner join BikeCategory ct on b.bikeCategoryId = ct.id")
     List<Bike> findBikeByIdCustom();
 }

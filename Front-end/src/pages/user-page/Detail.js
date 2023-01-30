@@ -9,16 +9,18 @@ import ImageGallery from "react-image-gallery";
 import Badge from 'react-bootstrap/Badge';
 import { PageLoad } from "../../components/Base/PageLoad";
 import { GetFormattedCurrency } from "../../function/CurrencyFormat";
+import { ListSwiper } from "../../components/Swiper/Swiper";
 
 // Redux
 import { useDispatch } from "react-redux";
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
 
-const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingData, Firebase_URL) => {
+const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingData, setListAutomatic, Firebase_URL) => {
     await AxiosInstance.get(PublicAPI.getBikeDetail + id, {
         headers: {}
     }).then((res) => {
+        console.log(res.data)
         var bikeDetail = {
             name: res.data.data.name,
             bikeNo: res.data.data.bikeNo,
@@ -40,6 +42,17 @@ const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingData,
             }
             listLinkImage.push(image)
         });
+        var listBike = res.data.data.listBike.map((data) => {
+            return {
+                id: data.id,
+                name: data.name,
+                bikeCategory: data.categoryName,
+                price: data.price,
+                filePath: data.imageList[0].filePath,
+                fileName: data.imageList[0].fileName,
+            }
+        })
+        setListAutomatic(listBike);
         setListImage(listLinkImage);
         setBikeDetail(bikeDetail);
         setLoadingData(false);
@@ -64,10 +77,11 @@ const Detail = props => {
     const [loadingData, setLoadingData] = useState(true);
     const [listImage, setListImage] = useState([]);
     const [bikeDetail, setBikeDetail] = useState({});
+    const [listAutomatic, setListAutomatic] = useState([]);
 
     useEffect(() => {
         if (loadingData) {
-            handleBikeDetail(id, setBikeDetail, setListImage, setLoadingData, Firebase_URL);
+            handleBikeDetail(id, setBikeDetail, setListImage, setLoadingData, setListAutomatic, Firebase_URL);
         }
     }, [loadingData])
 
@@ -78,46 +92,56 @@ const Detail = props => {
                     {loadingData ?
                         <div className="circular_progress circular_progress_detail">
                             <CircularProgress />
-                        </div> :
-                        <Row>
-                            <Col lg={6} xs={12}>
-                                <ImageGallery
-                                    showPlayButton={false}
-                                    thumbnailPosition={"right"}
-                                    items={listImage}
-                                    useBrowserFullscreen={false}
-                                />
-                            </Col>
-                            <Col lg={6} xs={12} className="public">
-                                <div className="detail-header">
-                                    <h2 className="bikeName">{bikeDetail.name}</h2>
-                                    <Badge className="bikeCategory">{bikeDetail.bikeCategoryName}</Badge>
-                                </div>
-                                <div className="detail-body">
-                                    <Row>
-                                        <Col lg={5} xs={6}><label className="body body-title">Bike No:</label></Col>
-                                        <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeNo}</label></Col>
-                                        <Col lg={5} xs={6}><label className="body body-title">Bike Color:</label></Col>
-                                        <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeColor}</label></Col>
-                                        <Col lg={5} xs={6}><label className="body body-title">Bike Manufacturer:</label></Col>
-                                        <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeManufacturerName}</label></Col>
-                                        <Col lg={5} xs={6}><label className="body body-title">Status:</label></Col>
-                                        <Col lg={7} xs={6}>{bikeDetail.status === "AVAILABLE" ?
-                                            <label className="body body-info" style={{ color: 'green' }}>{bikeDetail.status}</label> :
-                                            <label className="body body-info" style={{ color: 'red' }}>{bikeDetail.status}</label>}
-                                        </Col>
-                                    </Row>
-                                </div>
-                                <div className="detail-footer">
-                                    <h3 className="bikePrice">{GetFormattedCurrency(bikeDetail.price)}</h3>
-                                </div>
-                                {/* <label className="bikeName">{bikeDetail.name}</label>
-                            <div className="bikeTag">
-                                <Badge>{bikeDetail.bikeCategory}</Badge>
-                            </div>
-                            <p className="bikePrice">Price: <span>{bikeDetail.price}</span></p> */}
-                            </Col>
-                        </Row>
+                        </div>
+                        :
+                        <div>
+                            <Row style={{ marginBottom: "5%" }}>
+                                <Col lg={6} xs={12}>
+                                    <ImageGallery
+                                        showPlayButton={false}
+                                        thumbnailPosition={"right"}
+                                        items={listImage}
+                                        useBrowserFullscreen={false}
+                                    />
+                                </Col>
+                                <Col lg={6} xs={12} className="public">
+                                    <div className="detail-header">
+                                        <h2 className="bikeName">{bikeDetail.name}</h2>
+                                        <Badge className="bikeCategory">{bikeDetail.bikeCategoryName}</Badge>
+                                    </div>
+                                    <div className="detail-body">
+                                        <Row>
+                                            <Col lg={5} xs={6}><label className="body body-title">Bike No:</label></Col>
+                                            <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeNo}</label></Col>
+                                            <Col lg={5} xs={6}><label className="body body-title">Bike Color:</label></Col>
+                                            <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeColor}</label></Col>
+                                            <Col lg={5} xs={6}><label className="body body-title">Bike Manufacturer:</label></Col>
+                                            <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeManufacturerName}</label></Col>
+                                            <Col lg={5} xs={6}><label className="body body-title">Status:</label></Col>
+                                            <Col lg={7} xs={6}>{bikeDetail.status === "AVAILABLE" ?
+                                                <label className="body body-info" style={{ color: 'green' }}>{bikeDetail.status}</label> :
+                                                <label className="body body-info" style={{ color: 'red' }}>{bikeDetail.status}</label>}
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                    <div className="detail-footer">
+                                        <h3 className="bikePrice">{GetFormattedCurrency(bikeDetail.price)}</h3>
+                                    </div>
+                                </Col>
+
+                            </Row>
+                            <Row>
+                                <Col lg={12} xs={12}>
+                                    <h2 className="text-center">Relation Bike</h2>
+                                    {loadingData ?
+                                        <div className="circular_progress">
+                                            <CircularProgress />
+                                        </div> :
+                                        <ListSwiper listBike={listAutomatic} />
+                                    }
+                                </Col>
+                            </Row>
+                        </div>
                     }
                 </div>
             </Fragment>

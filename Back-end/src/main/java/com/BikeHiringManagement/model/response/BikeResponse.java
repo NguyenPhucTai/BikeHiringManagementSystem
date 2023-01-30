@@ -1,5 +1,6 @@
 package com.BikeHiringManagement.model.response;
 
+import com.BikeHiringManagement.dto.PageDto;
 import lombok.Data;
 
 import java.util.Date;
@@ -27,6 +28,7 @@ public class BikeResponse {
     private Date modifiedDate;
     private Long orderId;
     private List<AttachmentResponse> imageList;
+    private List<BikeResponse> listBike;
 
     public BikeResponse() {
     }
