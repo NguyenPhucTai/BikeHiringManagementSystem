@@ -414,7 +414,7 @@ function CreateOrder() {
             <Fragment>
                 {popup}
                 <div className="container">
-                    <h1 className="text-center">CREATE ORDER</h1>
+                    <h2 className="text-center">CREATE ORDER</h2>
                     <Button variant="contained" color="success"
                         onClick={() =>
                             handleSaveCart(

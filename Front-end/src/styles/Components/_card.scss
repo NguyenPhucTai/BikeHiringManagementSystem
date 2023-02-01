@@ -43,3 +43,123 @@
         }
     }
 }
+
+.card-value {
+    font-size: 40px;
+    font-weight: 600;
+
+    &-primary,
+    &-undefined {
+        color: $color-blue !important;
+    }
+
+    &-success {
+        color: $color-green !important;
+    }
+
+    &-info {
+        color: $color-cyan !important;
+    }
+
+    &-danger {
+        color: $color-red !important;
+    }
+
+    &-warning {
+        color: $color-orange !important;
+    }
+}
+
+.card-custom {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+    &-primary,
+    &-undefined {
+        border-bottom: 3px solid $color-blue !important;
+
+        &:hover {
+            border: 3px solid $color-blue !important;
+        }
+    }
+
+    &-success {
+        border-bottom: 3px solid $color-green !important;
+
+        &:hover {
+            border: 3px solid $color-green !important;
+        }
+    }
+
+    &-info {
+        border-bottom: 3px solid $color-cyan !important;
+
+        &:hover {
+            border: 3px solid $color-cyan !important;
+        }
+    }
+
+    &-danger {
+        border-bottom: 3px solid $color-red !important;
+
+        &:hover {
+            border: 3px solid $color-red !important;
+        }
+    }
+
+    &-warning {
+        border-bottom: 3px solid $color-orange !important;
+
+        &:hover {
+            border: 3px solid $color-orange !important;
+        }
+    }
+
+    &-header {
+        padding-bottom: 0px !important;
+    }
+
+    &-content {
+        padding-bottom: 16px !important;
+    }
+}
+
+.card-icon {
+    align-self: center;
+    padding: 0.8rem;
+
+    &-avatar {
+        width: 70px !important;
+        height: 70px !important;
+
+        &-image {
+            width: 40px !important;
+            height: 40px !important;
+        }
+
+        &-primary,
+        &-undefined {
+            background-color: $color-blue !important;
+        }
+
+        &-success {
+            background-color: $color-green !important;
+        }
+
+        &-info {
+            background-color: $color-cyan !important;
+        }
+
+        &-danger {
+            background-color: $color-red !important;
+        }
+
+        &-warning {
+            background-color: $color-orange !important;
+        }
+
+    }
+}
+
+.MuiCardHeader-title {
+    font-size: 16px !important;
+}
