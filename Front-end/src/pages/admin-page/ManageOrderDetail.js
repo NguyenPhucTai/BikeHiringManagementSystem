@@ -24,7 +24,7 @@ import { useParams } from "react-router-dom";
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
-import { OrderManagement } from "../../api/EndPoint";
+import { OrderAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
@@ -69,7 +69,7 @@ const handleGetOrder = async (
     setTotalAmount,
     setStatus
 ) => {
-    await AxiosInstance.get(OrderManagement.getById + id, {
+    await AxiosInstance.get(OrderAPI.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -123,7 +123,7 @@ const handleCalculateCost = async (
             expectedStartDate: startDate,
             expectedEndDate: endDate,
         };
-        await AxiosInstance.post(OrderManagement.cartCalculateCost, body, {
+        await AxiosInstance.post(OrderAPI.cartCalculateCost, body, {
             headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
         }).then((res) => {
             if (res.data.code === 1) {
@@ -190,7 +190,7 @@ const handleSaveOrder = async (
         status: status,
         isCloseOrder: isCloseOrder
     };
-    await AxiosInstance.post(OrderManagement.saveOrder, body, {
+    await AxiosInstance.post(OrderAPI.saveOrder, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     }).then((res) => {
         if (res.data.code === 1) {
@@ -208,7 +208,7 @@ const handleCancelOrder = async (id, setAlert, setShowCloseButton) => {
     const body = {
         id: id
     };
-    await AxiosInstance.post(OrderManagement.cancelOrder, body, {
+    await AxiosInstance.post(OrderAPI.cancelOrder, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     }).then((res) => {
         if (res.data.code === 1) {

@@ -24,7 +24,7 @@ import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
 import { SelectField } from "../../components/Form/SelectField";
-import { MaintainManagement } from "../../api/EndPoint";
+import { MaintainAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
@@ -55,7 +55,7 @@ const showAlert = (setAlert, message, isSuccess) => {
 
 
 const handleGetMaintainById = async (id, setData, setDate, setType, setListBike, setLoadingData, navigate) => {
-    await AxiosInstance.get(MaintainManagement.getById + id, {
+    await AxiosInstance.get(MaintainAPI.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -108,7 +108,7 @@ const saveMaintain = async (
         cost: formikRef.current.values.cost < 0 ? null : formikRef.current.values.cost,
         stringListManualId: formikRef.current.values.stringListManualId === "" ? null : formikRef.current.values.stringListManualId,
     };
-    await AxiosInstance.post(MaintainManagement.update, body, {
+    await AxiosInstance.post(MaintainAPI.update, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     }).then((res) => {
         if (res.data.code === 1) {

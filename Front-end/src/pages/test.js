@@ -6,7 +6,7 @@ import { SelectField } from "../components/Form/SelectField";
 import { BikeCategories } from "../components/Form/SelectItem";
 import { DropzoneArea } from "material-ui-dropzone";
 import { BikeSchema } from "../validation";
-import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from "../api/EndPoint";
+import { BikeAPI, CategoryAPI, ColorAPI, ManufacturerAPI } from "../api/EndPoint";
 import { storage } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { AlertMessage } from "../components/Modal/AlertMessage";
@@ -31,7 +31,7 @@ const handleSubmit = async (formData, fileUpload, setAlert, setIsSubmitting, set
         files: fileUpload,
     };
 
-    await AxiosInstance.post(BikeManagement.create, body, {
+    await AxiosInstance.post(BikeAPI.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     })
         .then((res) => {
@@ -81,7 +81,7 @@ const handleGetCategory = async (setListCategory) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(CategoryManagement.getPagination, body, {
+    await AxiosInstance.post(CategoryAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listCategory = res.data.data.content.map((data) => {
@@ -108,7 +108,7 @@ const handleGetColor = async (setListColor) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(ColorManagement.getPagination, body, {
+    await AxiosInstance.post(ColorAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listColor = res.data.data.content.map((data) => {
@@ -135,7 +135,7 @@ const handleGetManufacturer = async (setListManufacturer) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(ManufacturerManagement.getPagination, body, {
+    await AxiosInstance.post(ManufacturerAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listManufacturer = res.data.data.content.map((data) => {

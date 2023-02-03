@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { MaintainManagement } from '../../api/EndPoint';
+import { MaintainAPI } from '../../api/EndPoint';
 
 //Component
 import { TableMaintainList } from '../../components/Table/TableMaintainList';
@@ -74,7 +74,7 @@ const handleGetDataPagination = async (
         dateFrom: startDate,
         dateTo: endDate
     };
-    await AxiosInstance.post(MaintainManagement.getPagination, body, {
+    await AxiosInstance.post(MaintainAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
@@ -104,7 +104,7 @@ const handleDeleteMaintain = async (
     setLoadingData,
     setShowCloseButton
 ) => {
-    await AxiosInstance.post(MaintainManagement.delete + dataID, {}, {
+    await AxiosInstance.post(MaintainAPI.delete + dataID, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {

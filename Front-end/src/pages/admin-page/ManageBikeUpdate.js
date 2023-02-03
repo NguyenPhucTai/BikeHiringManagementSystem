@@ -22,7 +22,7 @@ import { Firebase_URL } from "../../api/EndPoint";
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { SelectField } from "../../components/Form/SelectField";
-import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from "../../api/EndPoint";
+import { BikeAPI, CategoryAPI, ColorAPI, ManufacturerAPI } from "../../api/EndPoint";
 import { GenerateRandomString } from "../../function/RandomString";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
@@ -59,7 +59,7 @@ const handleRemoveImageFromList = (imageID, imageList, setImageList) => {
 // FUNCTION
 // CALL API
 const handleGetBikeById = async (id, setData, setDefaultCategory, setDefaultManufacturer, setDefaultColor, setImageList) => {
-    await AxiosInstance.get(BikeManagement.getById + id, {
+    await AxiosInstance.get(BikeAPI.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -93,7 +93,7 @@ const handleGetCategoryList = async (setListCategory) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(CategoryManagement.getPagination, body, {
+    await AxiosInstance.post(CategoryAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listCategory = res.data.data.content.map((data) => {
@@ -120,7 +120,7 @@ const handleGetColorList = async (setListColor) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(ColorManagement.getPagination, body, {
+    await AxiosInstance.post(ColorAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listColor = res.data.data.content.map((data) => {
@@ -147,7 +147,7 @@ const handleGetManufacturerList = async (setListManufacturer) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(ManufacturerManagement.getPagination, body, {
+    await AxiosInstance.post(ManufacturerAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listManufacturer = res.data.data.content.map((data) => {
@@ -166,7 +166,7 @@ const handleGetManufacturerList = async (setListManufacturer) => {
 };
 
 const handleDeleteImage = async (imageId, setAlert, setShowCloseButton, setIsImageDelete) => {
-    await AxiosInstance.post(BikeManagement.deteteImage + imageId, {}, {
+    await AxiosInstance.post(BikeAPI.deteteImage + imageId, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         setIsImageDelete(true);
@@ -204,7 +204,7 @@ const handleSubmit = async (
         hiredNumber: formData.hiredNumber,
         files: fileUpload,
     };
-    await AxiosInstance.post(BikeManagement.update + formData.id, body, {
+    await AxiosInstance.post(BikeAPI.update + formData.id, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     })
         .then((res) => {

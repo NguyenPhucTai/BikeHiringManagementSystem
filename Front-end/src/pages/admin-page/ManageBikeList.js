@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { BikeManagement } from '../../api/EndPoint';
+import { BikeAPI } from '../../api/EndPoint';
 
 //Component
 import { TableBikeList } from '../../components/Table/TableBikeList';
@@ -67,7 +67,7 @@ const handleGetDataPagination = async (
         sortBy: reduxFilter.reduxSortBy,
         sortType: reduxFilter.reduxSortType
     };
-    await AxiosInstance.post(BikeManagement.getBikePagination, body, {
+    await AxiosInstance.post(BikeAPI.getBikePagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {

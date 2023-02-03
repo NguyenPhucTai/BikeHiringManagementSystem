@@ -14,7 +14,7 @@ export const Role = {
     create: "/admin/role/create/",
 }
 
-export const BikeManagement = {
+export const BikeAPI = {
     create: "/admin/bike/create",
     update: "/admin/bike/update/",
     delete: "/admin/bike/delete/",
@@ -23,7 +23,7 @@ export const BikeManagement = {
     getById: "/admin/bike/get?bikeId="
 };
 
-export const CategoryManagement = {
+export const CategoryAPI = {
     create: "/admin/bike-category/create",
     update: "/admin/bike-category/update/",
     delete: "/admin/bike-category/delete/",
@@ -31,7 +31,7 @@ export const CategoryManagement = {
     getById: "/admin/bike-category/get?id="
 }
 
-export const ColorManagement = {
+export const ColorAPI = {
     create: "/admin/bike-color/create",
     update: "/admin/bike-color/update/",
     delete: "/admin/bike-color/delete/",
@@ -39,7 +39,7 @@ export const ColorManagement = {
     getById: "/admin/bike-color/get?id="
 }
 
-export const ManufacturerManagement = {
+export const ManufacturerAPI = {
     create: "/admin/bike-manufacturer/create",
     update: "/admin/bike-manufacturer/update/",
     delete: "/admin/bike-manufacturer/delete/",
@@ -47,7 +47,7 @@ export const ManufacturerManagement = {
     getById: "/admin/bike-manufacturer/get?id="
 }
 
-export const OrderManagement = {
+export const OrderAPI = {
     cartAddBike: "/admin/order/cart/add-bike",
     cartGetByUsername: "/admin/order/cart/get",
     cartGetBikeNumber: "/admin/order/cart/get/bike-number",
@@ -60,12 +60,17 @@ export const OrderManagement = {
     cancelOrder: "/admin/order/cancel"
 }
 
-export const MaintainManagement = {
+export const MaintainAPI = {
     create: "/admin/maintain/create",
     update: "/admin/maintain/update",
     delete: "/admin/maintain/delete/",
     getPagination: "/admin/maintain/get",
     getById: "/admin/maintain/get?id="
+}
+
+export const DashboardAPI = {
+    getByDateFromTo: "/admin/dashboard/getByDateFromTo",
+    getByYear: "/admin/dashboard/getByYear"
 }
 
 // Fire Base

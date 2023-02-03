@@ -21,7 +21,7 @@ import dayjs from 'dayjs';
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
-import { MaintainManagement } from "../../api/EndPoint";
+import { MaintainAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 
@@ -58,7 +58,7 @@ const handleSubmit = async (formikRef, date, setAlert, setShowPopup, setIsSubmit
         cost: formikRef.current.values.cost < 0 ? null : formikRef.current.values.cost,
         stringListManualId: formikRef.current.values.stringListManualId === "" ? null : formikRef.current.values.stringListManualId,
     };
-    await AxiosInstance.post(MaintainManagement.create, body, {
+    await AxiosInstance.post(MaintainAPI.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     }).then((res) => {
         if (res.data.code === 1) {

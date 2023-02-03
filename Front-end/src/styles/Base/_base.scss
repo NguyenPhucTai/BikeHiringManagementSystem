@@ -74,7 +74,6 @@ span {
 .container {
     max-width: 100%;
     padding: 3% 5%;
-    margin-bottom: 9.5vh;
 
     @media screen and (max-width: 1095px) {
         padding: 6% 5%;
@@ -141,4 +140,8 @@ td {
     align-items: end !important;
     float: right !important;
     padding-right: 10px !important;
+}
+
+.MuiIconButton-edgeEnd {
+    padding: 6px !important;
 }

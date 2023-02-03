@@ -20,7 +20,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { SelectField } from "../../components/Form/SelectField";
-import { BikeManagement, CategoryManagement, ColorManagement, ManufacturerManagement } from "../../api/EndPoint";
+import { BikeAPI, CategoryAPI, ColorAPI, ManufacturerAPI } from "../../api/EndPoint";
 import { GenerateRandomString } from "../../function/RandomString";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
@@ -59,7 +59,7 @@ const handleGetCategoryList = async (setListCategory) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(CategoryManagement.getPagination, body, {
+    await AxiosInstance.post(CategoryAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listCategory = res.data.data.content.map((data) => {
@@ -86,7 +86,7 @@ const handleGetColorList = async (setListColor) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(ColorManagement.getPagination, body, {
+    await AxiosInstance.post(ColorAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listColor = res.data.data.content.map((data) => {
@@ -113,7 +113,7 @@ const handleGetManufacturerList = async (setListManufacturer) => {
         sortBy: "name",
         sortType: "ASC"
     };
-    await AxiosInstance.post(ManufacturerManagement.getPagination, body, {
+    await AxiosInstance.post(ManufacturerAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listManufacturer = res.data.data.content.map((data) => {
@@ -143,7 +143,7 @@ const handleSubmit = async (formData, fileUpload, setAlert, setIsSubmitting, set
         bikeManufacturerId: formData.bikeManufacturer,
         files: fileUpload,
     };
-    await AxiosInstance.post(BikeManagement.create, body, {
+    await AxiosInstance.post(BikeAPI.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     })
         .then((res) => {

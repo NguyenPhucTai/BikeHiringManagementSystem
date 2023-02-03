@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Component
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
-import { Firebase_URL, BikeManagement } from "../../api/EndPoint";
+import { Firebase_URL, BikeAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
@@ -50,7 +50,7 @@ const handleNavigateToListPage = (isDeleted, navigate) => {
 // FUNCTION
 // CALL API
 const handleGetBikeById = async (id, setData, setLoadingData, navigate) => {
-    await AxiosInstance.get(BikeManagement.getById + id, {
+    await AxiosInstance.get(BikeAPI.getById + id, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -74,7 +74,7 @@ const handleDeleteBikeById = async (
     setShowCloseButton,
     setIsDeleted
 ) => {
-    await AxiosInstance.post(BikeManagement.delete + id, {}, {
+    await AxiosInstance.post(BikeAPI.delete + id, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {

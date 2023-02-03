@@ -23,7 +23,7 @@ import dayjs from 'dayjs';
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
-import { OrderManagement } from "../../api/EndPoint";
+import { OrderAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
@@ -65,7 +65,7 @@ const handleGetCart = async (
     setServiceCost,
     setTotalAmount
 ) => {
-    await AxiosInstance.get(OrderManagement.cartGetByUsername, {
+    await AxiosInstance.get(OrderAPI.cartGetByUsername, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -111,7 +111,7 @@ const handleDeleteBike = async (
     orderID,
     setIsCalculateCost
 ) => {
-    await AxiosInstance.post(OrderManagement.cartDeleteBike + "orderId=" + orderID + "&bikeId=" + dataID, null, {
+    await AxiosInstance.post(OrderAPI.cartDeleteBike + "orderId=" + orderID + "&bikeId=" + dataID, null, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -143,7 +143,7 @@ const handleCalculateCost = async (
             expectedStartDate: expectedStartDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
             expectedEndDate: expectedEndDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
         };
-        await AxiosInstance.post(OrderManagement.cartCalculateCost, body, {
+        await AxiosInstance.post(OrderAPI.cartCalculateCost, body, {
             headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
         }).then((res) => {
             if (res.data.code === 1) {
@@ -198,7 +198,7 @@ const handleSaveCart = async (
         totalAmount: totalAmount,
         isCreateOrder: isCreateOrder
     };
-    await AxiosInstance.post(OrderManagement.cartSave, body, {
+    await AxiosInstance.post(OrderAPI.cartSave, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` },
     }).then((res) => {
         if (res.data.code === 1) {

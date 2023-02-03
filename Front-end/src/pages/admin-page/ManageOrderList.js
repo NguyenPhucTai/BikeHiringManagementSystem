@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { OrderManagement } from '../../api/EndPoint';
+import { OrderAPI } from '../../api/EndPoint';
 
 //Component
 import { TableOrderList } from '../../components/Table/TableOrderList';
@@ -78,7 +78,7 @@ const handleGetDataPagination = async (
         startDate: startDate,
         endDate: endDate
     };
-    await AxiosInstance.post(OrderManagement.getPagination, body, {
+    await AxiosInstance.post(OrderAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {

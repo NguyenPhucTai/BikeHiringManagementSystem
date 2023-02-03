@@ -10,7 +10,7 @@ import Col from 'react-bootstrap/Col';
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { CategoryManagement } from '../../api/EndPoint';
+import { CategoryAPI } from '../../api/EndPoint';
 
 //Component
 import { TableCRUD } from '../../components/Table/TableCRUD';
@@ -67,7 +67,7 @@ const handleGetDataPagination = async (
         sortBy: reduxFilter.reduxSortBy,
         sortType: reduxFilter.reduxSortType
     };
-    await AxiosInstance.post(CategoryManagement.getPagination, body, {
+    await AxiosInstance.post(CategoryAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
@@ -90,7 +90,7 @@ const handleGetDataPagination = async (
 };
 
 const handleGetDataById = async (dataID, setLineItem) => {
-    await AxiosInstance.get(CategoryManagement.getById + dataID, {
+    await AxiosInstance.get(CategoryAPI.getById + dataID, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -114,7 +114,7 @@ const handleCreateData = async (
         name: values.name,
         price: values.price,
     };
-    await AxiosInstance.post(CategoryManagement.create, body, {
+    await AxiosInstance.post(CategoryAPI.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -144,7 +144,7 @@ const handleUpdateData = async (
         name: values.name,
         price: values.price,
     };
-    await AxiosInstance.post(CategoryManagement.update + dataID, body, {
+    await AxiosInstance.post(CategoryAPI.update + dataID, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -169,7 +169,7 @@ const handleDeleteData = async (
     setLoadingData,
     setShowCloseButton
 ) => {
-    await AxiosInstance.post(CategoryManagement.delete + dataID, {}, {
+    await AxiosInstance.post(CategoryAPI.delete + dataID, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {

@@ -5,6 +5,8 @@ import { useDispatch } from "react-redux";
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
 // Library
+import { AxiosInstance } from "../../api/AxiosClient";
+import Cookies from 'universal-cookie';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Divider from '@mui/material/Divider';
@@ -24,10 +26,35 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
 // Component
+import { DashboardAPI } from "../../api/EndPoint";
 import { CardCustom } from "../../components/Card/CardCustom";
 
 // Function
 import { ConvertLongNumber } from "../../function/ConvertLongNumber";
+
+const cookies = new Cookies();
+
+const handleGetByDateFromTo = async (startDate, endDate, setFirstChart) => {
+    if (endDate.isAfter(startDate)) {
+        const body = {
+            dateFrom: startDate,
+            dateTo: endDate,
+        };
+        await AxiosInstance.post(DashboardAPI.getByDateFromTo, body, {
+            headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+        }).then((res) => {
+            setFirstChart({
+                totalIncome: res.data.data.firstChart.totalIncome,
+                totalOrder: res.data.data.firstChart.totalOrder,
+                totalNewUser: res.data.data.firstChart.totalNewCustomer
+            })
+        }).catch((error) => {
+            if (error && error.response) {
+                console.log("Error: ", error);
+            }
+        });
+    }
+};
 
 function Dashboard() {
 
@@ -45,6 +72,16 @@ function Dashboard() {
     const [endDate, setEndDate] = useState(now);
 
     // Chart
+    const [firstChart, setFirstChart] = useState({
+        totalIncome: 0,
+        totalOrder: 0,
+        totalNewUser: 0
+    })
+
+    useEffect(() => {
+        handleGetByDateFromTo(startDate, endDate, setFirstChart);
+    }, [startDate, endDate])
+
     const [dataChart2, setDataChart2] = useState({
         labels: ['Total revenue', 'Total expense'],
         datasets: [{
@@ -116,7 +153,7 @@ function Dashboard() {
                                 <CardCustom
                                     title={'Total income'}
                                     icon={<ReceiptLongIcon className="card-icon-avatar-image" />}
-                                    value={200000000}
+                                    value={firstChart.totalIncome}
                                     setFormatValue={ConvertLongNumber}
                                     colorType={'primary'}
                                     duration={1000}
@@ -126,7 +163,7 @@ function Dashboard() {
                                 <CardCustom
                                     title={'Total Order'}
                                     icon={<AttachMoneyOutlinedIcon className="card-icon-avatar-image" />}
-                                    value={100}
+                                    value={firstChart.totalOrder}
                                     setFormatValue={ConvertLongNumber}
                                     colorType={'warning'}
                                     duration={1000}
@@ -136,7 +173,7 @@ function Dashboard() {
                                 <CardCustom
                                     title={'Total new user'}
                                     icon={<GroupAddOutlinedIcon className="card-icon-avatar-image" />}
-                                    value={60}
+                                    value={firstChart.totalNewUser}
                                     setFormatValue={ConvertLongNumber}
                                     colorType={'success'}
                                     duration={1000}

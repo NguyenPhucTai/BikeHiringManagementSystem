@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 // Fire base
 import { AxiosInstance } from "../../api/AxiosClient";
 import SortBar from "../../components/Navbar/SortBar";
-import { Firebase_URL, BikeManagement, OrderManagement } from "../../api/EndPoint";
+import { Firebase_URL, BikeAPI, OrderAPI } from "../../api/EndPoint";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -54,7 +54,7 @@ const handleGetListBike = async (
         sortType: reduxFilter.reduxSortType,
         isInCart: true
     };
-    await AxiosInstance.post(BikeManagement.getBikePagination, body, {
+    await AxiosInstance.post(BikeAPI.getBikePagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
@@ -84,7 +84,7 @@ const handleCreateCart = async (bikeId, setCarNumber) => {
     const body = {
         bikeId: bikeId
     };
-    await AxiosInstance.post(OrderManagement.cartAddBike, body, {
+    await AxiosInstance.post(OrderAPI.cartAddBike, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -100,7 +100,7 @@ const handleCreateCart = async (bikeId, setCarNumber) => {
 }
 
 const handleBikeNumberInCart = async (setCarNumber) => {
-    await AxiosInstance.get(OrderManagement.cartGetBikeNumber, {
+    await AxiosInstance.get(OrderAPI.cartGetBikeNumber, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {

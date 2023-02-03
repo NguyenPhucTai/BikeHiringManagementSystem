@@ -9,7 +9,7 @@ import Col from 'react-bootstrap/Col';
 // Source
 // API
 import { AxiosInstance } from "../../api/AxiosClient";
-import { ManufacturerManagement } from '../../api/EndPoint';
+import { ManufacturerAPI } from '../../api/EndPoint';
 
 //Component
 import { TableCRUD } from '../../components/Table/TableCRUD';
@@ -64,7 +64,7 @@ const handleGetDataPagination = async (
         sortBy: reduxFilter.reduxSortBy,
         sortType: reduxFilter.reduxSortType
     };
-    await AxiosInstance.post(ManufacturerManagement.getPagination, body, {
+    await AxiosInstance.post(ManufacturerAPI.getPagination, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         var listData = res.data.data.content.map((data) => {
@@ -86,7 +86,7 @@ const handleGetDataPagination = async (
 };
 
 const handleGetDataById = async (dataID, setLineItem) => {
-    await AxiosInstance.get(ManufacturerManagement.getById + dataID, {
+    await AxiosInstance.get(ManufacturerAPI.getById + dataID, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -109,7 +109,7 @@ const handleCreateData = async (
     const body = {
         name: values.name
     };
-    await AxiosInstance.post(ManufacturerManagement.create, body, {
+    await AxiosInstance.post(ManufacturerAPI.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -138,7 +138,7 @@ const handleUpdateData = async (
     const body = {
         name: values.name
     };
-    await AxiosInstance.post(ManufacturerManagement.update + dataID, body, {
+    await AxiosInstance.post(ManufacturerAPI.update + dataID, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
@@ -163,7 +163,7 @@ const handleDeleteData = async (
     setLoadingData,
     setShowCloseButton
 ) => {
-    await AxiosInstance.post(ManufacturerManagement.delete + dataID, {}, {
+    await AxiosInstance.post(ManufacturerAPI.delete + dataID, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         if (res.data.code === 1) {
