@@ -578,7 +578,7 @@ function ManageOrderDetail() {
                                                 <label className='form-label'>Expect Date</label>
                                             </Row>
                                             <Row className="mb-3">
-                                                <Col xs={12} lg={2}>
+                                                <Col xs={12} lg={3}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Expected Start Date"
@@ -588,13 +588,24 @@ function ManageOrderDetail() {
                                                                 setExpectedStartDate(newValue);
                                                             }}
                                                             onAccept={() => setIsCalculateCost(true)}
-                                                            renderInput={(params) => (
-                                                                <TextField {...params} />
+                                                            renderInput={({ inputRef, inputProps, InputProps }) => (
+                                                                <div className="form-group mb-3">
+                                                                    <label className='form-label' htmlFor={inputProps.name}>
+                                                                        Date From
+                                                                    </label>
+                                                                    <div style={{ display: 'inline' }}>
+                                                                        <input className='form-control shadow-none'
+                                                                            autoComplete='off'
+                                                                            ref={inputRef} {...inputProps}
+                                                                        />
+                                                                        {InputProps?.endAdornment}
+                                                                    </div>
+                                                                </div>
                                                             )}
                                                         />
                                                     </LocalizationProvider>
                                                 </Col>
-                                                <Col xs={12} lg={2}>
+                                                <Col xs={12} lg={3}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Expected End Date"
@@ -603,8 +614,19 @@ function ManageOrderDetail() {
                                                                 setExpectedEndDate(newValue);
                                                             }}
                                                             onAccept={() => setIsCalculateCost(true)}
-                                                            renderInput={(params) => (
-                                                                <TextField {...params} />
+                                                            renderInput={({ inputRef, inputProps, InputProps }) => (
+                                                                <div className="form-group mb-3">
+                                                                    <label className='form-label' htmlFor={inputProps.name}>
+                                                                        Date From
+                                                                    </label>
+                                                                    <div style={{ display: 'inline' }}>
+                                                                        <input className='form-control shadow-none'
+                                                                            autoComplete='off'
+                                                                            ref={inputRef} {...inputProps}
+                                                                        />
+                                                                        {InputProps?.endAdornment}
+                                                                    </div>
+                                                                </div>
                                                             )}
                                                         />
                                                     </LocalizationProvider>
@@ -614,7 +636,7 @@ function ManageOrderDetail() {
                                                 <label className='form-label'>Actual Date</label>
                                             </Row>
                                             <Row className="mb-3">
-                                                <Col xs={12} lg={2}>
+                                                <Col xs={12} lg={3}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Actual Start Date"
@@ -623,13 +645,24 @@ function ManageOrderDetail() {
                                                                 setActualStartDate(newValue);
                                                             }}
                                                             onAccept={() => setIsCalculateCost(true)}
-                                                            renderInput={(params) => (
-                                                                <TextField {...params} />
+                                                            renderInput={({ inputRef, inputProps, InputProps }) => (
+                                                                <div className="form-group mb-3">
+                                                                    <label className='form-label' htmlFor={inputProps.name}>
+                                                                        Date From
+                                                                    </label>
+                                                                    <div style={{ display: 'inline' }}>
+                                                                        <input className='form-control shadow-none'
+                                                                            autoComplete='off'
+                                                                            ref={inputRef} {...inputProps}
+                                                                        />
+                                                                        {InputProps?.endAdornment}
+                                                                    </div>
+                                                                </div>
                                                             )}
                                                         />
                                                     </LocalizationProvider>
                                                 </Col>
-                                                <Col xs={12} lg={2}>
+                                                <Col xs={12} lg={3}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DateTimePicker
                                                             label="Actual End Date"
@@ -638,8 +671,19 @@ function ManageOrderDetail() {
                                                                 setActualEndDate(newValue)
                                                             }}
                                                             onAccept={() => setIsCalculateCost(true)}
-                                                            renderInput={(params) => (
-                                                                <TextField {...params} />
+                                                            renderInput={({ inputRef, inputProps, InputProps }) => (
+                                                                <div className="form-group mb-3">
+                                                                    <label className='form-label' htmlFor={inputProps.name}>
+                                                                        Date From
+                                                                    </label>
+                                                                    <div style={{ display: 'inline' }}>
+                                                                        <input className='form-control shadow-none'
+                                                                            autoComplete='off'
+                                                                            ref={inputRef} {...inputProps}
+                                                                        />
+                                                                        {InputProps?.endAdornment}
+                                                                    </div>
+                                                                </div>
                                                             )}
                                                         />
                                                     </LocalizationProvider>

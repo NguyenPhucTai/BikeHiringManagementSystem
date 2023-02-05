@@ -99,7 +99,7 @@ const SortBarMaintain = (props) => {
                 </Col>
             </Row>
             <Row className="sort-bar mb-3">
-                <Col lg={6} xs={12}></Col>
+                <Col lg={3} xs={12}></Col>
                 <Col lg={6} xs={12}>
                     <Formik
                         initialValues={initialValues}
@@ -137,6 +137,7 @@ const SortBarMaintain = (props) => {
                         )}
                     </Formik>
                 </Col>
+                <Col lg={3} xs={12}></Col>
             </Row>
         </Fragment >
     )
