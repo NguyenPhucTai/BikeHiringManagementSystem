@@ -21,6 +21,8 @@ public class Constant {
     public static final Integer ORDER = 6;
     public static final Integer MAINTAIN = 7;
 
+    public static final Integer FORMULA = 8;
+
     /* ----------------------- HISTORY -------------------------- */
     public static final String HISTORY_LOGIN = "LOGIN";
     public static final String HISTORY_CREATE = "CREATE";
