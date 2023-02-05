@@ -142,9 +142,7 @@ const handleGetByDateFromTo = async (
 };
 
 const handleGetByYear = async (
-    year,
-    setListMonthDataCustomerRankHiredNumber,
-    setListMonthDataCustomerRankHiredCost
+    year
 ) => {
     const body = {
         year: year
@@ -152,7 +150,7 @@ const handleGetByYear = async (
     await AxiosInstance.post(DashboardAPI.getByYear, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
-        // console.log(res.data.data)
+        console.log(res.data.data)
         // var listMonthDataCustomerRankHiredNumber = res.data.data.monthChart.listMonthData.map((data) => {
         //     return {
         //         id: data.id,
@@ -279,9 +277,7 @@ function Dashboard() {
             setListMonthDataCustomerRankHiredCost
         );
         handleGetByYear(
-            year,
-            setListMonthDataCustomerRankHiredNumber,
-            setListMonthDataCustomerRankHiredCost
+            year
         );
     }, [startDate, endDate])
 
@@ -289,7 +285,9 @@ function Dashboard() {
     // USE EFFECT
     // CHANGE YEAR
     useEffect(() => {
-        console.log(year)
+        handleGetByYear(
+            year
+        );
     }, [year])
 
     // USE EFFECT
