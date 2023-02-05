@@ -64,20 +64,22 @@ const handleGetMaintainById = async (id, setData, setDate, setType, setListBike,
                 setType(res.data.data.type);
                 var date = dayjs(res.data.data.date);
                 setDate(date);
-                var listBike = res.data.data.listBike.map((data) => {
-                    return {
-                        id: data.id,
-                        name: data.name,
-                        bikeManualId: data.bikeManualId,
-                        bikeCategoryName: data.bikeCategoryName,
-                        color: data.bikeColor,
-                        manufacturer: data.bikeManufacturerName,
-                        hiredNumber: data.hiredNumber,
-                        status: data.status
-                    }
-                })
-                setListBike(listBike);
-                setLoadingData(false)
+                if (res.data.data.type === "BIKE") {
+                    var listBike = res.data.data.listBike.map((data) => {
+                        return {
+                            id: data.id,
+                            name: data.name,
+                            bikeManualId: data.bikeManualId,
+                            bikeCategoryName: data.bikeCategoryName,
+                            color: data.bikeColor,
+                            manufacturer: data.bikeManufacturerName,
+                            hiredNumber: data.hiredNumber,
+                            status: data.status
+                        }
+                    })
+                    setListBike(listBike);
+                }
+                setLoadingData(false);
             }
             else {
                 navigate("/404");
@@ -157,7 +159,7 @@ function ManageMaintainDetail() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [data, setData] = useState({})
     const [date, setDate] = useState(null);
-    const [type, setType] = useState(null);
+    const [type, setType] = useState("GENERAL");
     const [listBike, setListBike] = useState([])
 
 
@@ -198,7 +200,6 @@ function ManageMaintainDetail() {
         initialValues.cost = data.cost;
         initialValues.stringListManualId = data.stringListManualId;
     }
-
 
     // USE EFFECT
     // PAGE LOADING
