@@ -32,10 +32,27 @@ public class DashboardController {
     JwtUtils jwtUtils;
 
 
-    @PostMapping("/get")
-    public ResponseEntity<?> getDataByDate(@RequestBody DashboardRequest reqBody){
+    @PostMapping("/getByDateFromTo")
+    public ResponseEntity<?> getDataByFromTo(@RequestBody DashboardRequest reqBody){
         try{
-            Result result = dashboardService.getDataByDate(reqBody);
+            Result result = dashboardService.getDataByFromTo(reqBody);
+            if(result.getCode() == Constant.SUCCESS_CODE){
+                return  responseUtils.getResponseEntity(result.getObject(), result.getCode(), result.getMessage(), HttpStatus.OK);
+            }
+            else{
+                return responseUtils.getResponseEntity(null, result.getCode(), result.getMessage(), HttpStatus.OK);
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return responseUtils.getResponseEntity(null, Constant.SYSTEM_ERROR_CODE, Constant.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/getByYear")
+    public ResponseEntity<?> getDataByYear(@RequestBody DashboardRequest reqBody){
+        try{
+            Result result = dashboardService.getDataByYear(reqBody);
             if(result.getCode() == Constant.SUCCESS_CODE){
                 return  responseUtils.getResponseEntity(result.getObject(), result.getCode(), result.getMessage(), HttpStatus.OK);
             }

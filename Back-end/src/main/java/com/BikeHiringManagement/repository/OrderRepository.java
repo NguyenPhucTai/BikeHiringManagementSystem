@@ -15,7 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     Order findByCreatedUserAndStatusAndIsDeleted(String username, String status, Boolean check);
     Order findOrderByIdAndIsDeleted(Long id, Boolean check);
 
-    Integer countAllByActualStartDateAfterAndActualEndDateBeforeAndStatusAndIsDeleted(Date dateFrom, Date dateTo, String status, Boolean check);
     List<Order> findAllByActualStartDateAfterAndActualEndDateBeforeAndStatusAndIsDeleted(Date dateFrom, Date dateTo, String status, Boolean check);
-    List<Order> findAllByActualStartDateAfterAndActualEndDateBeforeAndIsDeleted(Date dateFrom, Date dateTo, Boolean check);
+    List<Order> findAllByExpectedStartDateAfterAndExpectedEndDateBeforeAndStatusAndIsDeleted(Date dateFrom, Date dateTo, String status, Boolean check);
 }

@@ -1,21 +1,17 @@
 package com.BikeHiringManagement.model.response;
 
+import com.BikeHiringManagement.model.temp.dashboard.*;
 import lombok.Data;
 
 @Data
 public class DashboardResponse {
-    private Integer totalBike;
-    private Integer totalManualBike;
-    private Integer totalAutoBike;
-
-    private Integer totalOrder;
-    private Integer totalOrderClose;
-    private Integer totalOrderCancel;
-    private Integer totalOrderPending;
-
-    private Double revenue;
-    private Double income;
-    private Double expense;
+    private FirstChart firstChart;
+    private SecondChart secondChart;
+    private ThirdChart thirdChart;
+    private FourthChart fourthChart;
+    private FifthChart fifthChart;
+    private SixthChart sixthChart;
+    private MonthChart monthChart;
 }
 
 

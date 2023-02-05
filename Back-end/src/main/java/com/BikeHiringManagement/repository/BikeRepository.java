@@ -25,4 +25,6 @@ public interface BikeRepository extends JpaRepository<Bike, Long>, JpaSpecificat
 
     @Query("SELECT b, ct.name FROM Bike b inner join BikeCategory ct on b.bikeCategoryId = ct.id")
     List<Bike> findBikeByIdCustom();
+
+    List<Bike> findAllByIdInAndIsDeleted(List<Long> listBikeId, Boolean check);
 }

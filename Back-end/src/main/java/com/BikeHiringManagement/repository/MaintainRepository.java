@@ -4,6 +4,7 @@ import com.BikeHiringManagement.entity.Maintain;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.Date;
 import java.util.List;
 
 public interface MaintainRepository extends JpaRepository<Maintain, Long>, JpaSpecificationExecutor<Maintain> {
@@ -13,4 +14,5 @@ public interface MaintainRepository extends JpaRepository<Maintain, Long>, JpaSp
     Maintain findMaintainById(Long id);
 
     List<Maintain> findAllByIsDeleted(Boolean check);
+    List<Maintain> findAllByDateAfterAndDateBeforeAndIsDeleted(Date dateFrom, Date dateTo, Boolean check);
 }

@@ -7,4 +7,5 @@ import java.util.Date;
 public class DashboardRequest {
     private Date dateFrom;
     private Date dateTo;
+    private String year;
 }
