@@ -28,6 +28,8 @@ import CardContent from '@mui/material/CardContent';
 // Component
 import { DashboardAPI } from "../../api/EndPoint";
 import { CardCustom } from "../../components/Card/CardCustom";
+import { SortSelect } from "../../components/Form/SortSelect";
+import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
 
 // Function
 import { ConvertLongNumber } from "../../function/ConvertLongNumber";
@@ -44,7 +46,17 @@ const arrLabelChart4 = ['Manual Transmission', 'Automatic Transmission'];
 const labelChart5 = 'Total Maintain By Type Chart';
 const arrLabelChart5 = ['General Maintain', 'Bike Maintain'];
 
+// YEAR DATA TEMP
+export const SortYear = [
+    { value: 2023, label: "2023", key: "1" },
+    { value: 2022, label: "2022", key: "2" },
+    { value: 2021, label: "2021", key: "3" },
+    { value: 2020, label: "2020", key: "4" },
+    { value: 2019, label: "2019", key: "5" },
+    { value: 2018, label: "2018", key: "6" }
+];
 
+// NON-API FUNCTION
 const setValueForCircleChart = (lable, arrLabel, arrData, setDataChart) => {
     setDataChart({
         labels: arrLabel,
@@ -55,6 +67,11 @@ const setValueForCircleChart = (lable, arrLabel, arrData, setDataChart) => {
     })
 }
 
+const getListYear = () => {
+
+}
+
+// GET API FUNCTION
 const handleGetByDateFromTo = async (
     startDate,
     endDate,
@@ -63,7 +80,8 @@ const handleGetByDateFromTo = async (
     setThirdChart,
     setFourthChart,
     setFifthChart,
-    setSixthChart
+    setListMonthDataCustomerRankHiredNumber,
+    setListMonthDataCustomerRankHiredCost
 ) => {
     if (endDate.isAfter(startDate)) {
         const body = {
@@ -73,7 +91,6 @@ const handleGetByDateFromTo = async (
         await AxiosInstance.post(DashboardAPI.getByDateFromTo, body, {
             headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
         }).then((res) => {
-            console.log(res.data.data)
             setFirstChart({
                 totalIncome: res.data.data.firstChart.totalIncome,
                 totalOrder: res.data.data.firstChart.totalOrder,
@@ -96,10 +113,26 @@ const handleGetByDateFromTo = async (
                 totalMaintainBike: res.data.data.fifthChart.totalMaintainBike,
                 totalMaintainGeneral: res.data.data.fifthChart.totalMaintainGeneral
             })
-            setSixthChart({
-                listTopCustomerHiringCost: res.data.data.sixthChart.listTopCustomerHiringCost,
-                listTopCustomerHiringNumber: res.data.data.sixthChart.listTopCustomerHiringNumber,
+
+            var listMonthDataCustomerRankHiredNumber = res.data.data.sixthChart.listTopCustomerHiringNumber.map((data) => {
+                return {
+                    rank: data.rank,
+                    name: data.name,
+                    phoneNumber: data.phoneNumber,
+                    hiredNumber: data.hiredNumber
+                }
             })
+
+            var listMonthDataCustomerRankHiredCost = res.data.data.sixthChart.listTopCustomerHiringCost.map((data) => {
+                return {
+                    rank: data.rank,
+                    name: data.name,
+                    phoneNumber: data.phoneNumber,
+                    hiredCost: data.hiredCost
+                }
+            })
+            setListMonthDataCustomerRankHiredNumber(listMonthDataCustomerRankHiredNumber)
+            setListMonthDataCustomerRankHiredCost(listMonthDataCustomerRankHiredCost)
         }).catch((error) => {
             if (error && error.response) {
                 console.log("Error: ", error);
@@ -107,6 +140,39 @@ const handleGetByDateFromTo = async (
         });
     }
 };
+
+const handleGetByYear = async (
+    year,
+    setListMonthDataCustomerRankHiredNumber,
+    setListMonthDataCustomerRankHiredCost
+) => {
+    const body = {
+        year: year
+    };
+    await AxiosInstance.post(DashboardAPI.getByYear, body, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        // console.log(res.data.data)
+        // var listMonthDataCustomerRankHiredNumber = res.data.data.monthChart.listMonthData.map((data) => {
+        //     return {
+        //         id: data.id,
+        //         name: data.name,
+        //         price: GetFormattedCurrency(data.price)
+        //     }
+        // })
+        // var listMonthDataCustomerRankHiredCost = res.data.data.monthChart.listMonthData.map((data) => {
+        //     return {
+        //         id: data.id,
+        //         name: data.name,
+        //         price: GetFormattedCurrency(data.price)
+        //     }
+        // })
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
+}
 
 function Dashboard() {
 
@@ -118,13 +184,30 @@ function Dashboard() {
         setLoadingPage(false);
     }
 
+    // TABLE TITLE
+    const tableTitleListCustomerHiredNumber = [
+        { name: 'RANK', width: '25%' },
+        { name: 'NAME', width: '25%' },
+        { name: 'PHONE NUMBER', width: '25%' },
+        { name: 'HIRED NUMBER', width: '25%' }
+    ]
+
+    const tableTitleListCustomerHiredCost = [
+        { name: 'RANK', width: '25%' },
+        { name: 'NAME', width: '25%' },
+        { name: 'PHONE NUMBER', width: '25%' },
+        { name: 'HIRED COST', width: '25%' }
+    ]
+
+
     // SEARCH DATA 
     var now = dayjs();
     const [startDate, setStartDate] = useState(now.startOf('year'));
     const [endDate, setEndDate] = useState(now);
     const [year, setYear] = useState(now.get('year'))
 
-    /*----------- CHART DATA API----------*/
+
+    /*----------- DATA API----------*/
     const [firstChart, setFirstChart] = useState({
         totalIncome: 0,
         totalOrder: 0,
@@ -147,13 +230,11 @@ function Dashboard() {
         totalMaintainBike: 0,
         totalMaintainGeneral: 0
     })
-    const [sixthChart, setSixthChart] = useState({
-        listTopCustomerHiringCost: [],
-        listTopCustomerHiringNumber: []
-    })
+    const [listMonthDataCustomerRankHiredNumber, setListMonthDataCustomerRankHiredNumber] = useState([]);
+    const [listMonthDataCustomerRankHiredCost, setListMonthDataCustomerRankHiredCost] = useState([]);
 
 
-    /*----------- CHART DATA IN CHART----------*/
+    /*----------- DATA IN CHART----------*/
     const [dataChart2, setDataChart2] = useState({
         labels: [],
         datasets: [{
@@ -175,7 +256,6 @@ function Dashboard() {
             data: [],
         }]
     });
-
     const [dataChart5, setDataChart5] = useState({
         labels: [],
         datasets: [{
@@ -195,10 +275,22 @@ function Dashboard() {
             setThirdChart,
             setFourthChart,
             setFifthChart,
-            setSixthChart
+            setListMonthDataCustomerRankHiredNumber,
+            setListMonthDataCustomerRankHiredCost
+        );
+        handleGetByYear(
+            year,
+            setListMonthDataCustomerRankHiredNumber,
+            setListMonthDataCustomerRankHiredCost
         );
     }, [startDate, endDate])
 
+
+    // USE EFFECT
+    // CHANGE YEAR
+    useEffect(() => {
+        console.log(year)
+    }, [year])
 
     // USE EFFECT
     // CHART DATA CHANGED
@@ -242,7 +334,7 @@ function Dashboard() {
                 <Stack spacing={2} divider={<Divider />}>
                     <div>
 
-                        {/* Search Bar */}
+                        {/* Search Bar Date TO FROM */}
                         <Row className="sort-bar mb-3">
                             <Col lg={3} xs={12}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -331,6 +423,7 @@ function Dashboard() {
                             </Col>
                         </Row>
 
+                        {/* Circle chart */}
                         <Row style={{ marginBottom: '2rem' }}>
                             {/* Chart 2 */}
                             <Col lg={3} xs={12}>
@@ -376,7 +469,48 @@ function Dashboard() {
                                 </Card>
                             </Col>
                         </Row>
+
+                        {/* Rank table */}
                         <Row style={{ marginBottom: '2rem' }}>
+                            <Col lg={6} xs={12}>
+                                <label className='form-label'>RANKING CUSTOMER HIRED NUMBER</label>
+                                {Object.keys(listMonthDataCustomerRankHiredNumber).length !== 0 ?
+                                    <TableOrderBikeList
+                                        tableTitleList={tableTitleListCustomerHiredNumber}
+                                        listData={listMonthDataCustomerRankHiredNumber}
+                                        isShowButtonDelete={false}
+                                    />
+                                    :
+                                    <div>No data found</div>
+                                }
+                            </Col>
+                            <Col lg={6} xs={12}>
+                                <label className='form-label'>RANKING CUSTOMER HIRED COST</label>
+                                {Object.keys(listMonthDataCustomerRankHiredCost).length !== 0 ?
+                                    <TableOrderBikeList
+                                        tableTitleList={tableTitleListCustomerHiredCost}
+                                        listData={listMonthDataCustomerRankHiredCost}
+                                        isShowButtonDelete={false}
+                                    />
+                                    :
+                                    <div>No data found</div>
+                                }
+                            </Col>
+                        </Row>
+
+                        {/* SELECT Date By year */}
+                        <Row style={{ marginBottom: '2rem' }}>
+                            <Col lg={3} xs={6}>
+                                <SortSelect
+                                    label={'Sort By Year'}
+                                    name={'year'}
+                                    options={SortYear}
+                                    defaultValue={{ label: year, value: year }}
+                                    onChange={(value) => {
+                                        setYear(value.value)
+                                    }}
+                                />
+                            </Col>
                         </Row>
                     </div>
                     <div></div>
