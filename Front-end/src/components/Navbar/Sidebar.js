@@ -1,5 +1,5 @@
-
 import React, { useState, Fragment } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Navbar, Nav } from "react-bootstrap";
 import { styled } from '@mui/material/styles';
 import {
@@ -18,6 +18,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import Button from '@mui/material/Button';
+import Cookies from 'universal-cookie';
+
+// Redux
+import { useDispatch } from "react-redux";
+import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
+
+const cookies = new Cookies();
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -28,6 +36,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const Sidebar = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [managementCollapse, setManagementCollapse] = useState(false);
 
@@ -39,19 +49,33 @@ const Sidebar = () => {
         setManagementCollapse(!managementCollapse);
     }
 
+    const handleLogOut = () => {
+        cookies.remove('accessToken');
+        dispatch(reduxAuthenticateAction.updateToken(null));
+        dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
+        setTimeout(() => {
+            navigate('/signin');
+        }, 500);
+    }
+
     return (
         <Fragment>
-            <Navbar key="lg" expand="lg" className="navbar-light px-3 sidebar" sticky="top" bg="light" role="navigation" collapseOnSelect>
-                <IconButton
-                    color="default"
-                    aria-label="open drawer"
-                    onClick={toggleSlider}
-                    edge="start"
-                    style={{ ...(open && { display: 'none' }) }}
-                >
-                    <MenuIcon />
-                </IconButton>
-                <Navbar.Brand href="/">Rent Motorcycles</Navbar.Brand>
+            <Navbar key="lg" expand="lg" className="navbar-light px-3 sidebar"
+                sticky="top" bg="light" role="navigation" collapseOnSelect
+                style={{ justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <IconButton
+                        color="default"
+                        aria-label="open drawer"
+                        onClick={toggleSlider}
+                        edge="start"
+                        style={{ ...(open && { display: 'none' }) }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Navbar.Brand href="/dashboard">Rent Motorcycles</Navbar.Brand>
+                </div>
+                <Button className="btn-logout" variant="contained" onClick={() => handleLogOut()}>Log out</Button>
             </Navbar>
             <Drawer
                 variant="persistent"

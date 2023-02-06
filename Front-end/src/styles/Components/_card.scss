@@ -121,6 +121,14 @@
     &-content {
         padding-bottom: 16px !important;
     }
+
+    &-header-b {
+        padding-bottom: 0px !important;
+
+        .MuiTypography-h5 {
+            font-weight: 600 !important;
+        }
+    }
 }
 
 .card-icon {

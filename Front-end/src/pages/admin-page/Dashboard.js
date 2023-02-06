@@ -23,6 +23,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { PolarArea, Doughnut, Bar, Chart } from 'react-chartjs-2';
 import 'chart.js/auto';
 import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 
 // Component
@@ -46,14 +47,16 @@ const arrLabelChart4 = ['Manual Transmission', 'Automatic Transmission'];
 const labelChart5 = 'Total Maintain By Type Chart';
 const arrLabelChart5 = ['General Maintain', 'Bike Maintain'];
 
+const now = dayjs();
+
 // YEAR DATA TEMP
 export const SortYear = [
-    { value: 2023, label: "2023", key: "1" },
-    { value: 2022, label: "2022", key: "2" },
-    { value: 2021, label: "2021", key: "3" },
-    { value: 2020, label: "2020", key: "4" },
-    { value: 2019, label: "2019", key: "5" },
-    { value: 2018, label: "2018", key: "6" }
+    { value: now.get('year'), label: now.get('year'), key: "1" },
+    { value: now.get('year') - 1, label: now.get('year') - 1, key: "2" },
+    { value: now.get('year') - 2, label: now.get('year') - 2, key: "3" },
+    { value: now.get('year') - 3, label: now.get('year') - 3, key: "4" },
+    { value: now.get('year') - 4, label: now.get('year') - 4, key: "5" },
+    { value: now.get('year') - 5, label: now.get('year') - 5, key: "6" }
 ];
 
 // NON-API FUNCTION
@@ -67,9 +70,9 @@ const setValueForCircleChart = (lable, arrLabel, arrData, setDataChart) => {
     })
 }
 
-const getListYear = () => {
+// const getListYear = () => {
 
-}
+// }
 
 // GET API FUNCTION
 const handleGetByDateFromTo = async (
@@ -173,22 +176,22 @@ function Dashboard() {
 
     // TABLE TITLE
     const tableTitleListCustomerHiredNumber = [
-        { name: 'RANK', width: '25%' },
-        { name: 'NAME', width: '25%' },
-        { name: 'PHONE NUMBER', width: '25%' },
-        { name: 'HIRED NUMBER', width: '25%' }
+        { name: 'RANK', width: '10%' },
+        { name: 'NAME', width: '30%' },
+        { name: 'PHONE NUMBER', width: '30%' },
+        { name: 'HIRED NUMBER', width: '30%' }
     ]
 
     const tableTitleListCustomerHiredCost = [
-        { name: 'RANK', width: '25%' },
-        { name: 'NAME', width: '25%' },
-        { name: 'PHONE NUMBER', width: '25%' },
-        { name: 'HIRED COST', width: '25%' }
+        { name: 'RANK', width: '10%' },
+        { name: 'NAME', width: '30%' },
+        { name: 'PHONE NUMBER', width: '30%' },
+        { name: 'HIRED COST', width: '30%' }
     ]
 
 
     // SEARCH DATA 
-    var now = dayjs();
+
     const [startDate, setStartDate] = useState(now.startOf('year'));
     const [endDate, setEndDate] = useState(now);
     const [year, setYear] = useState(now.get('year'))
@@ -460,28 +463,36 @@ function Dashboard() {
                         {/* Rank table */}
                         <Row style={{ marginBottom: '2rem' }}>
                             <Col lg={6} xs={12}>
-                                <label className='form-label'>RANKING CUSTOMER HIRED NUMBER</label>
-                                {Object.keys(listMonthDataCustomerRankHiredNumber).length !== 0 ?
-                                    <TableOrderBikeList
-                                        tableTitleList={tableTitleListCustomerHiredNumber}
-                                        listData={listMonthDataCustomerRankHiredNumber}
-                                        isShowButtonDelete={false}
-                                    />
-                                    :
-                                    <div>No data found</div>
-                                }
+                                <Card variant="outlined" className="card-custom" >
+                                    <CardHeader title={"RANKING CUSTOMER HIRED NUMBER"} className="card-custom-header-b" />
+                                    <CardContent>
+                                        {Object.keys(listMonthDataCustomerRankHiredNumber).length !== 0 ?
+                                            <TableOrderBikeList
+                                                tableTitleList={tableTitleListCustomerHiredNumber}
+                                                listData={listMonthDataCustomerRankHiredNumber}
+                                                isShowButtonDelete={false}
+                                            />
+                                            :
+                                            <div>No data found</div>
+                                        }
+                                    </CardContent>
+                                </Card>
                             </Col>
                             <Col lg={6} xs={12}>
-                                <label className='form-label'>RANKING CUSTOMER HIRED COST</label>
-                                {Object.keys(listMonthDataCustomerRankHiredCost).length !== 0 ?
-                                    <TableOrderBikeList
-                                        tableTitleList={tableTitleListCustomerHiredCost}
-                                        listData={listMonthDataCustomerRankHiredCost}
-                                        isShowButtonDelete={false}
-                                    />
-                                    :
-                                    <div>No data found</div>
-                                }
+                                <Card variant="outlined" className="card-custom" >
+                                    <CardHeader title={"RANKING CUSTOMER HIRED COST"} className="card-custom-header-b" />
+                                    <CardContent>
+                                        {Object.keys(listMonthDataCustomerRankHiredCost).length !== 0 ?
+                                            <TableOrderBikeList
+                                                tableTitleList={tableTitleListCustomerHiredCost}
+                                                listData={listMonthDataCustomerRankHiredCost}
+                                                isShowButtonDelete={false}
+                                            />
+                                            :
+                                            <div>No data found</div>
+                                        }
+                                    </CardContent>
+                                </Card>
                             </Col>
                         </Row>
 

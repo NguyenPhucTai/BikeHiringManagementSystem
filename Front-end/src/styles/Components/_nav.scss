@@ -70,3 +70,15 @@
     }
 
 }
+
+.btn-logout {
+    padding: 0.5rem 1.5rem !important;
+    background-color: $color-coral !important;
+    border-radius: 0.25rem !important;
+    color: $color-white !important;
+
+    &:hover,
+    &:focus {
+        color: $color-white !important;
+    }
+}
