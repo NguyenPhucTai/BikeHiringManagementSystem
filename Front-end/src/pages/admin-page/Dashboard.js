@@ -116,7 +116,7 @@ const handleGetByDateFromTo = async (
 
             var listMonthDataCustomerRankHiredNumber = res.data.data.sixthChart.listTopCustomerHiringNumber.map((data) => {
                 return {
-                    rank: data.rank,
+                    id: data.rank,
                     name: data.name,
                     phoneNumber: data.phoneNumber,
                     hiredNumber: data.hiredNumber
@@ -125,7 +125,7 @@ const handleGetByDateFromTo = async (
 
             var listMonthDataCustomerRankHiredCost = res.data.data.sixthChart.listTopCustomerHiringCost.map((data) => {
                 return {
-                    rank: data.rank,
+                    id: data.rank,
                     name: data.name,
                     phoneNumber: data.phoneNumber,
                     hiredCost: data.hiredCost
@@ -144,6 +144,7 @@ const handleGetByDateFromTo = async (
 const handleGetByYear = async (
     year
 ) => {
+    /*
     const body = {
         year: year
     };
@@ -151,25 +152,13 @@ const handleGetByYear = async (
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
         console.log(res.data.data)
-        // var listMonthDataCustomerRankHiredNumber = res.data.data.monthChart.listMonthData.map((data) => {
-        //     return {
-        //         id: data.id,
-        //         name: data.name,
-        //         price: GetFormattedCurrency(data.price)
-        //     }
-        // })
-        // var listMonthDataCustomerRankHiredCost = res.data.data.monthChart.listMonthData.map((data) => {
-        //     return {
-        //         id: data.id,
-        //         name: data.name,
-        //         price: GetFormattedCurrency(data.price)
-        //     }
-        // })
+
     }).catch((error) => {
         if (error && error.response) {
             console.log("Error: ", error);
         }
     });
+    */
 }
 
 function Dashboard() {
