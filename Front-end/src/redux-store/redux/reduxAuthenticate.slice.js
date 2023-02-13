@@ -14,7 +14,7 @@ const reduxAuthenticateSlice = createSlice({
         },
         updateIsShowPublicNavBar(state, action) {
             state.isShowPublicNavBar = action.payload;
-        },
+        }
     }
 });
 

@@ -31,6 +31,7 @@ const handleSignIn = async (values, setAlert, navigate, dispatch) => {
                 cookies.set('accessToken', res.data.data.token);
                 dispatch(reduxAuthenticateAction.updateToken(res.data.data.token));
                 dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(false));
+                cookies.set('userName', res.data.data.userInfo.username);
                 setAlert({
                     alertShow: true,
                     alertStatus: "success",

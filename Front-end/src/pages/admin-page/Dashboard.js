@@ -20,7 +20,7 @@ import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
-import { PolarArea, Doughnut, Bar, Chart } from 'react-chartjs-2';
+import { PolarArea, Doughnut, Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -39,9 +39,9 @@ const cookies = new Cookies();
 
 /*---------------- CONST LABEL -------------------*/
 const labelChart2 = 'Revenue & Expense Chart';
-const arrLabelChart2 = ['Total revenue', 'Total expense'];
+const arrLabelChart2 = ['Total Revenue', 'Total Expense'];
 const labelChart3 = 'Total Order By Type Chart';
-const arrLabelChart3 = ['Close order', 'Cancel order', 'Pending order'];
+const arrLabelChart3 = ['Close Order', 'Cancel Order', 'Pending Order'];
 const labelChart4 = 'Total Hired Number By Bike Category Chart';
 const arrLabelChart4 = ['Manual Transmission', 'Automatic Transmission'];
 const labelChart5 = 'Total Maintain By Type Chart';
@@ -59,6 +59,18 @@ export const SortYear = [
     { value: now.get('year') - 5, label: now.get('year') - 5, key: "6" }
 ];
 
+// STACKED BAR CHART
+export const options = {
+    scales: {
+        x: {
+            stacked: true,
+        },
+        y: {
+            stacked: true,
+        },
+    },
+}
+
 // NON-API FUNCTION
 const setValueForCircleChart = (lable, arrLabel, arrData, setDataChart) => {
     setDataChart({
@@ -70,9 +82,12 @@ const setValueForCircleChart = (lable, arrLabel, arrData, setDataChart) => {
     })
 }
 
-// const getListYear = () => {
+const getMonthName = (monthNumber) => {
+    const date = new Date();
+    date.setMonth(monthNumber - 1);
 
-// }
+    return date.toLocaleString('en-US', { month: 'short' });
+}
 
 // GET API FUNCTION
 const handleGetByDateFromTo = async (
@@ -145,23 +160,21 @@ const handleGetByDateFromTo = async (
 };
 
 const handleGetByYear = async (
-    year
+    year,
+    setMonthChart
 ) => {
-    /*
     const body = {
         year: year
     };
     await AxiosInstance.post(DashboardAPI.getByYear, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
-        console.log(res.data.data)
-
+        setMonthChart(res.data.data.monthChart.listMonthData);
     }).catch((error) => {
         if (error && error.response) {
             console.log("Error: ", error);
         }
     });
-    */
 }
 
 function Dashboard() {
@@ -223,6 +236,8 @@ function Dashboard() {
     const [listMonthDataCustomerRankHiredNumber, setListMonthDataCustomerRankHiredNumber] = useState([]);
     const [listMonthDataCustomerRankHiredCost, setListMonthDataCustomerRankHiredCost] = useState([]);
 
+    const [monthChart, setMonthChart] = useState([]);
+
 
     /*----------- DATA IN CHART----------*/
     const [dataChart2, setDataChart2] = useState({
@@ -253,6 +268,38 @@ function Dashboard() {
             data: [],
         }]
     });
+    const [dataChart6, setDataChart6] = useState({
+        labels: [],
+        datasets: [{
+            type: 'bar',
+            label: '',
+            data: []
+        }, {
+            type: 'line',
+            label: '',
+            data: [],
+        }]
+    });
+    const [dataChart7, setDataChart7] = useState({
+        labels: [],
+        datasets: [{
+            type: 'bar',
+            label: '',
+            data: [],
+            stack: 'Stack 0',
+        }, {
+            type: 'bar',
+            label: '',
+            data: [],
+            stack: 'Stack 0',
+        }, {
+            type: 'bar',
+            label: '',
+            data: [],
+            stack: 'Stack 1',
+        }]
+    });
+
 
     // USE EFFECT
     // Page loading
@@ -268,9 +315,6 @@ function Dashboard() {
             setListMonthDataCustomerRankHiredNumber,
             setListMonthDataCustomerRankHiredCost
         );
-        handleGetByYear(
-            year
-        );
     }, [startDate, endDate])
 
 
@@ -278,7 +322,8 @@ function Dashboard() {
     // CHANGE YEAR
     useEffect(() => {
         handleGetByYear(
-            year
+            year,
+            setMonthChart
         );
     }, [year])
 
@@ -316,6 +361,54 @@ function Dashboard() {
         arrData.push(fifthChart.totalMaintainBike);
         setValueForCircleChart(labelChart5, arrLabelChart5, arrData, setDataChart5);
     }, [fifthChart])
+
+    // CHART 6, 7
+    useEffect(() => {
+        if (monthChart.length > 0) {
+            let listMonth = [];
+            let listTotalOrder = [];
+            let listTotalNewCustomer = [];
+            let listTotalRevenue = [];
+            let listTotalExpense = [];
+            let listTotalIncome = [];
+            monthChart.map(e => {
+                listMonth.push(getMonthName(e.month));
+                listTotalOrder.push(e.totalOrder);
+                listTotalNewCustomer.push(e.totalNewCustomer);
+                listTotalRevenue.push(e.totalRevenue);
+                listTotalExpense.push(-1 * e.totalExpense);
+                listTotalIncome.push(e.totalIncome);
+            });
+            setDataChart6({
+                labels: listMonth,
+                datasets: [{
+                    type: 'bar',
+                    label: 'Total Order',
+                    data: listTotalOrder
+                }, {
+                    type: 'line',
+                    label: 'Total New Customer',
+                    data: listTotalNewCustomer,
+                }]
+            })
+            setDataChart7({
+                labels: listMonth,
+                datasets: [{
+                    label: 'Total Revenue',
+                    data: listTotalRevenue,
+                    stack: 'Stack 0',
+                }, {
+                    label: 'Total Expense',
+                    data: listTotalExpense,
+                    stack: 'Stack 0',
+                }, {
+                    label: 'Total Income',
+                    data: listTotalIncome,
+                    stack: 'Stack 1',
+                }]
+            })
+        }
+    }, [monthChart])
 
     return (
         <Fragment>
@@ -495,7 +588,8 @@ function Dashboard() {
                                 </Card>
                             </Col>
                         </Row>
-
+                    </div>
+                    <div>
                         {/* SELECT Date By year */}
                         <Row style={{ marginBottom: '2rem' }}>
                             <Col lg={3} xs={6}>
@@ -510,8 +604,28 @@ function Dashboard() {
                                 />
                             </Col>
                         </Row>
+
+                        {/* Chart Month */}
+                        <Row style={{ marginBottom: '2rem' }}>
+                            {/* Chart 6 */}
+                            <Col lg={6} xs={12}>
+                                <Card variant="outlined" className="card-custom" >
+                                    <CardContent>
+                                        <Bar data={dataChart6} />
+                                    </CardContent>
+                                </Card>
+                            </Col>
+
+                            {/* Chart 7 */}
+                            <Col lg={6} xs={12}>
+                                <Card variant="outlined" className="card-custom" >
+                                    <CardContent>
+                                        <Bar data={dataChart7} options={options} />
+                                    </CardContent>
+                                </Card>
+                            </Col>
+                        </Row>
                     </div>
-                    <div></div>
                 </Stack>
             </div>
         </Fragment >

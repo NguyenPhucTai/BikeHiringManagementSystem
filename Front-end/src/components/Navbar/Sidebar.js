@@ -22,7 +22,7 @@ import Button from '@mui/material/Button';
 import Cookies from 'universal-cookie';
 
 // Redux
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
 const cookies = new Cookies();
@@ -41,6 +41,8 @@ const Sidebar = () => {
     const [open, setOpen] = useState(false);
     const [managementCollapse, setManagementCollapse] = useState(false);
 
+    let reduxUserName = cookies.get('userName');
+
     const toggleSlider = () => {
         setOpen(!open);
     };
@@ -51,6 +53,7 @@ const Sidebar = () => {
 
     const handleLogOut = () => {
         cookies.remove('accessToken');
+        cookies.remove('userName');
         dispatch(reduxAuthenticateAction.updateToken(null));
         dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
         setTimeout(() => {
@@ -75,6 +78,7 @@ const Sidebar = () => {
                     </IconButton>
                     <Navbar.Brand href="/dashboard">Rent Motorcycles</Navbar.Brand>
                 </div>
+                <label>Username: {reduxUserName}</label>
                 <Button className="btn-logout" variant="contained" onClick={() => handleLogOut()}>Log out</Button>
             </Navbar>
             <Drawer
