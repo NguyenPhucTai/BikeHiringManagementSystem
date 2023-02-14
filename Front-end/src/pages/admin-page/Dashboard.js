@@ -15,16 +15,14 @@ import dayjs from 'dayjs';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 
 // Library - date time
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
-import { PolarArea, Doughnut, Bar } from 'react-chartjs-2';
-import 'chart.js/auto';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
 
 // Component
 import { DashboardAPI } from "../../api/EndPoint";
@@ -33,7 +31,18 @@ import { SortSelect } from "../../components/Form/SortSelect";
 import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
 
 // Function
+import { GetFormattedCurrency } from "../../function/CurrencyFormat";
 import { ConvertLongNumber } from "../../function/ConvertLongNumber";
+
+// Library - Chart
+import { PolarArea, Doughnut, Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
+import "chartjs-plugin-datalabels";
+import { Chart } from "chart.js";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+// To register ChartDataLabels globally to all charts
+Chart.register(ChartDataLabels);
 
 const cookies = new Cookies();
 
@@ -334,7 +343,7 @@ function Dashboard() {
         let arrData = [];
         arrData.push(secondChart.totalRevenue);
         arrData.push(secondChart.totalExpense);
-        setValueForCircleChart(labelChart2, arrLabelChart2, arrData, setDataChart2);
+        setValueForCircleChart('Total money', arrLabelChart2, arrData, setDataChart2);
     }, [secondChart])
 
     // CHART 3
@@ -343,7 +352,7 @@ function Dashboard() {
         arrData.push(thirdChart.totalOrderClose);
         arrData.push(thirdChart.totalOrderCancel);
         arrData.push(thirdChart.totalOrderPending);
-        setValueForCircleChart(labelChart3, arrLabelChart3, arrData, setDataChart3);
+        setValueForCircleChart('Total order', arrLabelChart3, arrData, setDataChart3);
     }, [thirdChart])
 
     // CHART 4
@@ -351,7 +360,7 @@ function Dashboard() {
         let arrData = [];
         arrData.push(fourthChart.totalBikeManualHired);
         arrData.push(fourthChart.totalBikeAutoHired);
-        setValueForCircleChart(labelChart4, arrLabelChart4, arrData, setDataChart4);
+        setValueForCircleChart('Total bike', arrLabelChart4, arrData, setDataChart4);
     }, [fourthChart])
 
     // CHART 5
@@ -359,7 +368,7 @@ function Dashboard() {
         let arrData = [];
         arrData.push(fifthChart.totalMaintainGeneral);
         arrData.push(fifthChart.totalMaintainBike);
-        setValueForCircleChart(labelChart5, arrLabelChart5, arrData, setDataChart5);
+        setValueForCircleChart('Total maintain', arrLabelChart5, arrData, setDataChart5);
     }, [fifthChart])
 
     // CHART 6, 7
@@ -514,6 +523,24 @@ function Dashboard() {
                                     <CardContent>
                                         <PolarArea
                                             data={dataChart2}
+                                            options={{
+                                                plugins: {
+                                                    title: {
+                                                        display: true,
+                                                        position: 'bottom',
+                                                        text: labelChart2
+                                                    },
+                                                    datalabels: {
+                                                        anchor: 'end',
+                                                        align: 'center',
+                                                        formatter: GetFormattedCurrency,
+                                                        font: {
+                                                            weight: '500',
+                                                            size: 13
+                                                        }
+                                                    }
+                                                }
+                                            }}
                                         />
                                     </CardContent>
                                 </Card>
@@ -525,6 +552,24 @@ function Dashboard() {
                                     <CardContent>
                                         <Doughnut
                                             data={dataChart3}
+                                            options={{
+                                                plugins: {
+                                                    title: {
+                                                        display: true,
+                                                        position: 'bottom',
+                                                        text: labelChart3
+                                                    },
+                                                    datalabels: {
+                                                        anchor: 'center',
+                                                        align: 'center',
+                                                        formatter: ConvertLongNumber,
+                                                        font: {
+                                                            weight: '500',
+                                                            size: 13
+                                                        }
+                                                    }
+                                                }
+                                            }}
                                         />
                                     </CardContent>
                                 </Card>
@@ -536,6 +581,24 @@ function Dashboard() {
                                     <CardContent>
                                         <Doughnut
                                             data={dataChart4}
+                                            options={{
+                                                plugins: {
+                                                    title: {
+                                                        display: true,
+                                                        position: 'bottom',
+                                                        text: labelChart4
+                                                    },
+                                                    datalabels: {
+                                                        anchor: 'center',
+                                                        align: 'center',
+                                                        formatter: ConvertLongNumber,
+                                                        font: {
+                                                            weight: '500',
+                                                            size: 13
+                                                        }
+                                                    }
+                                                }
+                                            }}
                                         />
                                     </CardContent>
                                 </Card>
@@ -547,6 +610,24 @@ function Dashboard() {
                                     <CardContent>
                                         <Doughnut
                                             data={dataChart5}
+                                            options={{
+                                                plugins: {
+                                                    title: {
+                                                        display: true,
+                                                        position: 'bottom',
+                                                        text: labelChart5
+                                                    },
+                                                    datalabels: {
+                                                        anchor: 'center',
+                                                        align: 'center',
+                                                        formatter: ConvertLongNumber,
+                                                        font: {
+                                                            weight: '500',
+                                                            size: 13
+                                                        }
+                                                    }
+                                                }
+                                            }}
                                         />
                                     </CardContent>
                                 </Card>
@@ -611,7 +692,25 @@ function Dashboard() {
                             <Col lg={6} xs={12}>
                                 <Card variant="outlined" className="card-custom" >
                                     <CardContent>
-                                        <Bar data={dataChart6} />
+                                        <Bar data={dataChart6}
+                                            options={{
+                                                plugins: {
+                                                    title: {
+                                                        display: true,
+                                                        position: 'bottom',
+                                                        text: ''
+                                                    },
+                                                    datalabels: {
+                                                        anchor: 'end',
+                                                        align: 'top',
+                                                        formatter: ConvertLongNumber,
+                                                        font: {
+                                                            weight: '500',
+                                                            size: 13
+                                                        }
+                                                    }
+                                                }
+                                            }} />
                                     </CardContent>
                                 </Card>
                             </Col>
@@ -620,7 +719,32 @@ function Dashboard() {
                             <Col lg={6} xs={12}>
                                 <Card variant="outlined" className="card-custom" >
                                     <CardContent>
-                                        <Bar data={dataChart7} options={options} />
+                                        <Bar data={dataChart7} options={{
+                                            scales: {
+                                                x: {
+                                                    stacked: true,
+                                                },
+                                                y: {
+                                                    stacked: true,
+                                                },
+                                            },
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    position: 'bottom',
+                                                    text: ''
+                                                },
+                                                datalabels: {
+                                                    anchor: 'end',
+                                                    align: 'top',
+                                                    formatter: ConvertLongNumber,
+                                                    font: {
+                                                        weight: '500',
+                                                        size: 13
+                                                    }
+                                                }
+                                            }
+                                        }} />
                                     </CardContent>
                                 </Card>
                             </Col>

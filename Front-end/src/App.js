@@ -1,8 +1,8 @@
-import React, { Fragment } from "react";
-import { Routes, Route, BrowserRouter, Navigate, Outlet } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
 import './styles/style.scss';
+import React, { Fragment } from "react";
+import { Routes, Route, BrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Cookies from 'universal-cookie';
 
 import PageNotFound from './pages/404';

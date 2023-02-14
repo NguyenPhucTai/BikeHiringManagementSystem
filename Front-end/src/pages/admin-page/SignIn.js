@@ -6,8 +6,6 @@ import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { Formik, Form } from "formik";
 import { UserSchema } from "../../validation";
 import { AlertMessage } from "../../components/Modal/AlertMessage";
-import { useNavigate } from 'react-router-dom';
-
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -20,7 +18,7 @@ const initialValues = {
     password: "",
 };
 
-const handleSignIn = async (values, setAlert, navigate, dispatch) => {
+const handleSignIn = async (values, setAlert, dispatch) => {
     const body = {
         username: values.username,
         password: values.password,
@@ -38,7 +36,7 @@ const handleSignIn = async (values, setAlert, navigate, dispatch) => {
                     alertMessage: "Sign in success",
                 })
                 setTimeout(() => {
-                    navigate('/dashboard');
+                    window.location.replace('/dashboard');
                 }, 500);
             } else {
                 setAlert({
@@ -67,9 +65,6 @@ function SignIn() {
         setLoadingPage(false);
     }
 
-    // Render page
-    const navigate = useNavigate();
-
     // USE STATE
     const [alert, setAlert] = useState({
         alertShow: false,
@@ -91,7 +86,7 @@ function SignIn() {
                 initialValues={initialValues}
                 validationSchema={UserSchema}
                 onSubmit={(values) => {
-                    handleSignIn(values, setAlert, navigate, dispatch);
+                    handleSignIn(values, setAlert, dispatch);
                 }}>
                 {({
                     isSubmitting,

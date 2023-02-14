@@ -6,7 +6,7 @@ export const AlertMessage = (props) => {
     return (
         <div className='alert-message' style={{ marginBottom: "16px" }}>
             {isShow &&
-                <Alert variant="filled" severity={status}>
+                <Alert variant="outlined" severity={status} color={status}>
                     {message}
                 </Alert>}
         </div>

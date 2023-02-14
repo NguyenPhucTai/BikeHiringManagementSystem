@@ -1,5 +1,4 @@
 import React, { useState, Fragment } from "react";
-import { useNavigate } from 'react-router-dom';
 import { Navbar, Nav } from "react-bootstrap";
 import { styled } from '@mui/material/styles';
 import {
@@ -16,13 +15,16 @@ import Collapse from '@mui/material/Collapse';
 import EditIcon from '@mui/icons-material/Edit';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
 import Cookies from 'universal-cookie';
 
 // Redux
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
 const cookies = new Cookies();
@@ -37,11 +39,11 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const Sidebar = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [managementCollapse, setManagementCollapse] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
 
-    let reduxUserName = cookies.get('userName');
+    let userName = cookies.get('userName');
 
     const toggleSlider = () => {
         setOpen(!open);
@@ -57,9 +59,17 @@ const Sidebar = () => {
         dispatch(reduxAuthenticateAction.updateToken(null));
         dispatch(reduxAuthenticateAction.updateIsShowPublicNavBar(true));
         setTimeout(() => {
-            navigate('/signin');
+            window.location.replace('/signin');
         }, 500);
     }
+
+    const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     return (
         <Fragment>
@@ -78,8 +88,28 @@ const Sidebar = () => {
                     </IconButton>
                     <Navbar.Brand href="/dashboard">Rent Motorcycles</Navbar.Brand>
                 </div>
-                <label>Username: {reduxUserName}</label>
-                <Button className="btn-logout" variant="contained" onClick={() => handleLogOut()}>Log out</Button>
+                <div>
+                    <Button className="btn-user" variant="outlined" onClick={handleMenu} startIcon={<AccountCircle style={{ fontSize: '32px' }} />}>{userName}</Button>
+                    <Menu
+                        style={{ marginTop: '40px' }}
+                        id="menu-appbar"
+                        anchorEl={anchorEl}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+                        <MenuItem className="user-menu" onClick={handleClose}>Profile</MenuItem>
+                        <MenuItem className="user-menu" onClick={() => handleLogOut()}>Log out</MenuItem>
+                    </Menu>
+                </div>
             </Navbar>
             <Drawer
                 variant="persistent"
