@@ -701,13 +701,7 @@ function Dashboard() {
                                                         text: ''
                                                     },
                                                     datalabels: {
-                                                        anchor: 'end',
-                                                        align: 'top',
-                                                        formatter: ConvertLongNumber,
-                                                        font: {
-                                                            weight: '500',
-                                                            size: 13
-                                                        }
+                                                        display: false
                                                     }
                                                 }
                                             }} />
@@ -735,13 +729,7 @@ function Dashboard() {
                                                     text: ''
                                                 },
                                                 datalabels: {
-                                                    anchor: 'end',
-                                                    align: 'top',
-                                                    formatter: ConvertLongNumber,
-                                                    font: {
-                                                        weight: '500',
-                                                        size: 13
-                                                    }
+                                                    display: false
                                                 }
                                             }
                                         }} />

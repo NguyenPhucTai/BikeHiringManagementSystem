@@ -106,7 +106,7 @@ const Sidebar = () => {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
-                        <MenuItem className="user-menu" onClick={handleClose}>Profile</MenuItem>
+                        {/* <MenuItem className="user-menu" onClick={handleClose}>Profile</MenuItem> */}
                         <MenuItem className="user-menu" onClick={() => handleLogOut()}>Log out</MenuItem>
                     </Menu>
                 </div>
