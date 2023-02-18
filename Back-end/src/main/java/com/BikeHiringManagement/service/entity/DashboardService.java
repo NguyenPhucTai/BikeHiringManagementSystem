@@ -140,17 +140,21 @@ public class DashboardService {
                 Long customerId = order.getCustomerId();
 
                 // Hired Number Map
-                if (mapCustomerAppear.containsKey(customerId)) {
-                    mapCustomerAppear.put(customerId, mapCustomerAppear.get(customerId) + 1);
-                } else {
-                    mapCustomerAppear.put(customerId, 1);
+                if(mapCustomerAppear.size() < 6){
+                    if (mapCustomerAppear.containsKey(customerId)) {
+                        mapCustomerAppear.put(customerId, mapCustomerAppear.get(customerId) + 1);
+                    } else {
+                        mapCustomerAppear.put(customerId, 1);
+                    }
                 }
 
                 // Cost Map
-                if (mapCustomerCost.containsKey(customerId)) {
-                    mapCustomerCost.put(customerId, mapCustomerCost.get(customerId) + order.getTotalAmount());
-                } else {
-                    mapCustomerCost.put(customerId, order.getTotalAmount());
+                if(mapCustomerCost.size() < 6){
+                    if (mapCustomerCost.containsKey(customerId)) {
+                        mapCustomerCost.put(customerId, mapCustomerCost.get(customerId) + order.getTotalAmount());
+                    } else {
+                        mapCustomerCost.put(customerId, order.getTotalAmount());
+                    }
                 }
             }
 
@@ -167,25 +171,25 @@ public class DashboardService {
 
             for (Map.Entry<Long, Integer> entry : mapCustomerAppear.entrySet()) {
                 rankAppear++;
-                Optional<Customer> customer = listNewCustomer.stream().filter(x -> x.getId() == entry.getKey()).findFirst();
+                Customer customer = customerRepository.findCustomerByIdAndIsDeleted(entry.getKey(), Boolean.FALSE);
                 CustomerRank customerRank = new CustomerRank();
                 customerRank.setRank(rankAppear);
                 customerRank.setCustomerId(entry.getKey());
                 customerRank.setHiredNumber(entry.getValue());
-                customerRank.setName(customer.get().getName());
-                customerRank.setPhoneNumber(customer.get().getPhoneNumber());
+                customerRank.setName(customer.getName());
+                customerRank.setPhoneNumber(customer.getPhoneNumber());
                 listCustomerAppear.add(customerRank);
             }
 
             for (Map.Entry<Long, Double> entry : mapCustomerCost.entrySet()) {
                 rankCost++;
-                Optional<Customer> customer = listNewCustomer.stream().filter(x -> x.getId() == entry.getKey()).findFirst();
+                Customer customer = customerRepository.findCustomerByIdAndIsDeleted(entry.getKey(), Boolean.FALSE);
                 CustomerRank customerRank = new CustomerRank();
                 customerRank.setRank(rankCost);
                 customerRank.setCustomerId(entry.getKey());
                 customerRank.setHiredCost(entry.getValue());
-                customerRank.setName(customer.get().getName());
-                customerRank.setPhoneNumber(customer.get().getPhoneNumber());
+                customerRank.setName(customer.getName());
+                customerRank.setPhoneNumber(customer.getPhoneNumber());
                 listCustomerCost.add(customerRank);
             }
             sixthChart.setListTopCustomerHiringNumber(listCustomerAppear);
