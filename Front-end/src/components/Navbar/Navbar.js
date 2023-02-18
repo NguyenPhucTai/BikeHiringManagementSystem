@@ -21,7 +21,7 @@ const MenuBar = () => {
                         <Offcanvas.Body>
                             <Nav className="me-auto" variant="pills">
                                 <Nav.Link className="nav-item mx-lg-4" href="/">Home</Nav.Link>
-                                <Nav.Link className="nav-item mx-lg-4" href="/about-us">About Us</Nav.Link>
+                                {/* <Nav.Link className="nav-item mx-lg-4" href="/about-us">About Us</Nav.Link> */}
                                 <NavDropdown
                                     title="List of motorbikes"
                                     id={`offcanvasNavbarDropdown-expand-lg`}
@@ -31,7 +31,7 @@ const MenuBar = () => {
                                     <NavDropdown.Divider />
                                     <NavDropdown.Item href="/list">See all</NavDropdown.Item>
                                 </NavDropdown>
-                                <Nav.Link className="nav-item mx-lg-4" href="/contact-us">Contact Us</Nav.Link>
+                                {/* <Nav.Link className="nav-item mx-lg-4" href="/contact-us">Contact Us</Nav.Link> */}
                             </Nav>
                         </Offcanvas.Body>
                     </Navbar.Offcanvas>

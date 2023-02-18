@@ -424,6 +424,7 @@ function ManageBikeCategory() {
                                     name={"name"}
                                     type={"text"}
                                     placeholder={"Enter the category name"}
+                                    disabled={true}
                                 />
                                 <TextFieldCustom
                                     label={"Price"}
