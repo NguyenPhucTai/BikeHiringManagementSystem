@@ -298,7 +298,7 @@ function ManageBikeManufacturer() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-close"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -342,12 +342,12 @@ function ManageBikeManufacturer() {
                                     placeholder={"Enter the manufacturer name"}
                                 />
                                 <div className="popup-button">
-                                    <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
                                     <button className="btn btn-secondary btn-cancel"
                                         onClick={() => {
                                             setShowPopup(false);
                                             setAlert({ alertShow: false })
                                         }}>Cancel</button>
+                                    <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
                                 </div>
                             </Form>
                         )}
@@ -364,7 +364,7 @@ function ManageBikeManufacturer() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-close"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -411,13 +411,13 @@ function ManageBikeManufacturer() {
                                     placeholder={"Enter the manufacturer name"}
                                 />
                                 <div className="popup-button">
-                                    <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
                                     <button className="btn btn-secondary btn-cancel"
                                         onClick={() => {
                                             setShowPopup(false);
                                             setAlert({ alertShow: false });
                                             setDataID(0); setIsUpdate(false)
                                         }}>Cancel</button>
+                                    <button className="btn btn-primary btn-action" type="submit">{titlePopup}</button>
                                 </div>
                             </Form>
                         )}
@@ -426,58 +426,36 @@ function ManageBikeManufacturer() {
         } />
     } else if (titlePopup === "View") {
         popupTitle = <Popup showPopup={showPopup} setShowPopup={setShowPopup} title={"View"} child={
-            showCloseButton ?
-                < Fragment >
-                    <AlertMessage
-                        isShow={alert.alertShow}
-                        message={alert.alertMessage}
-                        status={alert.alertStatus}
-                    />
-                    <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
-                            onClick={() => {
-                                setShowPopup(false);
-                                setShowCloseButton(false);
-                                setAlert({ alertShow: false });
-                                setDataID(0)
-                            }}>Close</button>
+            <Fragment>
+                <div className='popup-view-container'>
+                    <div className="popup-view-body">
+                        <Row>
+                            <Col lg={6} xs={6}><label className="body-title">Manufacturer Id:</label></Col>
+                            <Col lg={6} xs={6}><label>{lineItem.id}</label></Col>
+                            <Col lg={6} xs={6}><label className="body-title">Manufacturer Name:</label></Col>
+                            <Col lg={6} xs={6}><label>{lineItem.name}</label></Col>
+                            <Col lg={6} xs={6}><label className="body-title">Create Date:</label></Col>
+                            <Col lg={6} xs={6}><label>{GetFormattedDate(lineItem.createdDate)}</label></Col>
+                            <Col lg={6} xs={6}><label className="body-title">Create User:</label></Col>
+                            <Col lg={6} xs={6}><label>{lineItem.createdUser}</label></Col>
+                            <Col lg={6} xs={6}><label className="body-title">Modified Date:</label></Col>
+                            <Col lg={6} xs={6}><label>{lineItem.modifiedDate === null ? "N/A" : GetFormattedDate(lineItem.modifiedDate)}</label></Col>
+                            <Col lg={6} xs={6}><label className="body-title">Modified User:</label></Col>
+                            <Col lg={6} xs={6}><label>{lineItem.modifiedUser === null ? "N/A" : lineItem.modifiedUser}</label></Col>
+                        </Row>
                     </div>
-                </ Fragment>
-                :
-                <Fragment>
-                    <div className='popup-view-container'>
-                        <div>{popupTitle}</div>
-                        <div className="popup-view-header">
-                            <div>{popupTitle}</div>
-                        </div>
-                        <div className="popup-view-body">
-                            <Row>
-                                <Col lg={6} xs={6}><label className="body-title">Manufacturer Id:</label></Col>
-                                <Col lg={6} xs={6}><label>{lineItem.id}</label></Col>
-                                <Col lg={6} xs={6}><label className="body-title">Manufacturer Name:</label></Col>
-                                <Col lg={6} xs={6}><label>{lineItem.name}</label></Col>
-                                <Col lg={6} xs={6}><label className="body-title">Create Date:</label></Col>
-                                <Col lg={6} xs={6}><label>{GetFormattedDate(lineItem.createdDate)}</label></Col>
-                                <Col lg={6} xs={6}><label className="body-title">Create User:</label></Col>
-                                <Col lg={6} xs={6}><label>{lineItem.createdUser}</label></Col>
-                                <Col lg={6} xs={6}><label className="body-title">Modified Date:</label></Col>
-                                <Col lg={6} xs={6}><label>{lineItem.modifiedDate === null ? "N/A" : GetFormattedDate(lineItem.modifiedDate)}</label></Col>
-                                <Col lg={6} xs={6}><label className="body-title">Modified User:</label></Col>
-                                <Col lg={6} xs={6}><label>{lineItem.modifiedUser === null ? "N/A" : lineItem.modifiedUser}</label></Col>
-                            </Row>
-                        </div>
-                        <div className="popup-view-footer">
-                            <div className="popup-button">
-                                <button className="btn btn-secondary btn-cancel"
-                                    onClick={() => {
-                                        setShowPopup(false);
-                                        setDataID(0)
-                                    }}>Cancel</button>
-                            </div>
+                    <div className="popup-view-footer">
+                        <div className="popup-button">
+                            <button className="btn btn-secondary btn-cancel-view"
+                                onClick={() => {
+                                    setShowPopup(false);
+                                    setDataID(0)
+                                }}>Cancel</button>
                         </div>
                     </div>
+                </div>
 
-                </Fragment >
+            </Fragment >
 
         } />
     } else if (titlePopup === "Delete") {
@@ -490,7 +468,7 @@ function ManageBikeManufacturer() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-close"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -507,6 +485,12 @@ function ManageBikeManufacturer() {
                         <p>This process cannot be undone</p>
                     </div>
                     <div className="popup-button">
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                                setDataID(0);
+                                setIsDelete(false)
+                            }}>Cancel</button>
                         <button className="btn btn-danger btn-action"
                             onClick={() => handleDeleteData(
                                 dataID,
@@ -514,12 +498,6 @@ function ManageBikeManufacturer() {
                                 setLoadingData,
                                 setShowCloseButton
                             )}>{titlePopup}</button>
-                        <button className="btn btn-secondary btn-cancel"
-                            onClick={() => {
-                                setShowPopup(false);
-                                setDataID(0);
-                                setIsDelete(false)
-                            }}>Cancel</button>
                     </div>
                 </Fragment >
         } />

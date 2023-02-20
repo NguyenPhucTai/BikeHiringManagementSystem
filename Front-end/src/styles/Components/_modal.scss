@@ -1,5 +1,5 @@
-.popup{
-    &-container{
+.popup {
+    &-container {
         background-color: $color-white;
         padding: 16px;
         min-height: 50%;
@@ -7,16 +7,34 @@
         margin: 5% auto;
     }
 
-    &-title{
+    &-title {
         text-align: center;
-        margin: 0 0 16px 0 ;
+        margin: 0 0 16px 0;
     }
 
-    &-button{
-        text-align: end;
+    &-view {
+        &-body {
+            margin-bottom: 16px;
+        }
+    }
 
-        .btn-action{
-            margin-right: 16px;
+    &-button {
+        display: flex;
+        justify-content: center;
+
+        .btn-cancel {
+            margin-right: 8px;
+            width: 100%;
+        }
+
+        .btn-action {
+            margin-left: 8px;
+            width: 100%;
+        }
+
+        .btn-cancel-view,
+        .btn-close {
+            width: 100%;
         }
     }
 }

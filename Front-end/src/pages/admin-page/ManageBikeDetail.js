@@ -8,6 +8,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 // Component
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
@@ -16,6 +21,7 @@ import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { GetFormattedDate } from "../../function/DateFormat";
+import { GetFormattedCurrency } from "../../function/CurrencyFormat";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -130,6 +136,22 @@ function ManageBikeDetail() {
         alertMessage: "",
     })
 
+    // VARIABLE
+    // COLOR
+    let colorStatus = '#006442';
+
+    // Modal fullscreen
+    const [openModal, setOpenModal] = useState(false);
+    const [imageFullScreen, setImageFullScreen] = useState("");
+
+    const handleClickOpenModal = () => {
+        setOpenModal(true);
+    };
+
+    const onCloseModal = () => {
+        setOpenModal(false);
+    };
+
     // Formik variables
     const initialValues = {
         id: 0,
@@ -163,7 +185,7 @@ function ManageBikeDetail() {
         initialValues.bikeName = data.name;
         initialValues.bikeNo = data.bikeNo;
         initialValues.bikeCategory = data.bikeCategoryName;
-        initialValues.price = data.price;
+        initialValues.price = GetFormattedCurrency(data.price);
         initialValues.bikeManufacturer = data.bikeManufacturerName;
         initialValues.bikeColor = data.bikeColor;
         initialValues.hiredNumber = data.hiredNumber;
@@ -172,6 +194,12 @@ function ManageBikeDetail() {
         initialValues.createdDate = GetFormattedDate(data.createdDate);
         initialValues.modifiedUser = data.modifiedUser ? data.modifiedUser : "N/A";
         initialValues.modifiedDate = data.modifiedDate ? GetFormattedDate(data.modifiedDate) : "N/A";
+
+        if (data.status === 'AVAILABLE') {
+            colorStatus = '#006442';
+        } else {
+            colorStatus = 'red';
+        }
     }
 
     // POPUP INTERFACE
@@ -215,7 +243,7 @@ function ManageBikeDetail() {
         !loadingData ?
             <div className="container">
                 {deletePopup}
-                <h1 className="text-center">BIKE DETAIL</h1>
+                <h2 className="text-center">BIKE DETAIL</h2>
                 <div className="button-section" style={{ textAlign: "right" }}>
                     <button className="btn btn-primary" style={{ marginLeft: "16px" }} onClick={() => navigate('/manage/bike/update/' + id)}>UPDATE</button>
                     <button className="btn btn-danger" style={{ marginLeft: "16px" }} onClick={() => setShowPopup(true)}>DELETE</button>
@@ -314,6 +342,7 @@ function ManageBikeDetail() {
                                         name={"status"}
                                         type={"text"}
                                         disabled={true}
+                                        style={{ fontWeight: 600, color: colorStatus }}
                                     />
                                 </Col>
                                 <Col xs={12} lg={6}>
@@ -354,7 +383,7 @@ function ManageBikeDetail() {
                                         return (
                                             <Col key={index} xs={12} sm={6} md={4} lg={3}>
                                                 <div className="card-item">
-                                                    <img src={Firebase_URL + value.filePath} alt={value.fileName} />
+                                                    <img src={Firebase_URL + value.filePath} alt={value.fileName} onClick={() => { handleClickOpenModal(); setImageFullScreen(value.filePath) }} />
                                                 </div>
                                             </Col>
                                         )
@@ -366,7 +395,24 @@ function ManageBikeDetail() {
                         </Form>
                     )}
                 </Formik>
-
+                <Dialog
+                    fullWidth={true}
+                    maxWidth={'md'}
+                    open={openModal}
+                    onClose={onCloseModal}
+                >
+                    <DialogTitle style={{ alignSelf: 'end' }}>
+                        <IconButton
+                            aria-label="close"
+                            onClick={onCloseModal}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+                    <DialogContent style={{ overflowY: 'hidden' }}>
+                        <img src={Firebase_URL + imageFullScreen} alt='image-fullscreen' />
+                    </DialogContent>
+                </Dialog>
             </div >
             :
             <Fragment>
