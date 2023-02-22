@@ -4,10 +4,9 @@ import React, { useState, useEffect, Fragment } from "react";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 // import Badge from 'react-bootstrap/Badge';
-import { Badge, Button, IconButton, StyledBadge } from '@mui/material';
+import { Badge, Button, IconButton } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Link } from "react-router-dom";
 import Cookies from 'universal-cookie';
 import { useNavigate } from "react-router-dom";
 
@@ -184,45 +183,43 @@ function CreateCart(props) {
                 <div className="container">
                     <Row>
                         <Col lg={12}>
-                            <div className="container">
-                                <h2 className="text-center">Add Bike To Cart</h2>
-                                <div className="view-cart">
-                                    <IconButton aria-label="cart" onClick={() => navigate('/manage/order/create')}>
-                                        <Badge badgeContent={cartNumber} color="secondary" max={999} showZero>
-                                            <ShoppingCartIcon />
-                                        </Badge>
-                                    </IconButton>
-                                </div>
-                                <SortBar SortBy={SortBy} />
-                                {loadingData ?
-                                    <div className="circular_progress">
-                                        <CircularProgress />
-                                    </div> :
-                                    <Row>
-                                        {listData.map((data, index) => {
-                                            return (
-                                                <Col key={index} className="column" xs={12} sm={6} md={4} lg={3} style={{ maxHeight: "30rem" }}>
-                                                    <div className="card-item">
-                                                        <img src={Firebase_URL + data.filePath} alt={data.fileName} />
-                                                        <label className="bikeName">{data.name}</label>
-                                                        <p className="bikeManualId">Manual ID: <span>{data.bikeManualId}</span></p>
-                                                        <p className="bikeHiredNumber">Hired Number: <span>{data.hiredNumber}</span></p>
-                                                        {data.orderId === null ?
-                                                            <Button variant="contained" onClick={() => handleCreateCart(data.id, setCarNumber)}>Add to Cart</Button>
-                                                            :
-                                                            <Button variant="contained" disabled>Add to Cart</Button>
-                                                        }
-                                                    </div>
-                                                </Col>
-                                            )
-                                        })}
-                                    </Row>
-                                }
-                                <PaginationCustom
-                                    totalPages={totalPages}
-                                    isShowRowPerPage={false}
-                                />
+                            <h2 className="text-center">Add Bike To Cart</h2>
+                            <div className="view-cart">
+                                <IconButton aria-label="cart" onClick={() => navigate('/manage/order/create')}>
+                                    <Badge badgeContent={cartNumber} color="secondary" max={999} showZero>
+                                        <ShoppingCartIcon />
+                                    </Badge>
+                                </IconButton>
                             </div>
+                            <SortBar SortBy={SortBy} />
+                            {loadingData ?
+                                <div className="circular_progress">
+                                    <CircularProgress />
+                                </div> :
+                                <Row>
+                                    {listData.map((data, index) => {
+                                        return (
+                                            <Col key={index} className="column" xs={12} sm={6} md={4} lg={3} style={{ maxHeight: "30rem" }}>
+                                                <div className="card-item">
+                                                    <img src={Firebase_URL + data.filePath} alt={data.fileName} />
+                                                    <label className="bikeName">{data.name}</label>
+                                                    <p className="bikeManualId">Manual ID: <span>{data.bikeManualId}</span></p>
+                                                    <p className="bikeHiredNumber">Hired Number: <span>{data.hiredNumber}</span></p>
+                                                    {data.orderId === null ?
+                                                        <Button variant="contained" onClick={() => handleCreateCart(data.id, setCarNumber)}>Add to Cart</Button>
+                                                        :
+                                                        <Button variant="contained" disabled>Add to Cart</Button>
+                                                    }
+                                                </div>
+                                            </Col>
+                                        )
+                                    })}
+                                </Row>
+                            }
+                            <PaginationCustom
+                                totalPages={totalPages}
+                                isShowRowPerPage={false}
+                            />
                         </Col>
                     </Row>
                 </div>

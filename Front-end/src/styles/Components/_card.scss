@@ -1,4 +1,7 @@
 .card-item {
+    display: block;
+    margin-top: 20px;
+
     img {
         display: block;
         min-height: 14rem;
@@ -41,6 +44,18 @@
         img {
             opacity: .8;
         }
+
+        .btn-remove {
+            background-color: $color-danger;
+            color: $color-white;
+        }
+    }
+
+    .btn-remove {
+        position: relative;
+        bottom: 16.3rem;
+        left: 16.5rem;
+        color: transparent;
     }
 }
 

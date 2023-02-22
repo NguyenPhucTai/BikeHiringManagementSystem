@@ -1,7 +1,8 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 import { styled } from '@mui/material/styles';
 import {
+    Badge,
     Divider,
     IconButton,
     List,
@@ -22,10 +23,16 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import Cookies from 'universal-cookie';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 // Redux
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { reduxAction } from "../../redux-store/redux/redux.slice";
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
+
+// Fire base
+import { AxiosInstance } from "../../api/AxiosClient";
+import { OrderAPI } from "../../api/EndPoint";
 
 const cookies = new Cookies();
 
@@ -37,11 +44,48 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-end',
 }));
 
+const handleBikeNumberInCart = async (setCarNumber, setLoadingPage) => {
+    await AxiosInstance.get(OrderAPI.cartGetBikeNumber, {
+        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+    }).then((res) => {
+        if (res.data.code === 1) {
+            setCarNumber(res.data.data);
+            setLoadingPage(false);
+            // setCartNumber(res.data.data)
+        }
+    }).catch((error) => {
+        if (error && error.response) {
+            console.log("Error: ", error);
+        }
+    });
+}
+
 const Sidebar = () => {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [managementCollapse, setManagementCollapse] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [cartNumber, setCarNumber] = useState(-1);
+    const [loadingPage, setLoadingPage] = useState(true);
+
+    useEffect(() => {
+        if (loadingPage === true) {
+            handleBikeNumberInCart(setCarNumber, setLoadingPage);
+        }
+    }, [loadingPage])
+
+    useEffect(() => {
+        if (cartNumber !== -1) {
+            console.log(cartNumber);
+            dispatch(reduxAction.setCartNumber(cartNumber));
+        }
+    }, [cartNumber])
+
+    // const cartNumberRedux = 0;
+
+    const cartNumberRedux = useSelector((state) => state.redux.cartNumber);
+
+    console.log(cartNumberRedux);
 
     let userName = cookies.get('userName');
 
@@ -89,6 +133,11 @@ const Sidebar = () => {
                     <Navbar.Brand href="/dashboard">Rent Motorcycles</Navbar.Brand>
                 </div>
                 <div>
+                    <IconButton aria-label="cart">
+                        <Badge badgeContent={cartNumberRedux} color="secondary" max={999} showZero>
+                            <ShoppingCartIcon />
+                        </Badge>
+                    </IconButton>
                     <Button className="btn-user" variant="outlined" onClick={handleMenu} startIcon={<AccountCircle style={{ fontSize: '32px' }} />}>{userName}</Button>
                     <Menu
                         style={{ marginTop: '40px' }}

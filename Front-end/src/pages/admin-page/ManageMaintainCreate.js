@@ -187,7 +187,7 @@ function ManageMaintainCreate() {
             <Fragment>
                 {popup}
                 <div className="container">
-                    <h1 className="text-center">CREATE MAINTAIN</h1>
+                    <h2 className="text-center">CREATE MAINTAIN</h2>
                     <Formik
                         innerRef={formikRef}
                         enableReinitialize

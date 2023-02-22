@@ -7,7 +7,8 @@ const initialState = {
     sortBy: "id",
     sortType: "DESC",
     isSubmitting: false,
-    status: "PENDING"
+    status: "PENDING",
+    cartNumber: 0,
 };
 
 const reduxSlice = createSlice({
@@ -31,6 +32,9 @@ const reduxSlice = createSlice({
             state.isSubmitting = action.payload.isSubmitting;
         },
         setSortByStatus(state, action) {
+            state.status = action.payload;
+        },
+        setCartNumber(state, action) {
             state.status = action.payload;
         }
     }

@@ -349,7 +349,7 @@ function ManageBikeCreate() {
                     }
                 />
                 <div className="container">
-                    <h1 className="text-center">CREATE NEW BIKE</h1>
+                    <h2 className="text-center">CREATE NEW BIKE</h2>
                     {loading && (
                         <Box sx={{ width: '100%' }}>
                             <LinearProgress />

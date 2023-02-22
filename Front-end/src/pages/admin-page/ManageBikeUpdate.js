@@ -12,6 +12,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 // Firebase
 import { storage } from "../../firebase/firebase";
@@ -165,7 +170,7 @@ const handleGetManufacturerList = async (setListManufacturer) => {
     });
 };
 
-const handleDeleteImage = async (imageId, setAlert, setShowCloseButton, setIsImageDelete) => {
+const handleDeleteImage = async (imageId, setAlert, setShowCloseButton, setIsImageDelete, setImageList, imageList) => {
     await AxiosInstance.post(BikeAPI.deteteImage + imageId, {}, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
     }).then((res) => {
@@ -173,6 +178,8 @@ const handleDeleteImage = async (imageId, setAlert, setShowCloseButton, setIsIma
         setShowCloseButton(true);
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true);
+            var removedList = imageList.filter(item => item.id !== imageId);
+            setImageList(removedList);
         } else {
             showAlert(setAlert, res.data.message, false);
         }
@@ -289,6 +296,18 @@ function ManageBikeUpdate() {
     const [isImageDelete, setIsImageDelete] = useState(false);
     const [imageID, setImageID] = useState(0);
 
+    // Modal fullscreen
+    const [openModal, setOpenModal] = useState(false);
+    const [imageFullScreen, setImageFullScreen] = useState("");
+
+    const handleClickOpenModal = () => {
+        setOpenModal(true);
+    };
+
+    const onCloseModal = () => {
+        setOpenModal(false);
+    };
+
     // Formik variables
     const initialValues = {
         bikeName: "",
@@ -313,15 +332,15 @@ function ManageBikeUpdate() {
         }
 
         // CASE 2: EXCEED LIMIT IMAGE NUMBER
-        else if (isClicking && data.imageList.length + imageUpload.length > 4) {
+        else if (isClicking && imageList.length + imageUpload.length > 4) {
             setShowPopup(true);
-            showAlert(setAlert, "Exceeded maximum image number (Max: 4 - Current: " + data.imageList.length + " - New: " + imageUpload.length + ")", false);
+            showAlert(setAlert, "Exceeded maximum image number (Max: 4 - Current: " + imageList.length + " - New: " + imageUpload.length + ")", false);
             setLoading(false);
         }
 
         // CASE 3: NO EXCEED LIMIT IMAGE NUMBER
         else if (isClicking) {
-            var index = data.imageList.length;
+            var index = imageList.length;
             imageUpload.forEach((data) => {
                 index++;
                 let randomString = GenerateRandomString(10);
@@ -432,7 +451,7 @@ function ManageBikeUpdate() {
                             status={alert.alertStatus}
                         />
                         <div className="popup-button">
-                            <button className="btn btn-secondary btn-cancel"
+                            <button className="btn btn-secondary btn-cancel-view"
                                 onClick={() => {
                                     setShowPopup(false);
                                     setShowCloseButton(false);
@@ -450,19 +469,21 @@ function ManageBikeUpdate() {
                             <p>This process cannot be undone</p>
                         </div>
                         <div className="popup-button">
-                            <button className="btn btn-danger btn-action"
-                                onClick={() => handleDeleteImage(
-                                    imageID,
-                                    setAlert,
-                                    setShowCloseButton,
-                                    setIsImageDelete)
-                                }>DELETE</button>
                             <button className="btn btn-secondary btn-cancel"
                                 onClick={() => {
                                     setShowPopup(false);
                                     setImageID(0);
                                     setIsImageDelete(false);
                                 }}>Cancel</button>
+                            <button className="btn btn-danger btn-action"
+                                onClick={() => handleDeleteImage(
+                                    imageID,
+                                    setAlert,
+                                    setShowCloseButton,
+                                    setIsImageDelete,
+                                    setImageList,
+                                    imageList)
+                                }>DELETE</button>
                         </div>
                     </Fragment >
             }
@@ -478,13 +499,13 @@ function ManageBikeUpdate() {
                     />
                     <div className="popup-button">
                         {alert.alertStatus === "success" ?
-                            <button className="btn btn-secondary btn-cancel"
+                            <button className="btn btn-secondary btn-cancel-view"
                                 onClick={() => {
                                     setShowPopup(false);
                                     navigate('/manage/bike/' + data.id);
                                 }}>Close</button>
                             :
-                            <button className="btn btn-secondary btn-cancel"
+                            <button className="btn btn-secondary btn-cancel-view"
                                 onClick={() => {
                                     setShowPopup(false);
                                 }}>Close</button>}
@@ -499,7 +520,7 @@ function ManageBikeUpdate() {
             <Fragment>
                 {popup}
                 <div className="container">
-                    <h1 className="text-center">UPDATE BIKE</h1>
+                    <h2 className="text-center">UPDATE BIKE</h2>
                     {loading && (
                         <Box sx={{ width: '100%' }}>
                             <LinearProgress />
@@ -619,9 +640,14 @@ function ManageBikeUpdate() {
                                             return (
                                                 <Col key={index} xs={12} sm={6} md={4} lg={3}>
                                                     <div className="card-item">
-                                                        <img src={Firebase_URL + value.filePath} alt={value.fileName} />
-                                                        <button type="button" className="btn btn-danger"
-                                                            onClick={() => { setIsImageDelete(true); setImageID(value.id); }}>REMOVE</button>
+                                                        <img src={Firebase_URL + value.filePath} alt={value.fileName} onClick={() => { handleClickOpenModal(); setImageFullScreen(value.filePath) }} />
+                                                        <IconButton
+                                                            className="btn-remove"
+                                                            aria-label="close"
+                                                            onClick={() => { setIsImageDelete(true); setImageID(value.id); }}
+                                                        >
+                                                            <CloseIcon />
+                                                        </IconButton>
                                                     </div>
                                                 </Col>
                                             )
@@ -669,6 +695,24 @@ function ManageBikeUpdate() {
                         )}
                     </Formik>
                 </div>
+                <Dialog
+                    fullWidth={true}
+                    maxWidth={'md'}
+                    open={openModal}
+                    onClose={onCloseModal}
+                >
+                    <DialogTitle style={{ alignSelf: 'end' }}>
+                        <IconButton
+                            aria-label="close"
+                            onClick={onCloseModal}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+                    <DialogContent>
+                        <img src={Firebase_URL + imageFullScreen} alt='image-fullscreen' />
+                    </DialogContent>
+                </Dialog>
             </Fragment >
             :
             <Fragment>

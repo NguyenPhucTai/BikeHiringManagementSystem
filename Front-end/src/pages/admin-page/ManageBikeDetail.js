@@ -409,7 +409,7 @@ function ManageBikeDetail() {
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
-                    <DialogContent style={{ overflowY: 'hidden' }}>
+                    <DialogContent>
                         <img src={Firebase_URL + imageFullScreen} alt='image-fullscreen' />
                     </DialogContent>
                 </Dialog>

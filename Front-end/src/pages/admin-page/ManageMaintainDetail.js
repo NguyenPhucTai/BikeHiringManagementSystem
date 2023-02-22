@@ -258,7 +258,7 @@ function ManageMaintainDetail() {
             <Fragment>
                 {popup}
                 <div className="container">
-                    <h1 className="text-center">MAINTAIN NO. {id}</h1>
+                    <h2 className="text-center">MAINTAIN NO. {id}</h2>
                     <Formik
                         innerRef={formikRef}
                         enableReinitialize

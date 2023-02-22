@@ -510,7 +510,7 @@ function ManageOrderDetail() {
                 {popupConfirm}
                 {status === "PENDING" ?
                     <div className="container">
-                        <h1 className="text-center">ORDER NO. {id}</h1>
+                        <h2 className="text-center">ORDER NO. {id}</h2>
 
                         < div className="button-header" style={{ textAlign: "end" }}>
                             <Button variant="contained" color="success" style={{ marginRight: "8px" }}
@@ -863,7 +863,7 @@ function ManageOrderDetail() {
                     </div>
                     :
                     <div className="container">
-                        <h1 className="text-center">ORDER NO. {id}</h1>
+                        <h2 className="text-center">ORDER NO. {id}</h2>
                         {isRunLinear && (
                             <Box sx={{ width: '100%' }}>
                                 <LinearProgress />
