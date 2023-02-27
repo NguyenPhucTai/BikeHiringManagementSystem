@@ -6,6 +6,13 @@ import Cookies from 'universal-cookie';
 import { Formik, Form } from 'formik';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Grid3x3Icon from '@mui/icons-material/Grid3x3';
+import CategoryIcon from '@mui/icons-material/Category';
+import DateRangeIcon from '@mui/icons-material/DateRange';
+import PersonIcon from '@mui/icons-material/Person';
+import UpdateIcon from '@mui/icons-material/Update';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 // Source
 // API
@@ -452,20 +459,20 @@ function ManageBikeCategory() {
                 <div className='popup-view-container'>
                     <div className="popup-view-body">
                         <Row>
-                            <Col lg={6} xs={6}><label className="body-title">Category Id:</label></Col>
-                            <Col lg={6} xs={6}><label>{lineItem.id}</label></Col>
-                            <Col lg={6} xs={6}><label className="body-title">Category Name:</label></Col>
-                            <Col lg={6} xs={6}><label>{lineItem.name}</label></Col>
-                            <Col lg={6} xs={6}><label className="body-title">Price:</label></Col>
-                            <Col lg={6} xs={6}><label>{GetFormattedCurrency(lineItem.price)}</label></Col>
-                            <Col lg={6} xs={6}><label className="body-title">Create Date:</label></Col>
-                            <Col lg={6} xs={6}><label>{GetFormattedDate(lineItem.createdDate)}</label></Col>
-                            <Col lg={6} xs={6}><label className="body-title">Create User:</label></Col>
-                            <Col lg={6} xs={6}><label>{lineItem.createdUser}</label></Col>
-                            <Col lg={6} xs={6}><label className="body-title">Modified Date:</label></Col>
-                            <Col lg={6} xs={6}><label>{lineItem.modifiedDate === null ? "N/A" : GetFormattedDate(lineItem.modifiedDate)}</label></Col>
-                            <Col lg={6} xs={6}><label className="body-title">Modified User:</label></Col>
-                            <Col lg={6} xs={6}><label>{lineItem.modifiedUser === null ? "N/A" : lineItem.modifiedUser}</label></Col>
+                            <Col lg={6} xs={6}><Grid3x3Icon className='body-icon' /><label className="body-title">Category Id</label></Col>
+                            <Col lg={6} xs={6}><CategoryIcon className='body-icon' /><label className="body-title">Category Name</label></Col>
+                            <Col lg={6} xs={6}><p className='body-detail'>{lineItem.id}</p></Col>
+                            <Col lg={6} xs={6}><p className='body-detail'>{lineItem.name}</p></Col>
+                            <Col lg={6} xs={6}><DateRangeIcon className='body-icon' /><label className="body-title">Create Date</label></Col>
+                            <Col lg={6} xs={6}><PersonIcon className='body-icon' /><label className="body-title">Create User</label></Col>
+                            <Col lg={6} xs={6}><p className='body-detail'>{GetFormattedDate(lineItem.createdDate)}</p></Col>
+                            <Col lg={6} xs={6}><p className='body-detail'>{lineItem.createdUser}</p></Col>
+                            <Col lg={6} xs={6}><UpdateIcon className='body-icon' /><label className="body-title">Modified Date</label></Col>
+                            <Col lg={6} xs={6}><ManageAccountsIcon className='body-icon' /><label className="body-title">Modified User</label></Col>
+                            <Col lg={6} xs={6}><p className='body-detail'>{lineItem.modifiedDate === null ? "N/A" : GetFormattedDate(lineItem.modifiedDate)}</p></Col>
+                            <Col lg={6} xs={6}><p className='body-detail'>{lineItem.modifiedUser === null ? "N/A" : lineItem.modifiedUser}</p></Col>
+                            <Col lg={12} xs={12}><AttachMoneyIcon className='body-icon' /><label className="body-title">Price</label></Col>
+                            <Col lg={12} xs={12}><p className='body-detail'>{GetFormattedCurrency(lineItem.price)}</p></Col>
                         </Row>
                     </div>
                     <div className="popup-view-footer">

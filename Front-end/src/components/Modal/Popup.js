@@ -1,7 +1,5 @@
 import React from "react";
-import { Modal, Typography } from '@mui/material';
-// import { TextFieldCustom } from "../Form/TextFieldCustom";
-// import { Formik, Form } from "formik";
+import { Modal } from '@mui/material';
 
 export const Popup = (props) => {
     const { showPopup, child, title } = props;

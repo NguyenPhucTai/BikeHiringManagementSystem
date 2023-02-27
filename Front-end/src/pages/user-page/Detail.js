@@ -10,6 +10,10 @@ import Badge from 'react-bootstrap/Badge';
 import { PageLoad } from "../../components/Base/PageLoad";
 import { GetFormattedCurrency } from "../../function/CurrencyFormat";
 import { ListSwiper } from "../../components/Swiper/Swiper";
+import Grid3x3Icon from '@mui/icons-material/Grid3x3';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+import FactoryIcon from '@mui/icons-material/Factory';
+import RuleIcon from '@mui/icons-material/Rule';
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -111,14 +115,14 @@ const Detail = props => {
                                     </div>
                                     <div className="detail-body">
                                         <Row>
-                                            <Col lg={5} xs={6}><label className="body body-title">Bike No:</label></Col>
-                                            <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeNo}</label></Col>
-                                            <Col lg={5} xs={6}><label className="body body-title">Bike Color:</label></Col>
-                                            <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeColor}</label></Col>
-                                            <Col lg={5} xs={6}><label className="body body-title">Bike Manufacturer:</label></Col>
-                                            <Col lg={7} xs={6}><label className="body body-info">{bikeDetail.bikeManufacturerName}</label></Col>
-                                            <Col lg={5} xs={6}><label className="body body-title">Status:</label></Col>
-                                            <Col lg={7} xs={6}>{bikeDetail.status === "AVAILABLE" ?
+                                            <Col lg={6} xs={6}><Grid3x3Icon className='body-icon' /><label className="body body-title">Bike No</label></Col>
+                                            <Col lg={6} xs={6}><ColorLensIcon className='body-icon' /><label className="body body-title">Bike Color</label></Col>
+                                            <Col lg={6} xs={6}><label className="body body-info">{bikeDetail.bikeNo}</label></Col>
+                                            <Col lg={6} xs={6}><label className="body body-info">{bikeDetail.bikeColor}</label></Col>
+                                            <Col lg={6} xs={6}><FactoryIcon className='body-icon' /><label className="body body-title">Bike Manufacturer</label></Col>
+                                            <Col lg={6} xs={6}><RuleIcon className='body-icon' /><label className="body body-title">Status</label></Col>
+                                            <Col lg={6} xs={6}><label className="body body-info">{bikeDetail.bikeManufacturerName}</label></Col>
+                                            <Col lg={6} xs={6}>{bikeDetail.status === "AVAILABLE" ?
                                                 <label className="body body-info" style={{ color: 'green' }}>{bikeDetail.status}</label> :
                                                 <label className="body body-info" style={{ color: 'red' }}>{bikeDetail.status}</label>}
                                             </Col>

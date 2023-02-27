@@ -1,6 +1,8 @@
 .public {
     .detail {
         &-header {
+            margin-bottom: 2rem;
+
             .bikeName {
                 margin-top: 0;
                 margin-bottom: 1rem;
@@ -13,26 +15,38 @@
         }
 
         &-body {
-            margin-top: 0.5rem;
 
             .body {
                 font-size: 20px;
-                padding-top: 0.3rem;
-                padding-bottom: 0.3rem;
 
                 &-title {
-                    color: $color-gray-75;
+                    color: $color-black;
                     text-transform: capitalize;
+                    vertical-align: middle;
+                }
+
+                &-icon {
+                    font-size: 24px;
+                    margin-right: 16px;
+                    color: $color-coral;
+                }
+
+                &-info {
+                    color: $color-gray-75;
+                    margin-left: 2.5rem;
+                    margin-bottom: 24px;
                 }
             }
         }
 
         &-footer {
-            margin-top: 1rem;
+            margin-top: 0.5rem;
 
             .bikePrice {
                 color: $color-orange;
+                font-size: 2.5rem;
                 text-align-last: center;
+                margin-left: 10rem;
             }
         }
     }
