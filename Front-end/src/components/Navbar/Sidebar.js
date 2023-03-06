@@ -44,48 +44,43 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-end',
 }));
 
-const handleBikeNumberInCart = async (setCarNumber, setLoadingPage) => {
-    await AxiosInstance.get(OrderAPI.cartGetBikeNumber, {
-        headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
-    }).then((res) => {
-        if (res.data.code === 1) {
-            setCarNumber(res.data.data);
-            setLoadingPage(false);
-            // setCartNumber(res.data.data)
-        }
-    }).catch((error) => {
-        if (error && error.response) {
-            console.log("Error: ", error);
-        }
-    });
-}
+// const handleBikeNumberInCart = async (setCarNumber, setLoadingPage) => {
+//     await AxiosInstance.get(OrderAPI.cartGetBikeNumber, {
+//         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
+//     }).then((res) => {
+//         if (res.data.code === 1) {
+//             setCarNumber(res.data.data);
+//             setLoadingPage(false);
+//         }
+//     }).catch((error) => {
+//         if (error && error.response) {
+//             console.log("Error: ", error);
+//         }
+//     });
+// }
 
 const Sidebar = () => {
+
     const dispatch = useDispatch();
+    // let cartNumberRedux = useSelector((state) => state.redux.cartNumber);
+
+
     const [open, setOpen] = useState(false);
     const [managementCollapse, setManagementCollapse] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [cartNumber, setCarNumber] = useState(-1);
-    const [loadingPage, setLoadingPage] = useState(true);
+    // const [cartNumber, setCarNumber] = useState(-1);
+    // const [loadingPage, setLoadingPage] = useState(true);
 
-    useEffect(() => {
-        if (loadingPage === true) {
-            handleBikeNumberInCart(setCarNumber, setLoadingPage);
-        }
-    }, [loadingPage])
+    // useEffect(() => {
+    //     if (loadingPage === true) {
+    //         handleBikeNumberInCart(setCarNumber, setLoadingPage);
+    //     }
+    // }, [loadingPage])
 
-    useEffect(() => {
-        if (cartNumber !== -1) {
-            console.log(cartNumber);
-            dispatch(reduxAction.setCartNumber(cartNumber));
-        }
-    }, [cartNumber])
+    // useEffect(() => {
+    //     dispatch(reduxAction.setCartNumber(cartNumber));
+    // }, [cartNumber])
 
-    // const cartNumberRedux = 0;
-
-    const cartNumberRedux = useSelector((state) => state.redux.cartNumber);
-
-    console.log(cartNumberRedux);
 
     let userName = cookies.get('userName');
 
@@ -133,11 +128,11 @@ const Sidebar = () => {
                     <Navbar.Brand href="/dashboard">Rent Motorcycles</Navbar.Brand>
                 </div>
                 <div>
-                    <IconButton aria-label="cart">
+                    {/* <IconButton aria-label="cart">
                         <Badge badgeContent={cartNumberRedux} color="secondary" max={999} showZero>
                             <ShoppingCartIcon />
                         </Badge>
-                    </IconButton>
+                    </IconButton> */}
                     <Button className="btn-user" variant="outlined" onClick={handleMenu} startIcon={<AccountCircle style={{ fontSize: '32px' }} />}>{userName}</Button>
                     <Menu
                         style={{ marginTop: '40px' }}

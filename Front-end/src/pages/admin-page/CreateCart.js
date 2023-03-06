@@ -89,6 +89,7 @@ const handleCreateCart = async (bikeId, setCarNumber) => {
         if (res.data.code === 1) {
             if (res.data.data !== null) {
                 setCarNumber(res.data.data);
+
             }
         }
     }).catch((error) => {
