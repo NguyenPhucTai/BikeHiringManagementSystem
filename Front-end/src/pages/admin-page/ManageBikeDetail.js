@@ -244,10 +244,19 @@ function ManageBikeDetail() {
             <div className="container">
                 {deletePopup}
                 <h2 className="text-center">BIKE DETAIL</h2>
-                <div className="button-section" style={{ textAlign: "right" }}>
-                    <button className="btn btn-primary" style={{ marginLeft: "16px" }} onClick={() => navigate('/manage/bike/update/' + id)}>UPDATE</button>
-                    <button className="btn btn-danger" style={{ marginLeft: "16px" }} onClick={() => setShowPopup(true)}>DELETE</button>
-                </div>
+                <Row className="button-section">
+                    <Col lg={6} xs={6}>
+                        <div style={{ textAlign: "left" }}>
+                            <button className="btn btn-secondary" onClick={() => navigate('/manage/bike')}>BACK TO LIST</button>
+                        </div>
+                    </Col>
+                    <Col lg={6} xs={6}>
+                        <div style={{ textAlign: "right" }}>
+                            <button className="btn btn-primary" style={{ marginLeft: "16px" }} onClick={() => navigate('/manage/bike/update/' + id)}>UPDATE</button>
+                            <button className="btn btn-danger" style={{ marginLeft: "16px" }} onClick={() => setShowPopup(true)}>DELETE</button>
+                        </div>
+                    </Col>
+                </Row>
                 <Formik
                     enableReinitialize
                     initialValues={initialValues}

@@ -186,3 +186,18 @@
 .MuiCardHeader-title {
     font-size: 16px !important;
 }
+
+.bikeManualId {
+    margin-bottom: 16px;
+}
+
+.bikeHiredNumber {
+    color: #1565c0;
+    font-weight: 600;
+    font-size: 20px;
+
+    span {
+        font-weight: 600;
+        font-size: 20px;
+    }
+}

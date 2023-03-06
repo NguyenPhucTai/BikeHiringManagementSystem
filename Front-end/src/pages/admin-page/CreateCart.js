@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 // import Badge from 'react-bootstrap/Badge';
 import { Badge, Button, IconButton } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import CircularProgress from '@mui/material/CircularProgress';
 import Cookies from 'universal-cookie';
 import { useNavigate } from "react-router-dom";
@@ -185,14 +186,20 @@ function CreateCart(props) {
                     <Row>
                         <Col lg={12}>
                             <h2 className="text-center">Add Bike To Cart</h2>
-                            <div className="view-cart">
-                                <IconButton aria-label="cart" onClick={() => navigate('/manage/order/create')}>
-                                    <Badge badgeContent={cartNumber} color="secondary" max={999} showZero>
-                                        <ShoppingCartIcon />
-                                    </Badge>
-                                </IconButton>
-                            </div>
-                            <SortBar SortBy={SortBy} />
+                            <Row>
+                                <Col lg={11} xs={11}>
+                                    <SortBar SortBy={SortBy} />
+                                </Col>
+                                <Col lg={1} xs={1} style={{ alignSelf: 'center', textAlign: 'center' }}>
+                                    <div className="view-cart">
+                                        <IconButton aria-label="cart" onClick={() => navigate('/manage/order/create')}>
+                                            <Badge badgeContent={cartNumber} color="secondary" max={999} showZero>
+                                                <ShoppingCartIcon />
+                                            </Badge>
+                                        </IconButton>
+                                    </div>
+                                </Col>
+                            </Row>
                             {loadingData ?
                                 <div className="circular_progress">
                                     <CircularProgress />
@@ -205,12 +212,20 @@ function CreateCart(props) {
                                                     <img src={Firebase_URL + data.filePath} alt={data.fileName} />
                                                     <label className="bikeName">{data.name}</label>
                                                     <p className="bikeManualId">Manual ID: <span>{data.bikeManualId}</span></p>
-                                                    <p className="bikeHiredNumber">Hired Number: <span>{data.hiredNumber}</span></p>
-                                                    {data.orderId === null ?
-                                                        <Button variant="contained" onClick={() => handleCreateCart(data.id, setCarNumber)}>Add to Cart</Button>
-                                                        :
-                                                        <Button variant="contained" disabled>Add to Cart</Button>
-                                                    }
+                                                    <Row>
+                                                        <Col lg={6} xs={6} style={{ alignSelf: 'center' }}>
+                                                            <p className="bikeHiredNumber">
+                                                                <AddShoppingCartIcon /> <span>{data.hiredNumber}</span> times
+                                                            </p>
+                                                        </Col>
+                                                        <Col lg={6} xs={6}>
+                                                            {data.orderId === null ?
+                                                                <Button variant="contained" onClick={() => handleCreateCart(data.id, setCarNumber)}>Add to Cart</Button>
+                                                                :
+                                                                <Button variant="contained" disabled>Add to Cart</Button>
+                                                            }
+                                                        </Col>
+                                                    </Row>
                                                 </div>
                                             </Col>
                                         )
