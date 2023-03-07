@@ -14,6 +14,7 @@ import Grid3x3Icon from '@mui/icons-material/Grid3x3';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
 import FactoryIcon from '@mui/icons-material/Factory';
 import RuleIcon from '@mui/icons-material/Rule';
+import { TableBikeDetail } from "../../components/Table/TableBikeDetail";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -99,7 +100,7 @@ const Detail = props => {
                         </div>
                         :
                         <div>
-                            <Row style={{ marginBottom: "5%" }}>
+                            <Row style={{ marginBottom: "3%" }}>
                                 <Col lg={6} xs={12}>
                                     <ImageGallery
                                         showPlayButton={false}
@@ -132,8 +133,12 @@ const Detail = props => {
                                         <h3 className="bikePrice">{GetFormattedCurrency(bikeDetail.price)}</h3>
                                     </div>
                                 </Col>
-
                             </Row>
+                            <div style={{ marginBottom: "3%" }}>
+                                <label style={{ fontSize: '24px', marginBottom: '8px' }}>Rent Detail Table</label>
+                                <p style={{ marginBottom: '16px' }}><span style={{ fontWeight: 600, color: '#ff4444' }}>Important note: </span>If you rent a motorcycle beyond the specified time, we will charge an extra fee as follows:</p>
+                                <TableBikeDetail bikePrice={bikeDetail.price} />
+                            </div>
                             <Row>
                                 <Col lg={12} xs={12}>
                                     <h2 className="text-center">Relation Bike</h2>
