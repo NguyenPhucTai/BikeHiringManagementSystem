@@ -28,11 +28,11 @@ export const OrderSchema = Yup.object().shape({
             is: (depositType) => depositType === 'identifyCard',
             then: Yup.string().required("Identify Card is required")
         }),
-    depositAmount: Yup.number()
-        .when('depositType', {
-            is: (depositType) => depositType === 'money',
-            then: Yup.number().min(1, "Deposit Amount must be greater than 0")
-        }),
+    // depositAmount: Yup.number()
+    //     .when('depositType', {
+    //         is: (depositType) => depositType === 'money',
+    //         then: Yup.number().min(1, "Deposit Amount must be greater than 0")
+    //     }),
     depositHotel: Yup.string()
         .when('depositType', {
             is: (depositType) => depositType === 'hotel',

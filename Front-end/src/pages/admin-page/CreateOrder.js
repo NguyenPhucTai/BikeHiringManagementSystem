@@ -31,6 +31,7 @@ import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
 // Redux
 import { useDispatch } from "react-redux";
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
+import { GetFormattedCurrency, ParseCurrencyToNumber, InputNumber } from "../../function/CurrencyFormat";
 
 const cookies = new Cookies();
 
@@ -75,7 +76,7 @@ const handleGetCart = async (
                     name: data.name,
                     bikeManualId: data.bikeManualId,
                     bikeCategoryName: data.bikeCategoryName,
-                    price: data.price,
+                    price: GetFormattedCurrency(data.price),
                     hiredNumber: data.hiredNumber
                 }
             })
@@ -185,7 +186,7 @@ const handleSaveCart = async (
         expectedEndDate: expectedEndDate,
 
         serviceDescription: formikRef.current.values.serviceDescription === "" ? null : formikRef.current.values.serviceDescription,
-        depositAmount: formikRef.current.values.depositAmount,
+        depositAmount: ParseCurrencyToNumber(formikRef.current.values.depositAmount),
         depositIdentifyCard: formikRef.current.values.depositIdentifyCard === "" ? null : formikRef.current.values.depositIdentifyCard,
         depositHotel: formikRef.current.values.depositHotel === "" ? null : formikRef.current.values.depositHotel,
         note: formikRef.current.values.note === "" ? null : formikRef.current.values.note,
@@ -375,7 +376,7 @@ function CreateOrder() {
         initialValues.serviceDescription = data.serviceDescription === null ? "" : data.serviceDescription;
 
         initialValues.depositType = data.depositType === null ? "identifyCard" : data.depositType;
-        initialValues.depositAmount = data.depositAmount === null ? 0 : data.depositAmount;
+        initialValues.depositAmount = data.depositAmount === null ? GetFormattedCurrency(0) : GetFormattedCurrency(data.depositAmount);
         initialValues.depositIdentifyCard = data.depositIdentifyCard === null ? "" : data.depositIdentifyCard;
         initialValues.depositHotel = data.depositHotel === null ? "" : data.depositHotel;
 
@@ -547,9 +548,10 @@ function CreateOrder() {
                                         <TextFieldCustom
                                             label={"Cost"}
                                             name={"calculatedCost"}
-                                            type={"number"} onWheel={(e) => e.target.blur()}
+                                            type={"text"}
+                                            onWheel={(e) => e.target.blur()}
                                             placeholder={"Enter the cost"}
-                                            value={calculatedCost}
+                                            value={GetFormattedCurrency(calculatedCost)}
                                             disabled={true}
                                         />
                                     </Col>
@@ -593,17 +595,13 @@ function CreateOrder() {
                                                 <TextFieldCustom
                                                     label={"Service Cost"}
                                                     name={"serviceCost"}
-                                                    type={"number"}
+                                                    type={"text"}
                                                     onWheel={(e) => e.target.blur()}
                                                     placeholder={"Enter the service cost"}
-                                                    value={serviceCost}
+                                                    value={GetFormattedCurrency(serviceCost)}
                                                     onChange={(event) => {
                                                         let value = event.target.value;
-                                                        if (value === "") {
-                                                            setServiceCost("")
-                                                        } else {
-                                                            setServiceCost(parseFloat(value))
-                                                        }
+                                                        setServiceCost(ParseCurrencyToNumber(InputNumber(value)))
                                                     }}
                                                 />
                                             </Col>
@@ -644,9 +642,14 @@ function CreateOrder() {
                                             <TextFieldCustom
                                                 label={"Despoit Amount"}
                                                 name={"depositAmount"}
-                                                type={"number"}
+                                                type={"text"}
                                                 onWheel={(e) => e.target.blur()}
                                                 placeholder={"Enter the deposit amount"}
+                                                onChange={(event) => {
+                                                    let value = event.target.value;
+                                                    let decimalValue = ParseCurrencyToNumber(InputNumber(value))
+                                                    setFieldValue("depositAmount", GetFormattedCurrency(decimalValue));
+                                                }}
                                             />
                                         </Col>
                                     }
@@ -676,17 +679,13 @@ function CreateOrder() {
                                         <TextFieldCustom
                                             label={"Total Cost"}
                                             name={"totalAmount"}
-                                            type={"number"}
+                                            type={"text"}
                                             onWheel={(e) => e.target.blur()}
                                             placeholder={"Total Cost"}
-                                            value={totalAmount}
+                                            value={GetFormattedCurrency(totalAmount)}
                                             onChange={(event) => {
                                                 let value = event.target.value;
-                                                if (value === "") {
-                                                    setTotalAmount("")
-                                                } else {
-                                                    setTotalAmount(parseFloat(value))
-                                                }
+                                                setTotalAmount(ParseCurrencyToNumber(InputNumber(value)))
                                             }}
                                         />
                                     </Col>
