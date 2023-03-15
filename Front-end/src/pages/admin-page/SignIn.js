@@ -79,8 +79,8 @@ function SignIn() {
             <h1 className="text-center">Sign In</h1>
 
             <Row>
-                <Col lg={3} xs={1}></Col>
-                <Col lg={6} xs={10}>
+                <Col lg={4} xs={1}></Col>
+                <Col lg={4} xs={10}>
                     <AlertMessage
                         isShow={alert.alertShow}
                         message={alert.alertMessage}
@@ -123,7 +123,7 @@ function SignIn() {
                         )}
                     </Formik>
                 </Col>
-                <Col lg={3} xs={1}></Col>
+                <Col lg={4} xs={1}></Col>
             </Row>
         </div>
     )

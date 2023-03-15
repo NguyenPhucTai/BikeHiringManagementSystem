@@ -16,9 +16,7 @@ import { MaintainAPI } from '../../api/EndPoint';
 import { TableMaintainList } from '../../components/Table/TableMaintainList';
 import SortBarMaintain from "../../components/Navbar/SortBarMaintain";
 import { Popup } from '../../components/Modal/Popup';
-import { TextFieldCustom } from '../../components/Form/TextFieldCustom';
 import { AlertMessage } from '../../components/Modal/AlertMessage';
-import { GetFormattedDate } from "../../function/DateFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
 import { GetFormattedCurrency } from '../../function/CurrencyFormat';
@@ -141,18 +139,11 @@ function ManageMaintain() {
     // Table variables
     const tableTitleList = [
         { name: 'ID', width: '10%' },
-        { name: 'DATE', width: '15%' },
-        { name: 'TYPE', width: '15%' },
+        { name: 'DATE', width: '20%' },
+        { name: 'TYPE', width: '10%' },
         { name: 'TITLE', width: '25%' },
         { name: 'COST', width: '15%' }
     ]
-
-    // Formik variables
-    const initialValues = {
-        type: "",
-        description: "",
-        cost: 0,
-    };
 
     // Redux - Filter form
     let reduxFilter = {
@@ -237,14 +228,14 @@ function ManageMaintain() {
     // Popup Interface
     let popupTitle = <Popup showPopup={showPopup} setShowPopup={setShowPopup} title={"Delete ID " + dataID} child={
         showCloseButton ?
-            < Fragment >
+            <Fragment>
                 <AlertMessage
                     isShow={alert.alertShow}
                     message={alert.alertMessage}
                     status={alert.alertStatus}
                 />
                 <div className="popup-button">
-                    <button className="btn btn-secondary btn-cancel"
+                    <button className="btn btn-secondary btn-cancel-view"
                         onClick={() => {
                             setShowPopup(false);
                             setShowCloseButton(false);
@@ -261,6 +252,12 @@ function ManageMaintain() {
                     <p>This process cannot be undone</p>
                 </div>
                 <div className="popup-button">
+                    <button className="btn btn-secondary btn-cancel"
+                        onClick={() => {
+                            setShowPopup(false);
+                            setDataID(0);
+                            setIsDelete(false)
+                        }}>Cancel</button>
                     <button className="btn btn-danger btn-action"
                         onClick={() => {
                             handleDeleteMaintain(
@@ -270,16 +267,9 @@ function ManageMaintain() {
                                 setShowCloseButton
                             )
                         }}>{titlePopup}</button>
-                    <button className="btn btn-secondary btn-cancel"
-                        onClick={() => {
-                            setShowPopup(false);
-                            setDataID(0);
-                            setIsDelete(false)
-                        }}>Cancel</button>
                 </div>
             </Fragment >
     } />
-
 
 
     // Table - Pagination
@@ -318,8 +308,8 @@ function ManageMaintain() {
                     />
                     <div className='table-header'>
                         <Row>
-                            <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Maintain List</label></Col>
-                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => navigate('/manage-maintenaince/maintenaince/create')}>Create</button></Col>
+                            <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Maintenance List</label></Col>
+                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px', width: '5rem' }} onClick={() => navigate('/manage-maintenance/maintenance-create')}>Create</button></Col>
                         </Row>
                     </div>
                     {tablePagination}

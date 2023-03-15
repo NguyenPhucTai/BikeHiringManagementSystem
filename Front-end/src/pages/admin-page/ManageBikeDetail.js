@@ -252,7 +252,7 @@ function ManageBikeDetail() {
                     </Col>
                     <Col lg={6} xs={6}>
                         <div style={{ textAlign: "right" }}>
-                            <button className="btn btn-primary" style={{ marginLeft: "16px" }} onClick={() => navigate('/manage-bike/bike/update/' + id)}>UPDATE</button>
+                            <button className="btn btn-primary" style={{ marginLeft: "16px" }} onClick={() => navigate('/manage-bike/bike-update/' + id)}>UPDATE</button>
                             <button className="btn btn-danger" style={{ marginLeft: "16px" }} onClick={() => setShowPopup(true)}>DELETE</button>
                         </div>
                     </Col>

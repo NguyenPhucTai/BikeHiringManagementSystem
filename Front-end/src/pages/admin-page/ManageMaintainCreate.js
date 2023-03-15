@@ -8,7 +8,7 @@ import Cookies from 'universal-cookie';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useNavigate } from 'react-router-dom';
-import { Radio, RadioGroup, FormControlLabel, Button, Box } from "@mui/material";
+import { Radio, RadioGroup, FormControlLabel } from "@mui/material";
 
 // Library - date time
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -24,6 +24,7 @@ import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
 import { MaintainAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
+import { GetFormattedCurrency, ParseCurrencyToNumber, InputNumber } from "../../function/CurrencyFormat";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -55,7 +56,7 @@ const handleSubmit = async (formikRef, date, setAlert, setShowPopup, setIsSubmit
         type: formikRef.current.values.type === "" ? null : formikRef.current.values.type,
         title: formikRef.current.values.title === "" ? null : formikRef.current.values.title,
         description: formikRef.current.values.description === "" ? null : formikRef.current.values.description,
-        cost: formikRef.current.values.cost < 0 ? null : formikRef.current.values.cost,
+        cost: ParseCurrencyToNumber(formikRef.current.values.cost) < 0 ? null : ParseCurrencyToNumber(formikRef.current.values.cost),
         stringListManualId: formikRef.current.values.stringListManualId === "" ? null : formikRef.current.values.stringListManualId,
     };
     await AxiosInstance.post(MaintainAPI.create, body, {
@@ -94,13 +95,6 @@ function ManageMaintainCreate() {
     // TRIGGER
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // DATA
-    const listType = [
-        { value: "GENERAL", label: "GENERAL", key: 1 },
-        { value: "BIKE", label: "BIKE", key: 2 }
-    ]
-
-    const [data, setData] = useState({})
     const [date, setDate] = useState(now);
     const [type, setType] = useState("GENERAL");
 
@@ -108,7 +102,6 @@ function ManageMaintainCreate() {
     // VARIABLE
     // PAGE LOADING
     const [loadingData, setLoadingData] = useState(true);
-    const [isRunLinear, setIsRunLinear] = useState(false);
 
     // VARIABLE
     // ALERT MESSAGE
@@ -131,10 +124,8 @@ function ManageMaintainCreate() {
         title: "",
         description: "",
         stringListManualId: "",
-        cost: 0,
+        cost: GetFormattedCurrency(0),
     }
-
-
 
     // USE EFFECT
     // PAGE LOADING
@@ -165,14 +156,14 @@ function ManageMaintainCreate() {
                 />
                 {alert.alertStatus === "success" ?
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
-                                navigate('/manage-maintenaince/maintenaince-list')
+                                navigate('/manage-maintenance/maintenance-list')
                             }}>Close</button>
                     </div>
                     :
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                             }}>Close</button>
@@ -187,7 +178,7 @@ function ManageMaintainCreate() {
             <Fragment>
                 {popup}
                 <div className="container">
-                    <h2 className="text-center">CREATE MAINTAIN</h2>
+                    <h2 className="text-center">CREATE MAINTENANCE</h2>
                     <Formik
                         innerRef={formikRef}
                         enableReinitialize
@@ -281,9 +272,14 @@ function ManageMaintainCreate() {
                                         <TextFieldCustom
                                             label={"Total cost"}
                                             name={"cost"}
-                                            type={"number"}
+                                            type={"text"}
                                             onWheel={(e) => e.target.blur()}
                                             placeholder={"Enter the cost"}
+                                            onChange={(event) => {
+                                                let value = event.target.value;
+                                                let decimalValue = ParseCurrencyToNumber(InputNumber(value))
+                                                setFieldValue("cost", GetFormattedCurrency(decimalValue));
+                                            }}
                                         />
                                     </Col>
                                 </Row>

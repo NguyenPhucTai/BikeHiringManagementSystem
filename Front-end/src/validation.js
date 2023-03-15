@@ -28,11 +28,11 @@ export const OrderSchema = Yup.object().shape({
             is: (depositType) => depositType === 'identifyCard',
             then: Yup.string().required("Identify Card is required")
         }),
-    // depositAmount: Yup.number()
-    //     .when('depositType', {
-    //         is: (depositType) => depositType === 'money',
-    //         then: Yup.number().min(1, "Deposit Amount must be greater than 0")
-    //     }),
+    depositAmount: Yup.string()
+        .when('depositType', {
+            is: (depositType) => depositType === 'money',
+            then: Yup.string().required("Deposit Amount is required")
+        }),
     depositHotel: Yup.string()
         .when('depositType', {
             is: (depositType) => depositType === 'hotel',
@@ -49,10 +49,5 @@ export const UserSchema = Yup.object().shape({
 export const MaintainSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
     description: Yup.string().required("Description is required"),
-    stringListManualId: Yup.string()
-        .when('type', {
-            is: (type) => type === "BIKE",
-            then: Yup.string().required("Bike manual ID list is required"),
-        }),
-    cost: Yup.number().min(1, "Total cost must be greater than 0")
+    cost: Yup.string().required("Total cost is required")
 });

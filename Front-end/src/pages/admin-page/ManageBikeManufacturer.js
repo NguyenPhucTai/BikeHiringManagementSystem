@@ -304,7 +304,7 @@ function ManageBikeManufacturer() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -370,7 +370,7 @@ function ManageBikeManufacturer() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -474,7 +474,7 @@ function ManageBikeManufacturer() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -521,6 +521,7 @@ function ManageBikeManufacturer() {
                 setDataID={setDataID}
                 setIsDelete={setIsDelete}
                 setIsUpdate={setIsUpdate}
+                isShowDeleteBtn={true}
             />
             <PaginationCustom
                 totalPages={totalPages}
@@ -537,7 +538,7 @@ function ManageBikeManufacturer() {
             <Fragment>
                 <div className='container'>
                     {popupTitle}
-                    <h2 className="text-center">Management Bike Color</h2>
+                    <h2 className="text-center">Management Bike Manufacturer</h2>
                     <SortBar SortBy={SortBy} />
                     <div className='table-header'>
                         <Row>

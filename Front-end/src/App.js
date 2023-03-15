@@ -76,19 +76,19 @@ function App() {
 						<Route element={<ProtectedRoute token={reduxToken} />}>
 							<Route path='/dashboard' exact element={<Dashboard />} />
 							<Route path='/manage-bike/bike-list' exact element={<ManageBikeList />} />
-							<Route path='/manage-bike/bike/create' exact element={<ManageBikeCreate />} />
-							<Route path='/manage-bike/bike/update/:id' exact element={<ManageBikeUpdate />} />
+							<Route path='/manage-bike/bike-create' exact element={<ManageBikeCreate />} />
+							<Route path='/manage-bike/bike-update/:id' exact element={<ManageBikeUpdate />} />
 							<Route path='/manage-bike/bike/:id' element={<ManageBikeDetail />} />
 							<Route path='/manage-bike/category' exact element={<ManageBikeCategory />} />
 							<Route path='/manage-bike/color' exact element={<ManageBikeColor />} />
 							<Route path='/manage-bike/manufacturer' exact element={<ManageBikeManufacturer />} />
-							<Route path='/manage-order/cart/create' exact element={<CreateCart />} />
+							<Route path='/manage-order/cart-create' exact element={<CreateCart />} />
 							<Route path='/manage-order/order-list' exact element={<ManageOrderList />} />
-							<Route path='/manage-order/order/create' exact element={<CreateOrder />} />
+							<Route path='/manage-order/order-create' exact element={<CreateOrder />} />
 							<Route path='/manage-order/order/:id' element={<ManageOrderDetail />} />
-							<Route path='/manage-maintenaince/maintenaince-list' exact element={<ManageMaintain />} />
-							<Route path='/manage-maintenaince/maintenaince/create' exact element={<ManageMaintainCreate />} />
-							<Route path='/manage-maintenaince/maintenaince/:id' element={<ManageMaintainDetail />} />
+							<Route path='/manage-maintenance/maintenance-list' exact element={<ManageMaintain />} />
+							<Route path='/manage-maintenance/maintenance-create' exact element={<ManageMaintainCreate />} />
+							<Route path='/manage-maintenance/maintenance/:id' element={<ManageMaintainDetail />} />
 						</Route>
 					</Routes>
 				</BrowserRouter>
@@ -109,19 +109,19 @@ function App() {
 					<Route element={<ProtectedRoute token={reduxToken} />}>
 						<Route path='/dashboard' exact element={<Dashboard />} />
 						<Route path='/manage-bike/bike-list' exact element={<ManageBikeList />} />
-						<Route path='/manage-bike/bike/create' exact element={<ManageBikeCreate />} />
-						<Route path='/manage-bike/bike/update/:id' exact element={<ManageBikeUpdate />} />
+						<Route path='/manage-bike/bike-create' exact element={<ManageBikeCreate />} />
+						<Route path='/manage-bike/bike-update/:id' exact element={<ManageBikeUpdate />} />
 						<Route path='/manage-bike/bike/:id' element={<ManageBikeDetail />} />
 						<Route path='/manage-bike/category' exact element={<ManageBikeCategory />} />
 						<Route path='/manage-bike/color' exact element={<ManageBikeColor />} />
 						<Route path='/manage-bike/manufacturer' exact element={<ManageBikeManufacturer />} />
-						<Route path='/manage-order/cart/create' exact element={<CreateCart />} />
+						<Route path='/manage-order/cart-create' exact element={<CreateCart />} />
 						<Route path='/manage-order/order-list' exact element={<ManageOrderList />} />
-						<Route path='/manage-order/order/create' exact element={<CreateOrder />} />
+						<Route path='/manage-order/order-create' exact element={<CreateOrder />} />
 						<Route path='/manage-order/order/:id' element={<ManageOrderDetail />} />
-						<Route path='/manage-maintenaince/maintenaince-list' exact element={<ManageMaintain />} />
-						<Route path='/manage-maintenaince/maintenaince/create' exact element={<ManageMaintainCreate />} />
-						<Route path='/manage-maintenaince/maintenaince/:id' element={<ManageMaintainDetail />} />
+						<Route path='/manage-maintenance/maintenance-list' exact element={<ManageMaintain />} />
+						<Route path='/manage-maintenance/maintenance-create' exact element={<ManageMaintainCreate />} />
+						<Route path='/manage-maintenance/maintenance/:id' element={<ManageMaintainDetail />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>}

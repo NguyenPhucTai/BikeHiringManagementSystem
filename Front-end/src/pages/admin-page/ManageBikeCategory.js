@@ -28,7 +28,7 @@ import { AlertMessage } from '../../components/Modal/AlertMessage';
 import { GetFormattedDate } from "../../function/DateFormat";
 import { PaginationCustom } from '../../components/Table/Pagination';
 import { PageLoad } from '../../components/Base/PageLoad';
-import { GetFormattedCurrency } from '../../function/CurrencyFormat';
+import { GetFormattedCurrency, ParseCurrencyToNumber, InputNumber } from '../../function/CurrencyFormat';
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -119,7 +119,7 @@ const handleCreateData = async (
 ) => {
     const body = {
         name: values.name,
-        price: values.price,
+        price: ParseCurrencyToNumber(values.price),
     };
     await AxiosInstance.post(CategoryAPI.create, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
@@ -149,7 +149,7 @@ const handleUpdateData = async (
 ) => {
     const body = {
         name: values.name,
-        price: values.price,
+        price: ParseCurrencyToNumber(values.price),
     };
     await AxiosInstance.post(CategoryAPI.update + dataID, body, {
         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
@@ -299,7 +299,7 @@ function ManageBikeCategory() {
     // Update initialValues
     if (isUpdate === true && Object.keys(lineItem).length !== 0) {
         initialValues.name = lineItem.name;
-        initialValues.price = lineItem.price;
+        initialValues.price = GetFormattedCurrency(lineItem.price);
     }
 
     // Popup Interface
@@ -314,7 +314,7 @@ function ManageBikeCategory() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -360,8 +360,14 @@ function ManageBikeCategory() {
                                 <TextFieldCustom
                                     label={"Price"}
                                     name={"price"}
-                                    type={"number"} onWheel={(e) => e.target.blur()}
+                                    type={"number"}
+                                    onWheel={(e) => e.target.blur()}
                                     placeholder={"Enter the category price"}
+                                    onChange={(event) => {
+                                        let value = event.target.value;
+                                        let decimalValue = ParseCurrencyToNumber(InputNumber(value))
+                                        setFieldValue("price", GetFormattedCurrency(decimalValue));
+                                    }}
                                 />
                                 <div className="popup-button">
                                     <button className="btn btn-secondary btn-cancel"
@@ -386,7 +392,7 @@ function ManageBikeCategory() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -436,8 +442,14 @@ function ManageBikeCategory() {
                                 <TextFieldCustom
                                     label={"Price"}
                                     name={"price"}
-                                    type={"number"} onWheel={(e) => e.target.blur()}
+                                    type={"text"}
+                                    onWheel={(e) => e.target.blur()}
                                     placeholder={"Enter the category price"}
+                                    onChange={(event) => {
+                                        let value = event.target.value;
+                                        let decimalValue = ParseCurrencyToNumber(InputNumber(value))
+                                        setFieldValue("price", GetFormattedCurrency(decimalValue));
+                                    }}
                                 />
                                 <div className="popup-button">
                                     <button className="btn btn-secondary btn-cancel"
@@ -497,7 +509,7 @@ function ManageBikeCategory() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -545,6 +557,7 @@ function ManageBikeCategory() {
                 setDataID={setDataID}
                 setIsDelete={setIsDelete}
                 setIsUpdate={setIsUpdate}
+                isShowDeleteBtn={false}
             />
             <PaginationCustom
                 totalPages={totalPages}
@@ -566,7 +579,7 @@ function ManageBikeCategory() {
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike Category List</label></Col>
-                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px', width: '5rem' }} onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button></Col>
+                            {/* <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px', width: '5rem' }} onClick={() => { setShowPopup(true); setTitlePopup("Create") }}>Create</button></Col> */}
                         </Row>
                     </div>
                     {tablePagination}

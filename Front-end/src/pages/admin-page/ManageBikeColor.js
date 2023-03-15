@@ -304,7 +304,7 @@ function ManageBikeColor() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -370,7 +370,7 @@ function ManageBikeColor() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -474,7 +474,7 @@ function ManageBikeColor() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-close"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -521,6 +521,7 @@ function ManageBikeColor() {
                 setDataID={setDataID}
                 setIsDelete={setIsDelete}
                 setIsUpdate={setIsUpdate}
+                isShowDeleteBtn={true}
             />
             <PaginationCustom
                 totalPages={totalPages}

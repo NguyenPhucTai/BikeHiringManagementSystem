@@ -33,8 +33,8 @@ export const TableMaintainList = props => {
                                     })
                                 }
                                 <td key={'buttonRow'}>
-                                    <button className="btn btn-success" type="button" onClick={() => navigate("/manage-maintenaince/maintenaince/" + element.id)}>View</button>
-                                    <button className="btn btn-danger" type="button" onClick={() => { setShowPopup(true); setTitlePopup("Delete"); setDataID(element.id); setIsDelete(true) }}>Delete</button>
+                                    <button className="btn btn-success table-btn" type="button" onClick={() => navigate("/manage-maintenance/maintenance/" + element.id)}>View</button>
+                                    <button className="btn btn-danger table-btn" type="button" onClick={() => { setShowPopup(true); setTitlePopup("Delete"); setDataID(element.id); setIsDelete(true) }}>Delete</button>
                                 </td>
                             </tr>
                         )

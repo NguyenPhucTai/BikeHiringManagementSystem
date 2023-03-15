@@ -26,9 +26,20 @@ export const TableOrderBikeList = props => {
                             <tr key={element.id}>
                                 {
                                     Object.keys(element).map(function (propertyName, index) {
-                                        return (
-                                            <td key={index}>{element[propertyName]}</td>
-                                        )
+                                        if (element[propertyName] === "AVAILABLE") {
+                                            return (
+                                                <td key={index}><span style={{ color: '#006442', fontWeight: "bold" }}>{element[propertyName]}</span></td>
+                                            )
+                                        } else if (element[propertyName] === "HIRED") {
+                                            return (
+                                                <td key={index}><span style={{ color: 'red', fontWeight: "bold" }}>{element[propertyName]}</span></td>
+                                            )
+                                        }
+                                        else {
+                                            return (
+                                                <td key={index}>{element[propertyName]}</td>
+                                            )
+                                        }
                                     })
                                 }
                                 {isShowButtonDelete === true &&

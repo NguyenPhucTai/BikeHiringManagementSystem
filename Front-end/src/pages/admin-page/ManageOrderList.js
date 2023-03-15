@@ -261,7 +261,7 @@ function ManageOrderList() {
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Order List</label></Col>
                             <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }}
-                                onClick={() => navigate('/manage-order/cart/create')} >Create Order</button></Col>
+                                onClick={() => navigate('/manage-order/order-create')} >Create Order</button></Col>
                         </Row>
                     </div>
                     <div className='table-note'>

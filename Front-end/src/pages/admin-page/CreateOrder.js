@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { Radio, RadioGroup, FormControlLabel, Button, Box } from "@mui/material";
 
 // Library - date time
-import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers';
@@ -27,11 +26,11 @@ import { OrderAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
+import { GetFormattedCurrency, ParseCurrencyToNumber, InputNumber } from "../../function/CurrencyFormat";
 
 // Redux
 import { useDispatch } from "react-redux";
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
-import { GetFormattedCurrency, ParseCurrencyToNumber, InputNumber } from "../../function/CurrencyFormat";
 
 const cookies = new Cookies();
 
@@ -393,14 +392,14 @@ function CreateOrder() {
                 />
                 {isSubmitting === false ?
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                             }}>Close</button>
                     </div>
                     :
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 navigate('/manage-order/order-list')
                             }}>Close</button>
@@ -416,24 +415,26 @@ function CreateOrder() {
                 {popup}
                 <div className="container">
                     <h2 className="text-center">CREATE ORDER</h2>
-                    <Button variant="contained" color="success"
-                        onClick={() =>
-                            handleSaveCart(
-                                false,
-                                formikRef,
-                                expectedStartDate,
-                                expectedEndDate,
-                                calculatedCost,
-                                serviceCost,
-                                totalAmount,
-                                setLoadingData,
-                                setShowPopup,
-                                setAlert,
-                                setIsRunLinear,
-                            )
-                        }>
-                        SAVE CART
-                    </Button>
+                    <div style={{ textAlign: 'right', marginBottom: '16px' }}>
+                        <Button variant="contained" color="success"
+                            onClick={() =>
+                                handleSaveCart(
+                                    false,
+                                    formikRef,
+                                    expectedStartDate,
+                                    expectedEndDate,
+                                    calculatedCost,
+                                    serviceCost,
+                                    totalAmount,
+                                    setLoadingData,
+                                    setShowPopup,
+                                    setAlert,
+                                    setIsRunLinear,
+                                )
+                            }>
+                            SAVE CART
+                        </Button>
+                    </div>
                     {isRunLinear && (
                         <Box sx={{ width: '100%' }}>
                             <LinearProgress />

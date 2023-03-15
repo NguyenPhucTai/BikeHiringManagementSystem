@@ -209,7 +209,7 @@ const Sidebar = () => {
                         <Collapse in={managementOrderCollapse} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
                                 <ListItem key={'cart'} disableGutters={true} style={{ paddingLeft: 40 }}>
-                                    <ListItemButton className="item-button" component="a" href="/manage-order/cart/create">
+                                    <ListItemButton className="item-button" component="a" href="/manage-order/cart-create">
                                         <ListItemIcon>
                                             <AddShoppingCartIcon className="item-icon" />
                                         </ListItemIcon>
@@ -228,11 +228,11 @@ const Sidebar = () => {
                             </List>
                         </Collapse>
                         <ListItem key={'maintain'} disableGutters={true}>
-                            <ListItemButton className="item-button" component="a" href="/manage-maintenaince/maintenaince-list">
+                            <ListItemButton className="item-button" component="a" href="/manage-maintenance/maintenance-list">
                                 <ListItemIcon>
                                     <SettingsIcon className="item-icon" />
                                 </ListItemIcon>
-                                <ListItemText primary="Maintenaince" />
+                                <ListItemText primary="Maintenance" />
                             </ListItemButton>
                         </ListItem>
                     </List>

@@ -28,6 +28,7 @@ import { OrderAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
+import { GetFormattedCurrency, ParseCurrencyToNumber, InputNumber } from "../../function/CurrencyFormat";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -79,7 +80,7 @@ const handleGetOrder = async (
                     name: data.name,
                     bikeManualId: data.bikeManualId,
                     bikeCategoryName: data.bikeCategoryName,
-                    price: data.price,
+                    price: GetFormattedCurrency(data.price),
                     hiredNumber: data.hiredNumber
                 }
             })
@@ -176,7 +177,7 @@ const handleSaveOrder = async (
         actualEndDate: actualEndDate,
 
         serviceDescription: formikRef.current.values.serviceDescription === "" ? null : formikRef.current.values.serviceDescription,
-        depositAmount: formikRef.current.values.depositAmount,
+        depositAmount: ParseCurrencyToNumber(formikRef.current.values.depositAmount),
         depositIdentifyCard: formikRef.current.values.depositIdentifyCard === "" ? null : formikRef.current.values.depositIdentifyCard,
         depositHotel: formikRef.current.values.depositHotel === "" ? null : formikRef.current.values.depositHotel,
         note: formikRef.current.values.note === "" ? null : formikRef.current.values.note,
@@ -355,7 +356,7 @@ function ManageOrderDetail() {
         initialValues.serviceDescription = data.serviceDescription === null ? "" : data.serviceDescription;
 
         initialValues.depositType = data.depositType === null ? "identifyCard" : data.depositType;
-        initialValues.depositAmount = data.depositAmount === null ? 0 : data.depositAmount;
+        initialValues.depositAmount = data.depositAmount === null ? GetFormattedCurrency(0) : GetFormattedCurrency(data.depositAmount);
         initialValues.depositIdentifyCard = data.depositIdentifyCard === null ? "" : data.depositIdentifyCard;
         initialValues.depositHotel = data.depositHotel === null ? "" : data.depositHotel;
 
@@ -373,7 +374,7 @@ function ManageOrderDetail() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -387,6 +388,11 @@ function ManageOrderDetail() {
                         <p>This process cannot be undone</p>
                     </div>
                     <div className="popup-button">
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                            }}>Cancel</button>
+
                         <button className="btn btn-success btn-action"
                             onClick={() => {
                                 handleSaveOrder(
@@ -407,10 +413,6 @@ function ManageOrderDetail() {
                                     false
                                 );
                             }}>{titlePopup}</button>
-                        <button className="btn btn-secondary btn-cancel"
-                            onClick={() => {
-                                setShowPopup(false);
-                            }}>Cancel</button>
                     </div>
                 </Fragment >
         }
@@ -425,7 +427,7 @@ function ManageOrderDetail() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 navigate('/manage-order/order-list')
                             }}>Go to order page</button>
@@ -438,14 +440,14 @@ function ManageOrderDetail() {
                         <p>This process cannot be undone</p>
                     </div>
                     <div className="popup-button">
-                        <button className="btn btn-danger btn-action"
-                            onClick={() => {
-                                handleCancelOrder(id, setAlert, setShowCloseButton);
-                            }}>{titlePopup}</button>
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
                                 setShowPopup(false);
                             }}>Back</button>
+                        <button className="btn btn-danger btn-action"
+                            onClick={() => {
+                                handleCancelOrder(id, setAlert, setShowCloseButton);
+                            }}>{titlePopup}</button>
                     </div>
                 </Fragment >
         }
@@ -460,7 +462,7 @@ function ManageOrderDetail() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 navigate('/manage-order/order-list');
                             }}>Go to order page</button>
@@ -469,11 +471,15 @@ function ManageOrderDetail() {
                 :
                 <Fragment>
                     <div className='popup-message text-center mb-3'>
-                        <label>Do you really want to save new information</label>
+                        <label>Do you really want to close this order?</label>
                         <p>This process cannot be undone</p>
                     </div>
                     <div className="popup-button">
-                        <button className="btn btn-success btn-action"
+                        <button className="btn btn-secondary btn-cancel"
+                            onClick={() => {
+                                setShowPopup(false);
+                            }}>Back</button>
+                        <button className="btn btn-dark btn-action"
                             onClick={() => {
                                 handleSaveOrder(
                                     id,
@@ -493,16 +499,11 @@ function ManageOrderDetail() {
                                     true,
                                 );
                             }}>{titlePopup}</button>
-                        <button className="btn btn-secondary btn-cancel"
-                            onClick={() => {
-                                setShowPopup(false);
-                            }}>Back</button>
                     </div>
                 </Fragment >
         }
         />
     }
-
 
     return (
         !loadingData ?
@@ -709,10 +710,10 @@ function ManageOrderDetail() {
                                                 <TextFieldCustom
                                                     label={"Cost"}
                                                     name={"calculatedCost"}
-                                                    type={"number"}
+                                                    type={"text"}
                                                     onWheel={(e) => e.target.blur()}
                                                     placeholder={"Enter the cost"}
-                                                    value={calculatedCost}
+                                                    value={GetFormattedCurrency(calculatedCost)}
                                                     disabled={true}
                                                 />
                                             </Col>
@@ -756,17 +757,13 @@ function ManageOrderDetail() {
                                                     <TextFieldCustom
                                                         label={"Service Cost"}
                                                         name={"serviceCost"}
-                                                        type={"number"}
+                                                        type={"text"}
                                                         onWheel={(e) => e.target.blur()}
                                                         placeholder={"Enter the service cost"}
-                                                        value={serviceCost}
+                                                        value={GetFormattedCurrency(serviceCost)}
                                                         onChange={(event) => {
                                                             let value = event.target.value;
-                                                            if (value === "") {
-                                                                setServiceCost("")
-                                                            } else {
-                                                                setServiceCost(parseFloat(value))
-                                                            }
+                                                            setServiceCost(ParseCurrencyToNumber(InputNumber(value)))
                                                         }}
                                                     />
                                                 </Col>
@@ -807,9 +804,14 @@ function ManageOrderDetail() {
                                                 <TextFieldCustom
                                                     label={"Despoit Amount"}
                                                     name={"depositAmount"}
-                                                    type={"number"}
+                                                    type={"text"}
                                                     onWheel={(e) => e.target.blur()}
                                                     placeholder={"Enter the deposit amount"}
+                                                    onChange={(event) => {
+                                                        let value = event.target.value;
+                                                        let decimalValue = ParseCurrencyToNumber(InputNumber(value))
+                                                        setFieldValue("depositAmount", GetFormattedCurrency(decimalValue));
+                                                    }}
                                                 />
                                             </Col>
                                         }
@@ -839,23 +841,19 @@ function ManageOrderDetail() {
                                             <TextFieldCustom
                                                 label={"Total Cost"}
                                                 name={"totalAmount"}
-                                                type={"number"}
+                                                type={"text"}
                                                 onWheel={(e) => e.target.blur()}
                                                 placeholder={"Total Cost"}
-                                                value={totalAmount}
+                                                value={GetFormattedCurrency(totalAmount)}
                                                 onChange={(event) => {
                                                     let value = event.target.value;
-                                                    if (value === "") {
-                                                        setTotalAmount("")
-                                                    } else {
-                                                        setTotalAmount(parseFloat(value))
-                                                    }
+                                                    setTotalAmount(ParseCurrencyToNumber(InputNumber(value)))
                                                 }}
                                             />
                                         </Col>
                                     </Row>
                                     <button type="submit" className="btn btn-dark btn-md mt-3">
-                                        CLOSED
+                                        CLOSE ORDER
                                     </button>
                                 </Form>
                             )}
@@ -1005,10 +1003,10 @@ function ManageOrderDetail() {
                                                 <TextFieldCustom
                                                     label={"Cost"}
                                                     name={"calculatedCost"}
-                                                    type={"number"}
+                                                    type={"text"}
                                                     onWheel={(e) => e.target.blur()}
                                                     placeholder={"Enter the cost"}
-                                                    value={calculatedCost}
+                                                    value={GetFormattedCurrency(calculatedCost)}
                                                     disabled={true}
                                                 />
                                             </Col>
@@ -1056,18 +1054,14 @@ function ManageOrderDetail() {
                                                     <TextFieldCustom
                                                         label={"Service Cost"}
                                                         name={"serviceCost"}
-                                                        type={"number"}
+                                                        type={"text"}
                                                         onWheel={(e) => e.target.blur()}
                                                         placeholder={"Enter the service cost"}
                                                         disabled={true}
-                                                        value={serviceCost}
+                                                        value={GetFormattedCurrency(serviceCost)}
                                                         onChange={(event) => {
                                                             let value = event.target.value;
-                                                            if (value === "") {
-                                                                setServiceCost("")
-                                                            } else {
-                                                                setServiceCost(parseFloat(value))
-                                                            }
+                                                            setServiceCost(ParseCurrencyToNumber(InputNumber(value)))
                                                         }}
                                                     />
                                                 </Col>
@@ -1115,9 +1109,14 @@ function ManageOrderDetail() {
                                                 <TextFieldCustom
                                                     label={"Despoit Amount"}
                                                     name={"depositAmount"}
-                                                    type={"number"}
+                                                    type={"text"}
                                                     onWheel={(e) => e.target.blur()}
                                                     placeholder={"Enter the deposit amount"}
+                                                    onChange={(event) => {
+                                                        let value = event.target.value;
+                                                        let decimalValue = ParseCurrencyToNumber(InputNumber(value))
+                                                        setFieldValue("depositAmount", GetFormattedCurrency(decimalValue));
+                                                    }}
                                                     disabled={true}
                                                 />
                                             </Col>
@@ -1150,18 +1149,14 @@ function ManageOrderDetail() {
                                             <TextFieldCustom
                                                 label={"Total Cost"}
                                                 name={"totalAmount"}
-                                                type={"number"}
+                                                type={"text"}
                                                 onWheel={(e) => e.target.blur()}
                                                 placeholder={"Total Cost"}
                                                 disabled={true}
-                                                value={totalAmount}
+                                                value={GetFormattedCurrency(totalAmount)}
                                                 onChange={(event) => {
                                                     let value = event.target.value;
-                                                    if (value === "") {
-                                                        setTotalAmount("")
-                                                    } else {
-                                                        setTotalAmount(parseFloat(value))
-                                                    }
+                                                    setTotalAmount(ParseCurrencyToNumber(InputNumber(value)))
                                                 }}
                                             />
                                         </Col>

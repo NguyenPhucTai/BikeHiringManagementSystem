@@ -5,14 +5,12 @@ import { AxiosInstance } from "../../api/AxiosClient";
 import { Formik, Form } from 'formik';
 import { MaintainSchema } from "../../validation";
 import Cookies from 'universal-cookie';
-import LinearProgress from '@mui/material/LinearProgress';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Radio, RadioGroup, FormControlLabel, Button, Box } from "@mui/material";
 
 // Library - date time
-import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers';
@@ -23,11 +21,11 @@ import dayjs from 'dayjs';
 import { AlertMessage } from "../../components/Modal/AlertMessage";
 import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { TextAreaCustom } from "../../components/Form/TextAreaCustom";
-import { SelectField } from "../../components/Form/SelectField";
 import { MaintainAPI } from "../../api/EndPoint";
 import { PageLoad } from '../../components/Base/PageLoad';
 import { Popup } from '../../components/Modal/Popup';
 import { TableOrderBikeList } from "../../components/Table/TableOrderBikeList";
+import { GetFormattedCurrency, ParseCurrencyToNumber, InputNumber } from "../../function/CurrencyFormat";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -107,7 +105,7 @@ const saveMaintain = async (
         type: formikRef.current.values.type === "" ? null : formikRef.current.values.type,
         title: formikRef.current.values.title === "" ? null : formikRef.current.values.title,
         description: formikRef.current.values.description === "" ? null : formikRef.current.values.description,
-        cost: formikRef.current.values.cost < 0 ? null : formikRef.current.values.cost,
+        cost: ParseCurrencyToNumber(formikRef.current.values.cost) < 0 ? null : ParseCurrencyToNumber(formikRef.current.values.cost),
         stringListManualId: formikRef.current.values.stringListManualId === "" ? null : formikRef.current.values.stringListManualId,
     };
     await AxiosInstance.post(MaintainAPI.update, body, {
@@ -143,14 +141,14 @@ function ManageMaintainDetail() {
 
     // TABLE TITLE
     const tableTitleList = [
-        { name: 'ID', width: '12.5%' },
-        { name: 'NAME', width: '12.5%' },
-        { name: 'MANUAL ID', width: '12.5%' },
-        { name: 'CATEGORY', width: '12.5%' },
-        { name: 'COLOR', width: '12.5%' },
-        { name: 'MANUFACTURER', width: '12.5%' },
-        { name: 'HIRED NUMBER', width: '12.5%' },
-        { name: 'STATUS', width: '12.5%' },
+        { name: 'ID', width: '10%' },
+        { name: 'NAME', width: '20%' },
+        { name: 'MANUAL ID', width: '10%' },
+        { name: 'CATEGORY', width: '15%' },
+        { name: 'COLOR', width: '10%' },
+        { name: 'MANUFACTURER', width: '15%' },
+        { name: 'HIRED NUMBER', width: '15%' },
+        { name: 'STATUS', width: '15%' },
     ]
 
     // VARIABLE
@@ -188,7 +186,7 @@ function ManageMaintainDetail() {
         title: "",
         description: "",
         stringListManualId: "",
-        cost: 0,
+        cost: GetFormattedCurrency(0),
     }
 
     // Update initialValues
@@ -197,7 +195,7 @@ function ManageMaintainDetail() {
         initialValues.title = data.title;
         initialValues.type = data.type;
         initialValues.description = data.description;
-        initialValues.cost = data.cost;
+        initialValues.cost = GetFormattedCurrency(data.cost);
         initialValues.stringListManualId = data.stringListManualId;
     }
 
@@ -235,7 +233,7 @@ function ManageMaintainDetail() {
                 />
                 {alert.alertStatus === "success" ?
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setLoadingData(true);
                                 setShowPopup(false);
@@ -243,7 +241,7 @@ function ManageMaintainDetail() {
                     </div>
                     :
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                             }}>Close</button>
@@ -258,7 +256,7 @@ function ManageMaintainDetail() {
             <Fragment>
                 {popup}
                 <div className="container">
-                    <h2 className="text-center">MAINTAIN NO. {id}</h2>
+                    <h2 className="text-center">MAINTENANCE NO. {id}</h2>
                     <Formik
                         innerRef={formikRef}
                         enableReinitialize
@@ -371,14 +369,19 @@ function ManageMaintainDetail() {
                                         <TextFieldCustom
                                             label={"Total cost"}
                                             name={"cost"}
-                                            type={"number"}
+                                            type={"text"}
                                             onWheel={(e) => e.target.blur()}
                                             placeholder={"Enter the cost"}
+                                            onChange={(event) => {
+                                                let value = event.target.value;
+                                                let decimalValue = ParseCurrencyToNumber(InputNumber(value))
+                                                setFieldValue("cost", GetFormattedCurrency(decimalValue));
+                                            }}
                                         />
                                     </Col>
                                 </Row>
                                 <button type="submit" className="btn btn-dark btn-md mt-3">
-                                    SAVE
+                                    UPDATE INFORMATION
                                 </button>
                             </Form>
                         )}
