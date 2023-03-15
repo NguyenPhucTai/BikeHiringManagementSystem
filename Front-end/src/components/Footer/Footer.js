@@ -4,9 +4,9 @@ import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import EmailIcon from '@mui/icons-material/Email';
 
 const Footer = () => {
-    
+
     return (
-        <div className="footer">
+        <div id="footer">
             <div className="row">
                 <div className="col-lg-4">
                     <span>© Rent Motorcycles</span>

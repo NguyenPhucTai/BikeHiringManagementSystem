@@ -59,7 +59,41 @@ function App() {
 
 	return (
 		<Fragment>
-			<BrowserRouter>
+			{reduxIsShowPublicNavBar && <div id="content-wrap">
+				<BrowserRouter>
+					{reduxIsShowPublicNavBar && <MenuBar />}
+					{!reduxIsShowPublicNavBar && <SideBar />}
+					<Routes>
+						<Route path='/signin' exact element={<SignIn />} />
+						<Route path='/' exact element={<Home />} />
+						<Route path='/list' exact element={<List />} />
+						<Route path='/list/manual' exact element={<List category={2} />} />
+						<Route path='/list/automatic' exact element={<List category={1} />} />
+						<Route path='/bike/:id' element={<Detail />} />
+						<Route path='*' element={<Navigate to='/404' />} />
+						<Route path='/404' exact element={<PageNotFound warn={"Website is developed"} />} />
+
+						<Route element={<ProtectedRoute token={reduxToken} />}>
+							<Route path='/dashboard' exact element={<Dashboard />} />
+							<Route path='/manage-bike/bike-list' exact element={<ManageBikeList />} />
+							<Route path='/manage-bike/bike/create' exact element={<ManageBikeCreate />} />
+							<Route path='/manage-bike/bike/update/:id' exact element={<ManageBikeUpdate />} />
+							<Route path='/manage-bike/bike/:id' element={<ManageBikeDetail />} />
+							<Route path='/manage-bike/category' exact element={<ManageBikeCategory />} />
+							<Route path='/manage-bike/color' exact element={<ManageBikeColor />} />
+							<Route path='/manage-bike/manufacturer' exact element={<ManageBikeManufacturer />} />
+							<Route path='/manage-order/cart/create' exact element={<CreateCart />} />
+							<Route path='/manage-order/order-list' exact element={<ManageOrderList />} />
+							<Route path='/manage-order/order/create' exact element={<CreateOrder />} />
+							<Route path='/manage-order/order/:id' element={<ManageOrderDetail />} />
+							<Route path='/manage-maintenaince/maintenaince-list' exact element={<ManageMaintain />} />
+							<Route path='/manage-maintenaince/maintenaince/create' exact element={<ManageMaintainCreate />} />
+							<Route path='/manage-maintenaince/maintenaince/:id' element={<ManageMaintainDetail />} />
+						</Route>
+					</Routes>
+				</BrowserRouter>
+			</div>}
+			{!reduxIsShowPublicNavBar && <BrowserRouter>
 				{reduxIsShowPublicNavBar && <MenuBar />}
 				{!reduxIsShowPublicNavBar && <SideBar />}
 				<Routes>
@@ -74,24 +108,24 @@ function App() {
 
 					<Route element={<ProtectedRoute token={reduxToken} />}>
 						<Route path='/dashboard' exact element={<Dashboard />} />
-						<Route path='/manage/category' exact element={<ManageBikeCategory />} />
-						<Route path='/manage/color' exact element={<ManageBikeColor />} />
-						<Route path='/manage/manufacturer' exact element={<ManageBikeManufacturer />} />
-						<Route path='/manage/bike' exact element={<ManageBikeList />} />
-						<Route path='/manage/bike/create' exact element={<ManageBikeCreate />} />
-						<Route path='/manage/bike/update/:id' exact element={<ManageBikeUpdate />} />
-						<Route path='/manage/bike/:id' element={<ManageBikeDetail />} />
-						<Route path='/manage/cart/create' exact element={<CreateCart />} />
-						<Route path='/manage/order/create' exact element={<CreateOrder />} />
-						<Route path='/manage/order' exact element={<ManageOrderList />} />
-						<Route path='/manage/order/:id' element={<ManageOrderDetail />} />
-						<Route path='/manage/maintain' exact element={<ManageMaintain />} />
-						<Route path='/manage/maintain/create' exact element={<ManageMaintainCreate />} />
-						<Route path='/manage/maintain/:id' element={<ManageMaintainDetail />} />
+						<Route path='/manage-bike/bike-list' exact element={<ManageBikeList />} />
+						<Route path='/manage-bike/bike/create' exact element={<ManageBikeCreate />} />
+						<Route path='/manage-bike/bike/update/:id' exact element={<ManageBikeUpdate />} />
+						<Route path='/manage-bike/bike/:id' element={<ManageBikeDetail />} />
+						<Route path='/manage-bike/category' exact element={<ManageBikeCategory />} />
+						<Route path='/manage-bike/color' exact element={<ManageBikeColor />} />
+						<Route path='/manage-bike/manufacturer' exact element={<ManageBikeManufacturer />} />
+						<Route path='/manage-order/cart/create' exact element={<CreateCart />} />
+						<Route path='/manage-order/order-list' exact element={<ManageOrderList />} />
+						<Route path='/manage-order/order/create' exact element={<CreateOrder />} />
+						<Route path='/manage-order/order/:id' element={<ManageOrderDetail />} />
+						<Route path='/manage-maintenaince/maintenaince-list' exact element={<ManageMaintain />} />
+						<Route path='/manage-maintenaince/maintenaince/create' exact element={<ManageMaintainCreate />} />
+						<Route path='/manage-maintenaince/maintenaince/:id' element={<ManageMaintainDetail />} />
 					</Route>
 				</Routes>
-				{/* {reduxIsShowPublicNavBar && <Footer />} */}
-			</BrowserRouter>
+			</BrowserRouter>}
+			{reduxIsShowPublicNavBar && <Footer />}
 		</Fragment>
 	)
 }

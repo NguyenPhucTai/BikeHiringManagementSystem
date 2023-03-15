@@ -13,6 +13,7 @@
 .swiper-button-prev,
 .swiper-button-next {
     color: $color-coral !important;
+    top: 36% !important;
 }
 
 .swiper-button-prev {
@@ -29,7 +30,7 @@
 
 .swiper-autoheight,
 .swiper-autoheight .swiper-slide {
-    height: 355px !important;
+    height: 370px !important;
 }
 
 .swiper-pagination-bullet {
@@ -39,4 +40,9 @@
 
 .listSwiper {
     margin-bottom: 3rem;
+}
+
+.swiper-horizontal>.swiper-pagination-bullets,
+.swiper-pagination-bullets.swiper-pagination-horizontal {
+    bottom: -5px !important;
 }

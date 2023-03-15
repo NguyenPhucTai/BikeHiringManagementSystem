@@ -6,6 +6,8 @@ import { TextFieldCustom } from "../../components/Form/TextFieldCustom";
 import { Formik, Form } from "formik";
 import { UserSchema } from "../../validation";
 import { AlertMessage } from "../../components/Modal/AlertMessage";
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -76,47 +78,53 @@ function SignIn() {
         <div className="container">
             <h1 className="text-center">Sign In</h1>
 
-            <AlertMessage
-                isShow={alert.alertShow}
-                message={alert.alertMessage}
-                status={alert.alertStatus}
-            />
+            <Row>
+                <Col lg={3} xs={1}></Col>
+                <Col lg={6} xs={10}>
+                    <AlertMessage
+                        isShow={alert.alertShow}
+                        message={alert.alertMessage}
+                        status={alert.alertStatus}
+                    />
 
-            <Formik
-                initialValues={initialValues}
-                validationSchema={UserSchema}
-                onSubmit={(values) => {
-                    handleSignIn(values, setAlert, dispatch);
-                }}>
-                {({
-                    isSubmitting,
-                    handleChange,
-                    handleBlur,
-                    handleSubmit,
-                    values,
-                    errors,
-                    touched,
-                    setFieldValue,
-                }) => (
-                    <Form className="d-flex flex-column">
-                        <TextFieldCustom
-                            label={"Username"}
-                            name={"username"}
-                            type={"text"}
-                            placeholder={"Enter the username"}
-                        />
-                        <TextFieldCustom
-                            label={"Password"}
-                            name={"password"}
-                            type={"password"}
-                            placeholder={"Enter the password"}
-                        />
-                        <button type="submit" className="btn btn-dark btn-md mt-3">
-                            Sign In
-                        </button>
-                    </Form>
-                )}
-            </Formik>
+                    <Formik
+                        initialValues={initialValues}
+                        validationSchema={UserSchema}
+                        onSubmit={(values) => {
+                            handleSignIn(values, setAlert, dispatch);
+                        }}>
+                        {({
+                            isSubmitting,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            setFieldValue,
+                        }) => (
+                            <Form className="d-flex flex-column">
+                                <TextFieldCustom
+                                    label={"Username"}
+                                    name={"username"}
+                                    type={"text"}
+                                    placeholder={"Enter the username"}
+                                />
+                                <TextFieldCustom
+                                    label={"Password"}
+                                    name={"password"}
+                                    type={"password"}
+                                    placeholder={"Enter the password"}
+                                />
+                                <button type="submit" className="btn btn-dark btn-md mt-3">
+                                    Sign In
+                                </button>
+                            </Form>
+                        )}
+                    </Formik>
+                </Col>
+                <Col lg={3} xs={1}></Col>
+            </Row>
         </div>
     )
 }

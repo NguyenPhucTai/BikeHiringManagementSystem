@@ -319,7 +319,7 @@ function ManageMaintain() {
                     <div className='table-header'>
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Maintain List</label></Col>
-                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => navigate('/manage/maintain/create')}>Create</button></Col>
+                            <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px' }} onClick={() => navigate('/manage-maintenaince/maintenaince/create')}>Create</button></Col>
                         </Row>
                     </div>
                     {tablePagination}

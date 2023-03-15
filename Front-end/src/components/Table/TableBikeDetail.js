@@ -23,11 +23,11 @@ export const TableBikeDetail = props => {
                             <p>{GetFormattedCurrency(bikePrice * 0)}</p>
                             <p>(Coefficient: 0)</p>
                         </td>
-                        <td rowspan="3" key={'1.3'}>
+                        <td rowSpan="3" key={'1.3'}>
                             <p>The following photo identification documents will be retained by the company (in original form):</p>
                             <p style={{ marginTop: '16px', fontWeight: 600, color: '#1F4788' }}>Identified card , GPLX , Passport</p>
                         </td>
-                        <td rowspan="3" key={'1.4'}>
+                        <td rowSpan="3" key={'1.4'}>
                             <p style={{ fontWeight: 600, color: '#ff4444' }}>If you do not have identification documents, you must pay a deposit in order to create a contract.</p>
                             <p style={{ marginTop: '16px' }}>The deposit will be determined by the quantity and value of the vehicle.</p>
                             <p style={{ marginTop: '16px', fontWeight: 600, color: '#1F4788' }}>Refund of the deposit at the end of the lease</p>

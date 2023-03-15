@@ -167,7 +167,7 @@ function ManageMaintainCreate() {
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
-                                navigate('/manage/maintain')
+                                navigate('/manage-maintenaince/maintenaince-list')
                             }}>Close</button>
                     </div>
                     :

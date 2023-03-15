@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/style.scss';
-// import logo from './asset/logo.jpg'
+import Footer from '../components/Footer/Footer';
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -18,7 +18,6 @@ const PageNotFound = props => {
 
     return (
         <div className='page-404'>
-            {/* <img src={logo} alt="logo image" /> */}
             <h1>404 - Page Not Found!</h1>
             <h2>{props.warn}</h2>
         </div>

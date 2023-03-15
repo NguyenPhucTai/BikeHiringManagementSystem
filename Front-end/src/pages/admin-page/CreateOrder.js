@@ -402,7 +402,7 @@ function CreateOrder() {
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
-                                navigate('/manage/order')
+                                navigate('/manage-order/order-list')
                             }}>Close</button>
                     </div>
                 }

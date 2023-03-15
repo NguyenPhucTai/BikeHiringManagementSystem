@@ -25,7 +25,6 @@ const handleBikeDetail = async (id, setBikeDetail, setListImage, setLoadingData,
     await AxiosInstance.get(PublicAPI.getBikeDetail + id, {
         headers: {}
     }).then((res) => {
-        console.log(res.data)
         var bikeDetail = {
             name: res.data.data.name,
             bikeNo: res.data.data.bikeNo,

@@ -192,7 +192,7 @@ function CreateCart(props) {
                                 </Col>
                                 <Col lg={1} xs={1} style={{ alignSelf: 'center', textAlign: 'center' }}>
                                     <div className="view-cart">
-                                        <IconButton aria-label="cart" onClick={() => navigate('/manage/order/create')}>
+                                        <IconButton aria-label="cart" onClick={() => navigate('/manage-order/order/create')}>
                                             <Badge badgeContent={cartNumber} color="secondary" max={999} showZero>
                                                 <ShoppingCartIcon />
                                             </Badge>

@@ -175,7 +175,7 @@ function ManageBikeList() {
 
     useEffect(() => {
         if (dataID !== 0) {
-            navigate('/manage/bike/' + dataID);
+            navigate('/manage-bike/bike/' + dataID);
         }
     }, [dataID])
 
@@ -209,7 +209,7 @@ function ManageBikeList() {
                         <Row>
                             <Col lg={6} xs={6}><label style={{ fontSize: '36px' }}>Bike List</label></Col>
                             <Col lg={6} xs={6}><button className="btn btn-primary" style={{ float: "right", marginTop: '10px', width: '5rem' }}
-                                onClick={() => navigate('/manage/bike/create')} >Create</button></Col>
+                                onClick={() => navigate('/manage-bike/bike/create')} >Create</button></Col>
                         </Row>
                     </div>
                     {tablePagination}

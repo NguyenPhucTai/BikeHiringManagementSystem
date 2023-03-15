@@ -1,7 +1,9 @@
 .page-404 {
     text-align: center;
-    padding-top: 24.6vh;
-    padding-bottom: 24.6vh;
+    position: fixed;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -35%);
 
     h1,
     h2 {

@@ -7,13 +7,12 @@
 }
 
 #root {
-    // min-height: 200%;
     position: relative;
-    // padding-bottom: 12rem;
+    min-height: 100vh;
+}
 
-    // @media screen and (max-width: 1095px) {
-    //     padding-bottom: 21.5rem;
-    // }
+#content-wrap {
+    padding-bottom: 9rem;
 }
 
 html {
@@ -31,7 +30,6 @@ h1 {
     font-size: 45px;
     font-family: 'Montserrat', sans-serif;
     font-weight: 800;
-    margin-top: 3rem;
     margin-bottom: 3rem;
 }
 
@@ -73,7 +71,7 @@ span {
 
 .container {
     max-width: 100%;
-    padding: 3% 5%;
+    padding: 2.5rem 4.5rem 3.5rem;
 
     @media screen and (max-width: 1095px) {
         padding: 6% 5%;

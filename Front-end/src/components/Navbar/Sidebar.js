@@ -13,7 +13,16 @@ import {
 } from "@material-ui/core";
 import ListItemButton from '@mui/material/ListItemButton';
 import Collapse from '@mui/material/Collapse';
-import EditIcon from '@mui/icons-material/Edit';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import TwoWheelerIcon from '@mui/icons-material/TwoWheeler';
+import MopedIcon from '@mui/icons-material/Moped';
+import CategoryIcon from '@mui/icons-material/Category';
+import InvertColorsIcon from '@mui/icons-material/InvertColors';
+import FactoryIcon from '@mui/icons-material/Factory';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import SettingsIcon from '@mui/icons-material/Settings';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -23,16 +32,11 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import Cookies from 'universal-cookie';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 // Redux
-import { useDispatch, useSelector } from "react-redux";
-import { reduxAction } from "../../redux-store/redux/redux.slice";
+import { useDispatch } from "react-redux";
 import { reduxAuthenticateAction } from "../../redux-store/redux/reduxAuthenticate.slice";
 
-// Fire base
-import { AxiosInstance } from "../../api/AxiosClient";
-import { OrderAPI } from "../../api/EndPoint";
 
 const cookies = new Cookies();
 
@@ -44,43 +48,12 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-end',
 }));
 
-// const handleBikeNumberInCart = async (setCarNumber, setLoadingPage) => {
-//     await AxiosInstance.get(OrderAPI.cartGetBikeNumber, {
-//         headers: { Authorization: `Bearer ${cookies.get('accessToken')}` }
-//     }).then((res) => {
-//         if (res.data.code === 1) {
-//             setCarNumber(res.data.data);
-//             setLoadingPage(false);
-//         }
-//     }).catch((error) => {
-//         if (error && error.response) {
-//             console.log("Error: ", error);
-//         }
-//     });
-// }
-
 const Sidebar = () => {
-
     const dispatch = useDispatch();
-    // let cartNumberRedux = useSelector((state) => state.redux.cartNumber);
-
-
     const [open, setOpen] = useState(false);
-    const [managementCollapse, setManagementCollapse] = useState(false);
+    const [managementBikeCollapse, setManagementBikeCollapse] = useState(false);
+    const [managementOrderCollapse, setManagementOrderCollapse] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    // const [cartNumber, setCarNumber] = useState(-1);
-    // const [loadingPage, setLoadingPage] = useState(true);
-
-    // useEffect(() => {
-    //     if (loadingPage === true) {
-    //         handleBikeNumberInCart(setCarNumber, setLoadingPage);
-    //     }
-    // }, [loadingPage])
-
-    // useEffect(() => {
-    //     dispatch(reduxAction.setCartNumber(cartNumber));
-    // }, [cartNumber])
-
 
     let userName = cookies.get('userName');
 
@@ -88,8 +61,12 @@ const Sidebar = () => {
         setOpen(!open);
     };
 
-    const toggleManagement = () => {
-        setManagementCollapse(!managementCollapse);
+    const toggleManagementBike = () => {
+        setManagementBikeCollapse(!managementBikeCollapse);
+    }
+
+    const toggleManagementOrder = () => {
+        setManagementOrderCollapse(!managementOrderCollapse);
     }
 
     const handleLogOut = () => {
@@ -128,11 +105,6 @@ const Sidebar = () => {
                     <Navbar.Brand href="/dashboard">Rent Motorcycles</Navbar.Brand>
                 </div>
                 <div>
-                    {/* <IconButton aria-label="cart">
-                        <Badge badgeContent={cartNumberRedux} color="secondary" max={999} showZero>
-                            <ShoppingCartIcon />
-                        </Badge>
-                    </IconButton> */}
                     <Button className="btn-user" variant="outlined" onClick={handleMenu} startIcon={<AccountCircle style={{ fontSize: '32px' }} />}>{userName}</Button>
                     <Menu
                         style={{ marginTop: '40px' }}
@@ -174,78 +146,93 @@ const Sidebar = () => {
                         <ListItem key={'dashboard'} disableGutters={true}>
                             <ListItemButton className="item-button" component="a" href="/dashboard">
                                 <ListItemIcon>
-                                    <EditIcon className="item-icon" />
+                                    <DashboardIcon className="item-icon" />
                                 </ListItemIcon>
                                 <ListItemText primary="Dashboard" />
                             </ListItemButton>
                         </ListItem>
-                        <ListItem key={'managament'} disableGutters={true}>
-                            <ListItemButton className="item-button" onClick={toggleManagement}>
+                        <ListItem key={'bikeManagement'} disableGutters={true}>
+                            <ListItemButton className="item-button" onClick={toggleManagementBike}>
                                 <ListItemIcon>
-                                    <EditIcon className="item-icon" />
+                                    <TwoWheelerIcon className="item-icon" />
                                 </ListItemIcon>
-                                <ListItemText primary="Management" />
-                                {managementCollapse ? <ExpandLess /> : <ExpandMore />}
+                                <ListItemText primary="Bike Management" />
+                                {managementBikeCollapse ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
                         </ListItem>
-                        <Collapse in={managementCollapse} timeout="auto" unmountOnExit>
+                        <Collapse in={managementBikeCollapse} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                <ListItem key={'category'} disableGutters={true} style={{ paddingLeft: 40 }}>
-                                    <ListItemButton className="item-button" component="a" href="/manage/category">
+                                <ListItem key={'bike'} disableGutters={true} style={{ paddingLeft: 40 }}>
+                                    <ListItemButton className="item-button" component="a" href="/manage-bike/bike-list">
                                         <ListItemIcon>
-                                            <EditIcon className="item-icon" />
+                                            <MopedIcon className="item-icon" />
                                         </ListItemIcon>
-                                        <ListItemText primary="Manage Bike Category" />
+                                        <ListItemText primary="Bike List" />
+                                    </ListItemButton>
+                                </ListItem>
+                                <ListItem key={'category'} disableGutters={true} style={{ paddingLeft: 40 }}>
+                                    <ListItemButton className="item-button" component="a" href="/manage-bike/category">
+                                        <ListItemIcon>
+                                            <CategoryIcon className="item-icon" />
+                                        </ListItemIcon>
+                                        <ListItemText primary="Category" />
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem key={'color'} disableGutters={true} style={{ paddingLeft: 40 }}>
-                                    <ListItemButton className="item-button" component="a" href="/manage/color">
+                                    <ListItemButton className="item-button" component="a" href="/manage-bike/color">
                                         <ListItemIcon>
-                                            <EditIcon className="item-icon" />
+                                            <InvertColorsIcon className="item-icon" />
                                         </ListItemIcon>
-                                        <ListItemText primary="Manage Bike Color" />
+                                        <ListItemText primary="Color" />
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem key={'manufacturer'} disableGutters={true} style={{ paddingLeft: 40 }}>
-                                    <ListItemButton className="item-button" component="a" href="/manage/manufacturer">
+                                    <ListItemButton className="item-button" component="a" href="/manage-bike/manufacturer">
                                         <ListItemIcon>
-                                            <EditIcon className="item-icon" />
+                                            <FactoryIcon className="item-icon" />
                                         </ListItemIcon>
-                                        <ListItemText primary="Manage Bike Manufacturer" />
-                                    </ListItemButton>
-                                </ListItem>
-                                <ListItem key={'bike'} disableGutters={true} style={{ paddingLeft: 40 }}>
-                                    <ListItemButton className="item-button" component="a" href="/manage/bike">
-                                        <ListItemIcon>
-                                            <EditIcon className="item-icon" />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Manage Bike" />
-                                    </ListItemButton>
-                                </ListItem>
-                                <ListItem key={'order'} disableGutters={true} style={{ paddingLeft: 40 }}>
-                                    <ListItemButton className="item-button" component="a" href="/manage/order">
-                                        <ListItemIcon>
-                                            <EditIcon className="item-icon" />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Manage Order" />
-                                    </ListItemButton>
-                                </ListItem>
-                                <ListItem key={'maintain'} disableGutters={true} style={{ paddingLeft: 40 }}>
-                                    <ListItemButton className="item-button" component="a" href="/manage/maintain">
-                                        <ListItemIcon>
-                                            <EditIcon className="item-icon" />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Manage Maintain" />
+                                        <ListItemText primary="Manufacturer" />
                                     </ListItemButton>
                                 </ListItem>
                             </List>
                         </Collapse>
-                        <ListItem key={'cart'} disableGutters={true}>
-                            <ListItemButton className="item-button" component="a" href="/manage/cart/create">
+
+                        <ListItem key={'orderManagement'} disableGutters={true}>
+                            <ListItemButton className="item-button" onClick={toggleManagementOrder}>
                                 <ListItemIcon>
-                                    <EditIcon className="item-icon" />
+                                    <ManageSearchIcon className="item-icon" />
                                 </ListItemIcon>
-                                <ListItemText primary="Go to cart" />
+                                <ListItemText primary="Order Management" />
+                                {managementOrderCollapse ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                        </ListItem>
+                        <Collapse in={managementOrderCollapse} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem key={'cart'} disableGutters={true} style={{ paddingLeft: 40 }}>
+                                    <ListItemButton className="item-button" component="a" href="/manage-order/cart/create">
+                                        <ListItemIcon>
+                                            <AddShoppingCartIcon className="item-icon" />
+                                        </ListItemIcon>
+                                        <ListItemText primary="Create Cart" />
+                                    </ListItemButton>
+                                </ListItem>
+
+                                <ListItem key={'order'} disableGutters={true} style={{ paddingLeft: 40 }}>
+                                    <ListItemButton className="item-button" component="a" href="/manage-order/order-list">
+                                        <ListItemIcon>
+                                            <ViewListIcon className="item-icon" />
+                                        </ListItemIcon>
+                                        <ListItemText primary="Order List" />
+                                    </ListItemButton>
+                                </ListItem>
+                            </List>
+                        </Collapse>
+                        <ListItem key={'maintain'} disableGutters={true}>
+                            <ListItemButton className="item-button" component="a" href="/manage-maintenaince/maintenaince-list">
+                                <ListItemIcon>
+                                    <SettingsIcon className="item-icon" />
+                                </ListItemIcon>
+                                <ListItemText primary="Maintenaince" />
                             </ListItemButton>
                         </ListItem>
                     </List>

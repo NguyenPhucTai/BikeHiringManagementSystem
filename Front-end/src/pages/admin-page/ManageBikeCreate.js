@@ -336,7 +336,7 @@ function ManageBikeCreate() {
                                     <button className="btn btn-secondary btn-cancel"
                                         onClick={() => {
                                             setShowPopup(false);
-                                            navigate('/manage/bike');
+                                            navigate('/manage-bike/bike-list');
 
                                         }}>Close</button>
                                     :

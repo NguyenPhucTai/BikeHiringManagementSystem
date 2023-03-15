@@ -427,7 +427,7 @@ function ManageOrderDetail() {
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
-                                navigate('/manage/order')
+                                navigate('/manage-order/order-list')
                             }}>Go to order page</button>
                     </div>
                 </ Fragment>
@@ -462,7 +462,7 @@ function ManageOrderDetail() {
                     <div className="popup-button">
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
-                                navigate('/manage/order');
+                                navigate('/manage-order/order-list');
                             }}>Go to order page</button>
                     </div>
                 </ Fragment>

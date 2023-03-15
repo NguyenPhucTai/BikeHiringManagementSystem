@@ -49,7 +49,7 @@ const showAlert = (setAlert, message, isSuccess) => {
 
 const handleNavigateToListPage = (isDeleted, navigate) => {
     if (isDeleted) {
-        navigate("/manage/bike");
+        navigate("/manage-bike/bike-list");
     }
 }
 
@@ -247,12 +247,12 @@ function ManageBikeDetail() {
                 <Row className="button-section">
                     <Col lg={6} xs={6}>
                         <div style={{ textAlign: "left" }}>
-                            <button className="btn btn-secondary" onClick={() => navigate('/manage/bike')}>BACK TO LIST</button>
+                            <button className="btn btn-secondary" onClick={() => navigate('/manage-bike/bike-list')}>BACK TO LIST</button>
                         </div>
                     </Col>
                     <Col lg={6} xs={6}>
                         <div style={{ textAlign: "right" }}>
-                            <button className="btn btn-primary" style={{ marginLeft: "16px" }} onClick={() => navigate('/manage/bike/update/' + id)}>UPDATE</button>
+                            <button className="btn btn-primary" style={{ marginLeft: "16px" }} onClick={() => navigate('/manage-bike/bike/update/' + id)}>UPDATE</button>
                             <button className="btn btn-danger" style={{ marginLeft: "16px" }} onClick={() => setShowPopup(true)}>DELETE</button>
                         </div>
                     </Col>

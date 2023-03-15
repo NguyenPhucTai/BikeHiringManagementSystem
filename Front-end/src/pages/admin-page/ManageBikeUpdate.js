@@ -502,7 +502,7 @@ function ManageBikeUpdate() {
                             <button className="btn btn-secondary btn-cancel-view"
                                 onClick={() => {
                                     setShowPopup(false);
-                                    navigate('/manage/bike/' + data.id);
+                                    navigate('/manage-bike/bike/' + data.id);
                                 }}>Close</button>
                             :
                             <button className="btn btn-secondary btn-cancel-view"
