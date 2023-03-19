@@ -342,7 +342,7 @@ function ManageOrderDetail() {
     // TRIGGER API CALCULATE COST
     useEffect(() => {
         if (isCalculateCost === true) {
-            handleCalculateCost(id, expectedStartDate, expectedEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
+            handleCalculateCost(id, actualStartDate, actualEndDate, setIsCalculateCost, serviceCost, setTotalAmount, setCalculatedCost)
         }
     }, [isCalculateCost])
 
@@ -619,7 +619,7 @@ function ManageOrderDetail() {
                                                             renderInput={({ inputRef, inputProps, InputProps }) => (
                                                                 <div className="form-group mb-3">
                                                                     <label className='form-label' htmlFor={inputProps.name}>
-                                                                        Date From
+                                                                        Date To
                                                                     </label>
                                                                     <div style={{ display: 'inline' }}>
                                                                         <input className='form-control shadow-none'
@@ -676,7 +676,7 @@ function ManageOrderDetail() {
                                                             renderInput={({ inputRef, inputProps, InputProps }) => (
                                                                 <div className="form-group mb-3">
                                                                     <label className='form-label' htmlFor={inputProps.name}>
-                                                                        Date From
+                                                                        Date To
                                                                     </label>
                                                                     <div style={{ display: 'inline' }}>
                                                                         <input className='form-control shadow-none'

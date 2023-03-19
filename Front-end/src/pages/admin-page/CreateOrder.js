@@ -542,7 +542,7 @@ function CreateOrder() {
                                                 isShowButtonDelete={true}
                                             />
                                             :
-                                            <div>No bike found</div>
+                                            <div style={{ color: '#ff4444' }}>No bike found</div>
                                         }
                                     </Col>
                                     <Col xs={12} lg={12}>

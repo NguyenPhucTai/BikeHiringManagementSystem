@@ -519,8 +519,8 @@ public class OrderService {
             order.setCustomerId(customerId);
 
             /*--------------------------- CALCULATE COST ------------------------*/
-            order.setExpectedStartDate(orderRequest.getExpectedStartDate());
-            order.setExpectedEndDate(orderRequest.getExpectedEndDate());
+            order.setActualStartDate(orderRequest.getActualStartDate());
+            order.setActualEndDate(orderRequest.getActualEndDate());
             order.setCalculatedCost(orderRequest.getCalculatedCost());
 
             /*--------------------------- SERVICE COST LOGIC ------------------------*/
@@ -561,8 +561,8 @@ public class OrderService {
             if(isCloseOrder){
                 updateStatusOfBike(orderId, Constant.STATUS_BIKE_AVAILABLE, Boolean.FALSE);
                 order.setStatus(Constant.STATUS_ORDER_CLOSED);
-                order.setActualStartDate(orderRequest.getActualStartDate());
-                order.setActualEndDate(orderRequest.getActualEndDate());
+//                order.setActualStartDate(orderRequest.getActualStartDate());
+//                order.setActualEndDate(orderRequest.getActualEndDate());
                 message = "Close order successfully!!!";
             }
             order.setTotalAmount(orderRequest.getTotalAmount());
