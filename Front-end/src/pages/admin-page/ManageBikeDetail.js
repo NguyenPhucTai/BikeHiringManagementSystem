@@ -213,7 +213,7 @@ function ManageBikeDetail() {
                         status={alert.alertStatus}
                     />
                     <div className="popup-button">
-                        <button className="btn btn-secondary btn-cancel"
+                        <button className="btn btn-secondary btn-cancel-view"
                             onClick={() => {
                                 setShowPopup(false);
                                 setShowCloseButton(false);
@@ -229,12 +229,12 @@ function ManageBikeDetail() {
                         <p>This process cannot be undone</p>
                     </div>
                     <div className="popup-button">
-                        <button className="btn btn-danger btn-action"
-                            onClick={() => handleDeleteBikeById(id, setAlert, setShowCloseButton, setIsDeleted)}>DELETE</button>
                         <button className="btn btn-secondary btn-cancel"
                             onClick={() => {
                                 setShowPopup(false);
                             }}>Cancel</button>
+                        <button className="btn btn-danger btn-action"
+                            onClick={() => handleDeleteBikeById(id, setAlert, setShowCloseButton, setIsDeleted)}>DELETE</button>
                     </div>
                 </Fragment >
         } />
