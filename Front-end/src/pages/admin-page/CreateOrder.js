@@ -203,6 +203,8 @@ const handleSaveCart = async (
     }).then((res) => {
         if (res.data.code === 1) {
             showAlert(setAlert, res.data.message, true)
+        } else {
+            showAlert(setAlert, res.data.message, false)
         }
         if (isCreateOrder === false) {
             setLoadingData(true)

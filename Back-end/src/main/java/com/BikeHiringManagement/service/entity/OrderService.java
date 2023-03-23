@@ -409,7 +409,11 @@ public class OrderService {
             /*--------------------------- UPDATE OTHER FIELD ------------------------*/
             order.setNote(orderRequest.getNote());
             if (orderRequest.getIsCreateOrder() == Boolean.TRUE) {
-                updateStatusOfBike(order.getId(), Constant.STATUS_BIKE_HIRED, Boolean.FALSE);
+                boolean result = updateStatusOfBike(order.getId(), Constant.STATUS_BIKE_HIRED, Boolean.FALSE);
+                if(result == false){
+                    return new Result(Constant.LOGIC_ERROR_CODE, "There is no bike in this order id " + order.getId());
+                }
+
                 order.setStatus(Constant.STATUS_ORDER_PENDING);
                 order.setTotalAmount(orderRequest.getTotalAmount());
                 message = "Create order successfully";
@@ -559,7 +563,11 @@ public class OrderService {
             /*--------------------------- UPDATE OTHER FIELD ------------------------*/
             order.setNote(orderRequest.getNote());
             if(isCloseOrder){
-                updateStatusOfBike(orderId, Constant.STATUS_BIKE_AVAILABLE, Boolean.FALSE);
+                boolean result =  updateStatusOfBike(orderId, Constant.STATUS_BIKE_AVAILABLE, Boolean.FALSE);
+                if(result == false){
+                    return new Result(Constant.LOGIC_ERROR_CODE, "There is no bike in this order id " +orderId);
+                }
+
                 order.setStatus(Constant.STATUS_ORDER_CLOSED);
 //                order.setActualStartDate(orderRequest.getActualStartDate());
 //                order.setActualEndDate(orderRequest.getActualEndDate());
@@ -584,7 +592,10 @@ public class OrderService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The Order ID is not existed!!!");
             }
             Order order = orderRepository.findOrderByIdAndIsDeleted(orderId, Boolean.FALSE);
-            updateStatusOfBike(orderId, Constant.STATUS_BIKE_AVAILABLE, Boolean.TRUE);
+            boolean result =  updateStatusOfBike(orderId, Constant.STATUS_BIKE_AVAILABLE, Boolean.TRUE);
+            if(result == false){
+                return new Result(Constant.LOGIC_ERROR_CODE, "There is no bike in this order id " +orderId);
+            }
             order.setStatus("CANCEL");
             order.setModifiedUser(username);
             order.setModifiedDate(new Date());
@@ -664,9 +675,12 @@ public class OrderService {
         }
     }
 
-    public void updateStatusOfBike(Long orderID, String status, Boolean isCancel){
+    public boolean updateStatusOfBike(Long orderID, String status, Boolean isCancel){
         try{
             List<OrderDetail> listOrderDetail = orderDetailRepository.findAllOrderDetailByOrderIdAndIsDeleted(orderID, Boolean.FALSE);
+            if(listOrderDetail.size() == 0){
+                return false;
+            }
             List<Bike> listBike = new ArrayList<>();
             for(OrderDetail item : listOrderDetail){
                 Bike bike = bikeRepository.findBikeById(item.getBikeId());
@@ -677,9 +691,11 @@ public class OrderService {
                 listBike.add(bike);
             }
             bikeRepository.saveAll(listBike);
+            return true;
         }
         catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 }
