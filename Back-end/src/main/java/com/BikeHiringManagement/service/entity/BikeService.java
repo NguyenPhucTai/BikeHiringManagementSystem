@@ -228,6 +228,10 @@ public class BikeService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike has not been existed!!!");
             }
 
+            if(bike.getStatus() != "AVAILABLE"){
+                return new Result(Constant.LOGIC_ERROR_CODE, "The bike is being hired! Please check status");
+            }
+
             // REMOVE BIKE
             bike.setModifiedDate(new Date());
             bike.setModifiedUser(username);
