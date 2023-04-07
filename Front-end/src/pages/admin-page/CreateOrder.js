@@ -463,7 +463,7 @@ function CreateOrder() {
                             <Form className="d-flex flex-column">
                                 {/* Customer info */}
                                 <Row className="mb-3">
-                                    <Col xs={12} lg={12}>
+                                    <Col xs={12} lg={6}>
                                         <TextFieldCustom
                                             label={"Customer Name"}
                                             name={"customerName"}
@@ -471,7 +471,7 @@ function CreateOrder() {
                                             placeholder={"Enter the customer name"}
                                         />
                                     </Col>
-                                    <Col xs={12} lg={12}>
+                                    <Col xs={12} lg={6}>
                                         <TextFieldCustom
                                             label={"Phone Number"}
                                             name={"phoneNumber"}
@@ -586,7 +586,7 @@ function CreateOrder() {
                                     </Col>
                                     {isUsedService === true &&
                                         <Row>
-                                            <Col xs={12} lg={12}>
+                                            <Col xs={12} lg={6}>
                                                 <TextFieldCustom
                                                     label={"Service Description"}
                                                     name={"serviceDescription"}
@@ -594,7 +594,7 @@ function CreateOrder() {
                                                     placeholder={"Enter the description"}
                                                 />
                                             </Col>
-                                            <Col xs={12} lg={12}>
+                                            <Col xs={12} lg={6}>
                                                 <TextFieldCustom
                                                     label={"Service Cost"}
                                                     name={"serviceCost"}
