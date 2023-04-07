@@ -558,7 +558,7 @@ function ManageOrderDetail() {
 
                                     {/* Customer info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} lg={12}>
+                                        <Col xs={12} lg={6}>
                                             <TextFieldCustom
                                                 label={"Customer Name"}
                                                 name={"customerName"}
@@ -566,7 +566,7 @@ function ManageOrderDetail() {
                                                 placeholder={"Enter the customer name"}
                                             />
                                         </Col>
-                                        <Col xs={12} lg={12}>
+                                        <Col xs={12} lg={6}>
                                             <TextFieldCustom
                                                 label={"Phone Number"}
                                                 name={"phoneNumber"}
@@ -746,7 +746,7 @@ function ManageOrderDetail() {
                                         </Col>
                                         {isUsedService === true &&
                                             <Row>
-                                                <Col xs={12} lg={12}>
+                                                <Col xs={12} lg={6}>
                                                     <TextFieldCustom
                                                         label={"Service Description"}
                                                         name={"serviceDescription"}
@@ -754,7 +754,7 @@ function ManageOrderDetail() {
                                                         placeholder={"Enter the description"}
                                                     />
                                                 </Col>
-                                                <Col xs={12} lg={12}>
+                                                <Col xs={12} lg={6}>
                                                     <TextFieldCustom
                                                         label={"Service Cost"}
                                                         name={"serviceCost"}
@@ -891,7 +891,7 @@ function ManageOrderDetail() {
 
                                     {/* Customer info */}
                                     <Row className="mb-3">
-                                        <Col xs={12} lg={12}>
+                                        <Col xs={12} lg={6}>
                                             <TextFieldCustom
                                                 label={"Customer Name"}
                                                 name={"customerName"}
@@ -900,7 +900,7 @@ function ManageOrderDetail() {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col xs={12} lg={12}>
+                                        <Col xs={12} lg={6}>
                                             <TextFieldCustom
                                                 label={"Phone Number"}
                                                 name={"phoneNumber"}
@@ -1086,7 +1086,7 @@ function ManageOrderDetail() {
                                         </Col>
                                         {isUsedService === true &&
                                             <Row>
-                                                <Col xs={12} lg={12}>
+                                                <Col xs={12} lg={6}>
                                                     <TextFieldCustom
                                                         label={"Service Description"}
                                                         name={"serviceDescription"}
@@ -1095,7 +1095,7 @@ function ManageOrderDetail() {
                                                         disabled={true}
                                                     />
                                                 </Col>
-                                                <Col xs={12} lg={12}>
+                                                <Col xs={12} lg={6}>
                                                     <TextFieldCustom
                                                         label={"Service Cost"}
                                                         name={"serviceCost"}
