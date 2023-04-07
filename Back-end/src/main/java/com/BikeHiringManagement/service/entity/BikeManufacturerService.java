@@ -1,6 +1,7 @@
 package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
+import com.BikeHiringManagement.entity.Bike;
 import com.BikeHiringManagement.entity.BikeManufacturer;
 import com.BikeHiringManagement.model.temp.ComparedObject;
 import com.BikeHiringManagement.model.temp.HistoryObject;
@@ -9,6 +10,7 @@ import com.BikeHiringManagement.model.request.BikeManafacturerRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeManufacturerRepository;
+import com.BikeHiringManagement.repository.BikeRepository;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeManufacturerSpecification;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class BikeManufacturerService {
@@ -28,6 +31,9 @@ public class BikeManufacturerService {
 
     @Autowired
     BikeManufacturerSpecification bikeManufacturerSpecification;
+
+    @Autowired
+    BikeRepository bikeRepository;
 
     @Autowired
     ResponseUtils responseUtils;
@@ -145,6 +151,18 @@ public class BikeManufacturerService {
             if(bikeManufacturer.getIsDeleted() == true){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike manufacturer has not been existed!!!");
             }
+
+            List<Bike> listBikeByManufacturerId = bikeRepository.findAllByBikeManufacturerIdAndIsDeleted(id, Boolean.FALSE);
+            if(listBikeByManufacturerId.size() > 0){
+                String error_message = bikeManufacturer.getName() + " is being used for motorcycles ";
+                for(Bike bike : listBikeByManufacturerId){
+                    error_message += bike.getBikeManualId() + ", ";
+                }
+                error_message = error_message.substring(0, error_message.length() - 2);
+                error_message += " -> Please update the manufacturer for these bikes before continuing to delete this manufacturer.";
+                return new Result(Constant.LOGIC_ERROR_CODE, error_message);
+            }
+
             bikeManufacturer.setModifiedDate(new Date());
             bikeManufacturer.setModifiedUser(username);
             bikeManufacturer.setIsDeleted(true);

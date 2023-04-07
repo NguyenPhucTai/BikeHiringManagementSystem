@@ -73,6 +73,7 @@ const handleGetDataPagination = async (
         var listData = res.data.data.content.map((data) => {
             return {
                 id: data.id,
+                bikeManualId: data.bikeManualId,
                 name: data.name,
                 bikeCategoryName: data.bikeCategoryName,
                 hiredNumber: data.hiredNumber,
@@ -107,6 +108,7 @@ function ManageBikeList() {
     // Table variables
     const tableTitleList = [
         { name: 'ID', width: '10%' },
+        { name: 'MANUAL ID', width: '10%' },
         { name: 'NAME', width: '20%' },
         { name: 'CATEGORY', width: '20%' },
         { name: 'HIRED NUMBER', width: '15%' },

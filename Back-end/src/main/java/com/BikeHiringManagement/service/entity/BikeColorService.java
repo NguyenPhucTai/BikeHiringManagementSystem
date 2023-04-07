@@ -1,6 +1,7 @@
 package com.BikeHiringManagement.service.entity;
 import com.BikeHiringManagement.constant.Constant;
 import com.BikeHiringManagement.dto.PageDto;
+import com.BikeHiringManagement.entity.Bike;
 import com.BikeHiringManagement.entity.BikeColor;
 import com.BikeHiringManagement.model.temp.ComparedObject;
 import com.BikeHiringManagement.model.temp.HistoryObject;
@@ -9,6 +10,7 @@ import com.BikeHiringManagement.model.request.BikeColorRequest;
 import com.BikeHiringManagement.model.request.PaginationRequest;
 import com.BikeHiringManagement.model.request.ObjectNameRequest;
 import com.BikeHiringManagement.repository.BikeColorRepository;
+import com.BikeHiringManagement.repository.BikeRepository;
 import com.BikeHiringManagement.service.system.CheckEntityExistService;
 import com.BikeHiringManagement.service.system.ResponseUtils;
 import com.BikeHiringManagement.specification.BikeColorSpecification;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class BikeColorService {
@@ -28,6 +31,10 @@ public class BikeColorService {
 
     @Autowired
     BikeColorSpecification bikeColorSpecification;
+
+    @Autowired
+    BikeRepository bikeRepository;
+
     @Autowired
     ResponseUtils responseUtils;
 
@@ -144,6 +151,17 @@ public class BikeColorService {
             BikeColor bikeColor = bikeColorRepository.findBikeColorById(id);
             if(bikeColor.getIsDeleted() == true){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike color has not been existed!!!");
+            }
+
+            List<Bike> listBikeByColorId = bikeRepository.findAllByBikeColorIdAndIsDeleted(id, Boolean.FALSE);
+            if(listBikeByColorId.size() > 0){
+                String error_message = bikeColor.getName() + " is being used for motorcycles ";
+                for(Bike bike : listBikeByColorId){
+                    error_message += bike.getBikeManualId() + ", ";
+                }
+                error_message = error_message.substring(0, error_message.length() - 2);
+                error_message += " -> Please update the color for these bikes before continuing to delete this color.";
+                return new Result(Constant.LOGIC_ERROR_CODE, error_message);
             }
 
             bikeColor.setModifiedDate(new Date());
