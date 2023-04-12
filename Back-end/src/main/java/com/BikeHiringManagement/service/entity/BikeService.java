@@ -228,7 +228,7 @@ public class BikeService {
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike has not been existed!!!");
             }
 
-            if(bike.getStatus() != "AVAILABLE"){
+            if(!bike.getStatus().equalsIgnoreCase("AVAILABLE")){
                 return new Result(Constant.LOGIC_ERROR_CODE, "The bike is being hired! Please check status");
             }
 
